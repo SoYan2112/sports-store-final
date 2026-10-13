@@ -44,7 +44,6 @@ void main() {
     cubit.emit(const ProductDetailLoaded(
       product: tProduct,
       selectedSize: '39',
-      selectedColor: 0xFF1A1A1A,
       quantity: 1,
     ));
 

@@ -14,7 +14,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       emit(ProductDetailLoaded(
         product: initialProduct,
         selectedSize: initialProduct.sizes.isNotEmpty ? initialProduct.sizes.first : null,
-        selectedColor: initialProduct.colors.isNotEmpty ? initialProduct.colors.first : null,
       ));
     } else {
       emit(const ProductDetailLoading());
@@ -25,22 +24,14 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       final currentSize = (state is ProductDetailLoaded)
           ? (state as ProductDetailLoaded).selectedSize
           : null;
-      final currentColor = (state is ProductDetailLoaded)
-          ? (state as ProductDetailLoaded).selectedColor
-          : null;
       final currentQty = (state is ProductDetailLoaded)
           ? (state as ProductDetailLoaded).quantity
           : 1;
-      final currentFav = (state is ProductDetailLoaded)
-          ? (state as ProductDetailLoaded).isFavorite
-          : false;
 
       emit(ProductDetailLoaded(
         product: product,
         selectedSize: currentSize ?? (product.sizes.isNotEmpty ? product.sizes.first : null),
-        selectedColor: currentColor ?? (product.colors.isNotEmpty ? product.colors.first : null),
         quantity: currentQty,
-        isFavorite: currentFav,
       ));
     } catch (e) {
       if (state is! ProductDetailLoaded) {
@@ -54,18 +45,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
   void selectSize(String size) {
     if (state is ProductDetailLoaded) {
       emit((state as ProductDetailLoaded).copyWith(selectedSize: size));
-    }
-  }
-
-  void selectColor(int color) {
-    if (state is ProductDetailLoaded) {
-      emit((state as ProductDetailLoaded).copyWith(selectedColor: color));
-    }
-  }
-
-  void setActiveImageIndex(int index) {
-    if (state is ProductDetailLoaded) {
-      emit((state as ProductDetailLoaded).copyWith(activeImageIndex: index));
     }
   }
 
@@ -84,13 +63,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       if (current.quantity > 1) {
         emit(current.copyWith(quantity: current.quantity - 1));
       }
-    }
-  }
-
-  void toggleFavorite() {
-    if (state is ProductDetailLoaded) {
-      final current = state as ProductDetailLoaded;
-      emit(current.copyWith(isFavorite: !current.isFavorite));
     }
   }
 }

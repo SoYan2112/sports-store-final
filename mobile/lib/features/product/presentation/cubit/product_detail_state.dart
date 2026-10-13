@@ -24,47 +24,28 @@ class ProductDetailLoading extends ProductDetailState {
 class ProductDetailLoaded extends ProductDetailState {
   final ProductEntity product;
   final String? selectedSize;
-  final int? selectedColor;
   final int quantity;
-  final int activeImageIndex;
-  final bool isFavorite;
 
   const ProductDetailLoaded({
     required this.product,
     this.selectedSize,
-    this.selectedColor,
     this.quantity = 1,
-    this.activeImageIndex = 0,
-    this.isFavorite = false,
   });
 
   ProductDetailLoaded copyWith({
     ProductEntity? product,
     String? selectedSize,
-    int? selectedColor,
     int? quantity,
-    int? activeImageIndex,
-    bool? isFavorite,
   }) {
     return ProductDetailLoaded(
       product: product ?? this.product,
       selectedSize: selectedSize ?? this.selectedSize,
-      selectedColor: selectedColor ?? this.selectedColor,
       quantity: quantity ?? this.quantity,
-      activeImageIndex: activeImageIndex ?? this.activeImageIndex,
-      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
   @override
-  List<Object?> get props => [
-        product,
-        selectedSize,
-        selectedColor,
-        quantity,
-        activeImageIndex,
-        isFavorite,
-      ];
+  List<Object?> get props => [product, selectedSize, quantity];
 }
 
 class ProductDetailError extends ProductDetailState {

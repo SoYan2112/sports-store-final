@@ -7,9 +7,6 @@ import '../../domain/entities/product_entity.dart';
 import '../cubit/product_detail_cubit.dart';
 import '../cubit/product_detail_state.dart';
 
-/// Màn hình Chi tiết sản phẩm cơ bản (UC-05: View product details)
-/// Sử dụng các widget nhập môn cơ bản: Scaffold, AppBar, SingleChildScrollView,
-/// Column, Row, Text, Image.network, ElevatedButton, IconButton.
 class ProductDetailScreen extends StatefulWidget {
   final ProductEntity product;
 
@@ -18,7 +15,6 @@ class ProductDetailScreen extends StatefulWidget {
     required this.product,
   });
 
-  /// Hàm điều hướng từ màn hình danh sách sang màn hình chi tiết
   static Route route(ProductEntity product) {
     return MaterialPageRoute(
       builder: (_) => BlocProvider(
@@ -38,7 +34,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<ProductDetailCubit, ProductDetailState>(
       builder: (context, state) {
-        // Lấy thông tin từ state của Cubit
         final product = state is ProductDetailLoaded ? state.product : widget.product;
         final selectedSize = state is ProductDetailLoaded
             ? state.selectedSize
@@ -46,18 +41,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         final quantity = state is ProductDetailLoaded ? state.quantity : 1;
 
         return Scaffold(
-          // 1. THANH TIÊU ĐỀ
           appBar: AppBar(
             title: const Text('Chi tiết sản phẩm'),
             centerTitle: true,
           ),
-
-          // 2. NỘI DUNG CUỘN (Chứa ảnh và các thông tin từ trên xuống dưới)
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ảnh sản phẩm lớn ở trên cùng
                 Center(
                   child: Image.network(
                     product.imageUrl,
@@ -73,14 +64,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                 ),
-
-                // Phần thông tin chi tiết có đệm lề (Padding)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Tên thương hiệu
                       Text(
                         product.brand.toUpperCase(),
                         style: TextStyle(
@@ -90,8 +78,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 6),
-
-                      // Tên sản phẩm
                       Text(
                         product.name,
                         style: const TextStyle(
@@ -101,8 +87,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-
-                      // Đánh giá sao & Tồn kho
                       Row(
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 18),
@@ -119,8 +103,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-
-                      // Giá sản phẩm (định dạng VNĐ)
                       Text(
                         CurrencyFormatter.formatVnd(product.price),
                         style: const TextStyle(
@@ -129,10 +111,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: AppColors.primary,
                         ),
                       ),
-
                       const Divider(height: 30),
-
-                      // Chọn Size giày
                       const Text(
                         'Chọn kích cỡ:',
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -156,10 +135,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                         }).toList(),
                       ),
-
                       const SizedBox(height: 16),
-
-                      // Chọn số lượng
                       Row(
                         children: [
                           const Text(
@@ -185,10 +161,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ],
                       ),
-
                       const Divider(height: 30),
-
-                      // Thể loại & Mô tả sản phẩm
                       Text(
                         'Danh mục: ${product.category}',
                         style: const TextStyle(fontWeight: FontWeight.w500),
@@ -211,8 +184,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ],
             ),
           ),
-
-          // 3. NÚT THÊM VÀO GIỎ HÀNG Ở ĐÁY MÀN HÌNH
           bottomNavigationBar: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(

@@ -26,7 +26,6 @@ void main() {
     description: 'Giày chạy bộ cao cấp',
     stock: 10,
     sizes: ['39', '40', '41'],
-    colors: [0xFF1A1A1A, 0xFFFFFFFF],
   );
 
   setUp(() {
@@ -58,9 +57,7 @@ void main() {
         const ProductDetailLoaded(
           product: tProduct,
           selectedSize: '39',
-          selectedColor: 0xFF1A1A1A,
           quantity: 1,
-          isFavorite: false,
         ),
       ],
       verify: (_) {
@@ -100,22 +97,6 @@ void main() {
         const ProductDetailLoaded(product: tProduct, quantity: 2),
         const ProductDetailLoaded(product: tProduct, quantity: 3),
         const ProductDetailLoaded(product: tProduct, quantity: 2),
-      ],
-    );
-
-    blocTest<ProductDetailCubit, ProductDetailState>(
-      'toggles isFavorite state correctly',
-      build: () => cubit,
-      seed: () => const ProductDetailLoaded(
-        product: tProduct,
-        isFavorite: false,
-      ),
-      act: (c) => c.toggleFavorite(),
-      expect: () => [
-        const ProductDetailLoaded(
-          product: tProduct,
-          isFavorite: true,
-        ),
       ],
     );
   });
