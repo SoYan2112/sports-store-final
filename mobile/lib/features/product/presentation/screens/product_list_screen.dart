@@ -7,6 +7,7 @@ import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
+import 'product_detail_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -437,11 +438,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           return ProductCard(
                             product: product,
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Đã chọn: ${product.name}'),
-                                  duration: const Duration(seconds: 1),
-                                ),
+                              Navigator.of(context).push(
+                                ProductDetailScreen.route(product),
                               );
                             },
                           );

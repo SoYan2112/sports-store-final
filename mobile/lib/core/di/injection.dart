@@ -4,8 +4,10 @@ import '../network/dio_client.dart';
 import '../../features/product/data/datasources/product_remote_datasource.dart';
 import '../../features/product/data/repositories/product_repository_impl.dart';
 import '../../features/product/domain/repositories/product_repository.dart';
+import '../../features/product/domain/usecases/get_product_detail_usecase.dart';
 import '../../features/product/domain/usecases/get_products_usecase.dart';
 import '../../features/product/presentation/bloc/product_bloc.dart';
+import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -28,9 +30,17 @@ void initDependencies() {
   getIt.registerLazySingleton<GetProductsUseCase>(
     () => GetProductsUseCase(getIt<ProductRepository>()),
   );
+  getIt.registerLazySingleton<GetProductDetailUseCase>(
+    () => GetProductDetailUseCase(getIt<ProductRepository>()),
+  );
 
-  // Features - Product Bloc
+  // Features - Product Bloc & Cubit
   getIt.registerFactory<ProductBloc>(
     () => ProductBloc(getProductsUseCase: getIt<GetProductsUseCase>()),
+  );
+  getIt.registerFactory<ProductDetailCubit>(
+    () => ProductDetailCubit(
+      getProductDetailUseCase: getIt<GetProductDetailUseCase>(),
+    ),
   );
 }
