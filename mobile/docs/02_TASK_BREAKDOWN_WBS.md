@@ -9,11 +9,11 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 ---
 
 ## 📌 SPRINT 1 — Foundation & Authentication
-**Tiến độ**: 🔄 Đang thực hiện (2/9 pts · 22%)
+**Tiến độ**: 🔄 Đang thực hiện (6/9 pts · 66.7% | 3/6 UCs)
 
 ---
 
-### UC-01 · Login · `P0` · Medium · 2 pts
+### UC-01 · Login · `P0` · Medium · 2 pts · ⏳ Đang làm (Prototype/ChangeNotifier)
 **Assignee**: Nguyễn Hoài Ân (CE190990)
 
 - **[Mobile]** Dựng `LoginScreen` với `AppTextField` email/SĐT + password, nút CTA kiểu Adidas (nền đen, chữ trắng).
@@ -24,14 +24,15 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-02 · Register · `P0` · Medium · 2 pts
+### UC-02 · Register · `P0` · Medium · 2 pts · ✅ Hoàn thành
 **Assignee**: Trần Hoàng Nhật (CE190581)
 
-- **[Mobile]** Dựng `RegisterScreen` với các field: Họ tên, Email, SĐT (validate chuẩn VN: `09x/03x/07x/08x`), Mật khẩu ≥ 6 ký tự.
-- **[Mobile]** Tái dùng `AuthBloc` hoặc tạo `RegisterCubit` emit `RegisterLoading`, `RegisterSuccess`, `RegisterFailure`.
-- **[Mobile]** Tạo `AuthRemoteDataSource.register()` gọi `POST /api/auth/register`.
-- **[Mobile]** Hiển thị lỗi validation inline ngay dưới từng field (không dùng dialog).
-- **[Mobile]** Sau đăng ký thành công → tự động đăng nhập và điều hướng sang `HomeScreen`.
+- [x] **[Mobile]** Dựng `RegisterScreen` với các field: Họ tên, Email, SĐT (validate chuẩn VN: `09x/03x/07x/08x`), Mật khẩu ≥ 6 ký tự.
+- [x] **[Mobile]** Tạo `RegisterCubit` emit `RegisterLoading`, `RegisterSuccess`, `RegisterFailure`.
+- [x] **[Mobile]** Tạo `AuthRepository.register()` và `AuthService.register()` mô phỏng dữ liệu Sprint 1 (chưa có backend).
+- [x] **[Mobile]** Hiển thị lỗi validation inline ngay dưới từng field (không dùng dialog).
+- [x] **[Mobile]** Sau đăng ký thành công → hiển thị SnackBar thành công và tự động điều hướng.
+- [x] **[Mobile]** Viết Unit Test (`register_cubit_test.dart`) và Widget Test (`register_screen_test.dart`) đạt pass 100%.
 
 ---
 
@@ -65,7 +66,7 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-06 · Select product size/color variant · `P0` · Medium · 1.5 pts
+### UC-06 · Select product size/color variant · `P0` · Medium · 1.5 pts · ⏳ Đang làm (Một phần - Đã có Size/Qty)
 **Assignee**: Nguyễn Minh Nhật (CE191491)
 
 - **[Mobile]** Thêm widget chọn Size (dạng chip/grid ngang: 36, 37, 38...) vào `ProductDetailScreen`.
@@ -358,7 +359,7 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 | Sprint / Backlog | UC | Story Points | Trạng thái |
 |:---|:---:|:---:|:---:|
-| Sprint 1 | UC-01 → UC-06 | 9 pts | ⏹ Chưa bắt đầu |
+| Sprint 1 | UC-01 → UC-06 | 9 pts | 🔄 Đang thực hiện (6/9 pts · 3/6 UCs) |
 | Sprint 2 | UC-07 → UC-11 | 5.5 pts | ⏹ Chưa bắt đầu |
 | Sprint 3 | UC-12 → UC-17 | 10 pts | ⏹ Chưa bắt đầu |
 | Backlog P1 | UC-18 → UC-27 | 13 pts | ⏹ Chưa gán |
