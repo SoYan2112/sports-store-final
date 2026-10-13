@@ -21,4 +21,9 @@ class ProductRepositoryImpl implements ProductRepository {
       keyword: keyword,
     );
   }
+
+  @override
+  Future<ProductEntity> getProductById(String id) async {
+    return await remoteDataSource.getProductById(id);
+  }
 }

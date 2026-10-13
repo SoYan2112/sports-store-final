@@ -10,6 +10,8 @@ abstract class ProductRemoteDataSource {
     String? categoryId,
     String? keyword,
   });
+
+  Future<ProductModel> getProductById(String id);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -56,6 +58,33 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       // Khi Backend chưa khởi chạy hoặc mất mạng trong giai đoạn phát triển,
       // fallback về mock dataset thể thao tươi sáng chất lượng cao để UI hiển thị và test mượt mà
       return _getMockProducts(page: page, size: size);
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<ProductModel> getProductById(String id) async {
+    try {
+      final response = await dio.get('${ApiEndpoints.products}/$id');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Map<String, dynamic> item = data is Map<String, dynamic>
+            ? (data['data'] as Map<String, dynamic>? ?? data)
+            : <String, dynamic>{};
+
+        return ProductModel.fromJson(item);
+      } else {
+        throw ServerException(
+          message: 'Lỗi máy chủ: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException {
+      // Khi Backend chưa online, fallback mock chi tiết sản phẩm
+      return _getMockProductDetail(id);
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(message: e.toString());
@@ -172,5 +201,57 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     }
     final endIndex = (startIndex + size > allMock.length) ? allMock.length : startIndex + size;
     return allMock.sublist(startIndex, endIndex);
+  }
+
+  ProductModel _getMockProductDetail(String id) {
+    final list = _getMockProducts(page: 1, size: 50);
+    final found = list.firstWhere(
+      (p) => p.id == id,
+      orElse: () => list.isNotEmpty
+          ? list.first
+          : const ProductModel(
+              id: 'p1',
+              name: 'Nike unveil joyride',
+              brand: 'Nike',
+              price: 1950000,
+              originalPrice: 2450000,
+              imageUrl:
+                  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
+              badge: 'Hot',
+            ),
+    );
+
+    // Gallery ảnh phong phú cho từng góc nhìn sản phẩm
+    final gallery = [
+      found.imageUrl,
+      'https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600&auto=format&fit=crop&q=80',
+    ];
+
+    return ProductModel(
+      id: found.id,
+      name: found.name,
+      brand: found.brand,
+      price: found.price,
+      originalPrice: found.originalPrice,
+      imageUrl: found.imageUrl,
+      badge: found.badge,
+      rating: found.rating,
+      reviewCount: found.reviewCount > 0 ? found.reviewCount : 128,
+      description: found.description.isNotEmpty
+          ? '${found.description}\n\nĐược chế tác từ các vật liệu tái chế bền vững, công nghệ đệm hỗ trợ đàn hồi cao giúp bảo vệ cổ chân và trợ lực trong từng sải bước. Thích hợp cho cả tập luyện thể thao cường độ cao lẫn hoạt động phong cách hàng ngày.'
+          : 'Sản phẩm thể thao cao cấp chính hãng, hỗ trợ vận động tối ưu và đệm khí êm ái suốt ngày dài.',
+      images: gallery,
+      category: 'Giày chạy bộ & Thể thao',
+      stock: 12,
+      sizes: const ['38', '39', '40', '41', '42', '43'],
+      colors: const [
+        0xFF1A1A1A, // Đen thể thao
+        0xFFFFFFFF, // Trắng tinh tế
+        0xFFFF6B00, // Cam rực rỡ (Accent)
+        0xFF1E88E5, // Xanh dương thể thao
+      ],
+    );
   }
 }
