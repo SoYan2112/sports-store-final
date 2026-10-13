@@ -33,7 +33,7 @@ Thư mục `docs/` chứa toàn bộ tài liệu kỹ thuật và kế hoạch d
 
 | Sprint | UC | Points | Trạng thái |
 |:---|:---:|:---:|:---:|
-| Sprint 1 (P0) | UC-01 → UC-06 | 9 pts | 🔄 Đang thực hiện (2/9 pts) |
+| Sprint 1 (P0) | UC-01 → UC-06 | 9 pts | 🔄 Đang thực hiện (7.5/9 pts) |
 | Sprint 2 (P0) | UC-07 → UC-11 | 5.5 pts | ⏹ Chưa bắt đầu |
 | Sprint 3 (P0) | UC-12 → UC-17 | 10 pts | ⏹ Chưa bắt đầu |
 | Backlog P1 | UC-18 → UC-27 | 13 pts | ⏹ Chưa gán |

@@ -72,6 +72,50 @@ void main() {
     // Kiểm tra số lượng tồn kho
     expect(find.text('Còn 10 sản phẩm'), findsOneWidget);
 
+    // Nút Thêm vào giỏ hàng bị disabled khi chưa chọn size & màu
+    final button = tester.widget<ElevatedButton>(find.byKey(const Key('addToCartButton')));
+    expect(button.onPressed, isNull);
+
+    // Kiểm tra hiển thị size chips
+    expect(find.text('39'), findsOneWidget);
+    expect(find.text('40'), findsOneWidget);
+    expect(find.text('41'), findsOneWidget);
+
+    await cubit.close();
+  });
+
+  testWidgets('ProductDetailScreen enables CTA button when size and color are selected',
+      (WidgetTester tester) async {
+    final cubit = ProductDetailCubit(
+      getProductDetailUseCase: mockGetProductDetailUseCase,
+    );
+    cubit.emit(const ProductDetailLoaded(
+      product: tProduct,
+      quantity: 1,
+      selectedSize: '40',
+      selectedColor: 0xFF1A1A1A,
+    ));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider<ProductDetailCubit>.value(
+          value: cubit,
+          child: const ProductDetailScreen(
+            product: tProduct,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+
+    // Nút Thêm vào giỏ hàng được enabled khi đã chọn đủ size & màu
+    final button = tester.widget<ElevatedButton>(find.byKey(const Key('addToCartButton')));
+    expect(button.onPressed, isNotNull);
+
+    // Kiểm tra text đã chọn
+    expect(find.text('Đã chọn: 40'), findsOneWidget);
+
     await cubit.close();
   });
 }

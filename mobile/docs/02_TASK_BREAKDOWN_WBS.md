@@ -35,12 +35,12 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-03 · Logout · `P0` · Simple · 0.5 pts
+### UC-03 · Logout · `P0` · Simple · 0.5 pts · ✅ Hoàn thành
 **Assignee**: Nguyễn Minh Nhật (CE191491)
 
-- **[Mobile]** Thêm menu Logout vào `ProfileScreen` hoặc AppBar Drawer.
-- **[Mobile]** Dispatch `LogoutEvent` trong `AuthBloc` → xóa toàn bộ token khỏi `SharedPreferences`.
-- **[Mobile]** Reset navigation stack → điều hướng về `LoginScreen` (không cho back bằng nút back vật lý).
+- [x] **[Mobile]** Thêm nút Logout kèm hộp thoại xác nhận vào AppBar / Header (`HomeScreen`, `ProductListScreen`).
+- [x] **[Mobile]** Xử lý phương thức `logout()` trong `AuthRepository` & `LoginViewModel`.
+- [x] **[Mobile]** Reset navigation stack → điều hướng về `LoginScreen` (không cho back bằng nút back vật lý).
 
 ---
 
@@ -65,14 +65,14 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-06 · Select product size/color variant · `P0` · Medium · 1.5 pts
+### UC-06 · Select product size/color variant · `P0` · Medium · 1.5 pts · ✅ Hoàn thành
 **Assignee**: Nguyễn Minh Nhật (CE191491)
 
-- **[Mobile]** Thêm widget chọn Size (dạng chip/grid ngang: 36, 37, 38...) vào `ProductDetailScreen`.
-- **[Mobile]** Thêm widget chọn Màu sắc (color dot selector) liên kết với biến thể sản phẩm (`ProductVariant`).
-- **[Mobile]** Disable nút "Thêm vào giỏ" nếu chưa chọn đủ Size + Màu.
-- **[Mobile]** Cập nhật `ProductDetailCubit` để track `selectedSize` và `selectedColor` vào state.
-- **[Mobile]** Đánh dấu size hết hàng (`outOfStock`) bằng style strikethrough + màu xám.
+- [x] **[Mobile]** Thêm widget chọn Size (dạng chip/grid ngang: 38, 39, 40...) vào `ProductDetailScreen`.
+- [x] **[Mobile]** Thêm widget chọn Màu sắc (color dot selector) liên kết với danh sách màu sản phẩm.
+- [x] **[Mobile]** Disable nút "Thêm vào giỏ" nếu chưa chọn đủ Size + Màu.
+- [x] **[Mobile]** Cập nhật `ProductDetailCubit` để track `selectedSize` và `selectedColor` vào state.
+- [x] **[Mobile]** Đánh dấu size hết hàng (`outOfStock`) bằng style strikethrough + màu xám.
 
 ---
 
@@ -358,7 +358,7 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 | Sprint / Backlog | UC | Story Points | Trạng thái |
 |:---|:---:|:---:|:---:|
-| Sprint 1 | UC-01 → UC-06 | 9 pts | ⏹ Chưa bắt đầu |
+| Sprint 1 | UC-01 → UC-06 | 9 pts | ⏳ Đang thực hiện (7.5/9 pts) |
 | Sprint 2 | UC-07 → UC-11 | 5.5 pts | ⏹ Chưa bắt đầu |
 | Sprint 3 | UC-12 → UC-17 | 10 pts | ⏹ Chưa bắt đầu |
 | Backlog P1 | UC-18 → UC-27 | 13 pts | ⏹ Chưa gán |

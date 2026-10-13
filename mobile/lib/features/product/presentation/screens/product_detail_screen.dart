@@ -36,6 +36,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       builder: (context, state) {
         final product = state is ProductDetailLoaded ? state.product : widget.product;
         final quantity = state is ProductDetailLoaded ? state.quantity : 1;
+        final selectedSize = state is ProductDetailLoaded ? state.selectedSize : null;
+        final selectedColor = state is ProductDetailLoaded ? state.selectedColor : null;
+        final outOfStockSizes = state is ProductDetailLoaded
+            ? state.outOfStockSizes
+            : const <String>['43'];
+        final canAddToCart = state is ProductDetailLoaded && state.canAddToCart;
 
         return Scaffold(
           appBar: AppBar(
@@ -109,6 +115,130 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       const Divider(height: 30),
+                      // Chọn Màu sắc
+                      const Text(
+                        'Màu sắc:',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 12,
+                        children: product.colors.map((colorValue) {
+                          final isSelected = selectedColor == colorValue;
+                          return GestureDetector(
+                            key: Key('color_${colorValue.toRadixString(16)}'),
+                            onTap: () {
+                              context.read<ProductDetailCubit>().selectColor(colorValue);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(colorValue),
+                                  border: Border.all(
+                                    color: colorValue == 0xFFFFFFFF
+                                        ? Colors.grey.shade400
+                                        : Colors.black.withValues(alpha: 0.08),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.08),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: isSelected
+                                    ? Icon(
+                                        Icons.check,
+                                        size: 16,
+                                        color: colorValue == 0xFFFFFFFF
+                                            ? Colors.black
+                                            : Colors.white,
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                      // Chọn Kích thước (Size)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Kích thước (Size):',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                          if (selectedSize != null)
+                            Text(
+                              'Đã chọn: $selectedSize',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        children: product.sizes.map((size) {
+                          final isOutOfStock = outOfStockSizes.contains(size);
+                          final isSelected = selectedSize == size;
+
+                          return InkWell(
+                            key: Key('size_$size'),
+                            onTap: isOutOfStock
+                                ? null
+                                : () {
+                                    context.read<ProductDetailCubit>().selectSize(size);
+                                  },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : (isOutOfStock ? Colors.grey.shade100 : Colors.white),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isOutOfStock
+                                      ? Colors.grey.shade300
+                                      : (isSelected ? AppColors.primary : Colors.grey.shade400),
+                                ),
+                              ),
+                              child: Text(
+                                size,
+                                style: TextStyle(
+                                  color: isOutOfStock
+                                      ? Colors.grey.shade400
+                                      : (isSelected ? Colors.white : Colors.black87),
+                                  fontWeight: FontWeight.bold,
+                                  decoration: isOutOfStock ? TextDecoration.lineThrough : null,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const Divider(height: 30),
                       Row(
                         children: [
                           const Text(
@@ -179,22 +309,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 const SizedBox(width: 20),
                 Expanded(
                   child: ElevatedButton(
+                    key: const Key('addToCartButton'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.grey.shade300,
+                      disabledForegroundColor: Colors.grey.shade600,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: product.stock <= 0
-                        ? null
-                        : () {
+                    onPressed: canAddToCart
+                        ? () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Đã thêm $quantity x ${product.name} vào giỏ hàng!',
+                                  'Đã thêm $quantity x ${product.name} (Size $selectedSize) vào giỏ hàng!',
                                 ),
                               ),
                             );
-                          },
+                          }
+                        : null,
                     child: const Text(
                       'Thêm vào giỏ hàng',
                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
