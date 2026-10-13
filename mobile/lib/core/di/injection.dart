@@ -17,19 +17,17 @@ import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 final getIt = GetIt.instance;
 
 void initDependencies() {
-  // Features - Auth
-  getIt.registerLazySingleton<AuthService>(() => AuthService());
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepository(authService: getIt<AuthService>()),
-  );
   // Network
   getIt.registerLazySingleton<DioClient>(() => DioClient());
   getIt.registerLazySingleton<Dio>(() => getIt<DioClient>().dio);
 
   // Features - Auth
   getIt.registerLazySingleton<AuthService>(() => AuthService());
-  getIt.registerLazySingleton<AuthRepositoryInterface>(
+  getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(authService: getIt<AuthService>()),
+  );
+  getIt.registerLazySingleton<AuthRepositoryInterface>(
+    () => getIt<AuthRepository>(),
   );
   getIt.registerLazySingleton<RegisterUseCase>(
     () => RegisterUseCase(getIt<AuthRepositoryInterface>()),
@@ -44,8 +42,7 @@ void initDependencies() {
   );
 
   // Features - Product Repository
-  getIt.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(remoteDataSource: getIt<ProductRemoteDataSource>()),
+  getIt.registerLazySingleton<ProductRepository>( () => ProductRepositoryImpl(remoteDataSource: getIt<ProductRemoteDataSource>()),
   );
 
   // Features - Product Use Cases
