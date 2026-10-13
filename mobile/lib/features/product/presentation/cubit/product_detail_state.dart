@@ -24,24 +24,48 @@ class ProductDetailLoading extends ProductDetailState {
 class ProductDetailLoaded extends ProductDetailState {
   final ProductEntity product;
   final int quantity;
+  final String? selectedSize;
+  final int? selectedColor;
+  final List<String> outOfStockSizes;
 
   const ProductDetailLoaded({
     required this.product,
     this.quantity = 1,
+    this.selectedSize,
+    this.selectedColor,
+    this.outOfStockSizes = const ['43'],
   });
+
+  bool get canAddToCart =>
+      selectedSize != null &&
+      selectedColor != null &&
+      !outOfStockSizes.contains(selectedSize) &&
+      product.stock > 0;
 
   ProductDetailLoaded copyWith({
     ProductEntity? product,
     int? quantity,
+    String? selectedSize,
+    int? selectedColor,
+    List<String>? outOfStockSizes,
   }) {
     return ProductDetailLoaded(
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
+      selectedSize: selectedSize ?? this.selectedSize,
+      selectedColor: selectedColor ?? this.selectedColor,
+      outOfStockSizes: outOfStockSizes ?? this.outOfStockSizes,
     );
   }
 
   @override
-  List<Object?> get props => [product, quantity];
+  List<Object?> get props => [
+        product,
+        quantity,
+        selectedSize,
+        selectedColor,
+        outOfStockSizes,
+      ];
 }
 
 class ProductDetailError extends ProductDetailState {

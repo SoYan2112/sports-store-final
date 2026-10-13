@@ -52,4 +52,19 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
       }
     }
   }
+
+  void selectSize(String size) {
+    if (state is ProductDetailLoaded) {
+      final current = state as ProductDetailLoaded;
+      if (current.outOfStockSizes.contains(size)) return;
+      emit(current.copyWith(selectedSize: size));
+    }
+  }
+
+  void selectColor(int color) {
+    if (state is ProductDetailLoaded) {
+      final current = state as ProductDetailLoaded;
+      emit(current.copyWith(selectedColor: color));
+    }
+  }
 }

@@ -7,7 +7,9 @@ Lộ trình dự án được phân chia thành 3 Sprint chính và 2 nhóm Back
 
 ### Sprint 1: Khởi tạo Nền tảng, Core Design System & Authentication
 - **Trọng tâm**: Chuẩn hóa nền tảng kỹ thuật, thiết kế bộ UI Component phong cách Adidas, cơ chế bảo mật xác thực (Auth).
-- **Tiến độ**: 🔄 Đang thực hiện — 50.0% (3/6 UCs · 6/9 pts)
+
+- **Tiến độ**: ⏳ Đang thực hiện (83% - 5/6 Use Cases, 7.5/9 pts)
+
 - **Use Cases**:
   - UC-01: Login (⏳ Đang làm - Prototype)
   - UC-02: Register (✅ Hoàn thành)

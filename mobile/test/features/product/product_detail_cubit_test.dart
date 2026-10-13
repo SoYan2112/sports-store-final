@@ -82,5 +82,93 @@ void main() {
         const ProductDetailLoaded(product: tProduct, quantity: 2),
       ],
     );
+
+    blocTest<ProductDetailCubit, ProductDetailState>(
+      'selectColor updates selectedColor in state',
+      build: () => cubit,
+      seed: () => const ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+      ),
+      act: (c) => c.selectColor(0xFF1A1A1A),
+      expect: () => [
+        const ProductDetailLoaded(
+          product: tProduct,
+          quantity: 1,
+          selectedColor: 0xFF1A1A1A,
+        ),
+      ],
+    );
+
+    blocTest<ProductDetailCubit, ProductDetailState>(
+      'selectSize updates selectedSize when size is in stock',
+      build: () => cubit,
+      seed: () => const ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        outOfStockSizes: ['43'],
+      ),
+      act: (c) => c.selectSize('40'),
+      expect: () => [
+        const ProductDetailLoaded(
+          product: tProduct,
+          quantity: 1,
+          selectedSize: '40',
+          outOfStockSizes: ['43'],
+        ),
+      ],
+    );
+
+    blocTest<ProductDetailCubit, ProductDetailState>(
+      'selectSize does not update when size is out of stock',
+      build: () => cubit,
+      seed: () => const ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        outOfStockSizes: ['43'],
+      ),
+      act: (c) => c.selectSize('43'),
+      expect: () => [],
+    );
+
+    test('canAddToCart returns true only when both size and color are selected and in stock', () {
+      const stateWithoutSelection = ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+      );
+      expect(stateWithoutSelection.canAddToCart, isFalse);
+
+      const stateWithSizeOnly = ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        selectedSize: '40',
+      );
+      expect(stateWithSizeOnly.canAddToCart, isFalse);
+
+      const stateWithColorOnly = ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        selectedColor: 0xFF1A1A1A,
+      );
+      expect(stateWithColorOnly.canAddToCart, isFalse);
+
+      const stateWithBoth = ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        selectedSize: '40',
+        selectedColor: 0xFF1A1A1A,
+        outOfStockSizes: ['43'],
+      );
+      expect(stateWithBoth.canAddToCart, isTrue);
+
+      const stateWithOutOfStockSize = ProductDetailLoaded(
+        product: tProduct,
+        quantity: 1,
+        selectedSize: '43',
+        selectedColor: 0xFF1A1A1A,
+        outOfStockSizes: ['43'],
+      );
+      expect(stateWithOutOfStockSize.canAddToCart, isFalse);
+    });
   });
 }
