@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
-import '../../../auth/data/datasources/auth_service.dart';
 import '../../../auth/data/repositories/auth_repository.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import 'product_detail_screen.dart';
@@ -132,42 +132,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                       Row(
                         children: [
-                          // Nút đăng xuất
-                          InkWell(
-                            borderRadius: BorderRadius.circular(14),
-                            onTap: () {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => LoginScreen(
-                                    authRepository: AuthRepository(
-                                      authService: AuthService(),
-                                    ),
-                                  ),
-                                ),
-                                (route) => false,
-                              );
-                            },
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.04),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.logout_rounded,
-                                size: 20,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
                           // Nút thông báo
                           Stack(
                             children: [
@@ -203,6 +167,69 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(width: 8),
+                          // Nút đăng xuất
+                          InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Đăng xuất'),
+                                  content: const Text(
+                                    'Bạn có chắc chắn muốn đăng xuất không?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Hủy'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text(
+                                        'Đăng xuất',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true && context.mounted) {
+                                await getIt<AuthRepository>().logout();
+                                if (!context.mounted) return;
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => LoginScreen(
+                                      authRepository: getIt<AuthRepository>(),
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              }
+                            },
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.logout_rounded,
+                                size: 20,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
                           ),
                         ],
                       ),

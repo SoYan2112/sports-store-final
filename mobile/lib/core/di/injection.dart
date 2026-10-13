@@ -17,6 +17,11 @@ import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 final getIt = GetIt.instance;
 
 void initDependencies() {
+  // Features - Auth
+  getIt.registerLazySingleton<AuthService>(() => AuthService());
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepository(authService: getIt<AuthService>()),
+  );
   // Network
   getIt.registerLazySingleton<DioClient>(() => DioClient());
   getIt.registerLazySingleton<Dio>(() => getIt<DioClient>().dio);

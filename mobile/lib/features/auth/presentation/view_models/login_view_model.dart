@@ -33,4 +33,11 @@ class LoginViewModel extends ChangeNotifier {
     _errorMessage = user == null ? 'Email hoặc mật khẩu không đúng' : null;
     notifyListeners();
   }
+
+  Future<void> logout() async {
+    await authRepository.logout();
+    _authenticatedUser = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

@@ -26,4 +26,9 @@ class AuthRepository implements AuthRepositoryInterface {
       password: password,
     );
   }
+
+  Future<void> logout() async {
+    // Mock: chuẩn bị sẵn cho việc xóa local token / storage khi nối backend
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
 }
