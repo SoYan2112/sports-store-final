@@ -36,14 +36,13 @@ void main() {
         .thenAnswer((_) async => tProduct);
   });
 
-  testWidgets('ProductDetailScreen renders product info, sizes, and CTA button',
+  testWidgets('ProductDetailScreen renders product info and CTA button',
       (WidgetTester tester) async {
     final cubit = ProductDetailCubit(
       getProductDetailUseCase: mockGetProductDetailUseCase,
     );
     cubit.emit(const ProductDetailLoaded(
       product: tProduct,
-      selectedSize: '39',
       quantity: 1,
     ));
 
@@ -66,11 +65,6 @@ void main() {
 
     // Kiểm tra giá tiền định dạng VNĐ
     expect(find.text('1.950.000 ₫'), findsWidgets);
-
-    // Kiểm tra size chips
-    expect(find.text('39'), findsOneWidget);
-    expect(find.text('40'), findsOneWidget);
-    expect(find.text('41'), findsOneWidget);
 
     // Kiểm tra nút Thêm vào giỏ hàng
     expect(find.text('Thêm vào giỏ hàng'), findsOneWidget);
