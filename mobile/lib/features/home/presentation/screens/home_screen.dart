@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../auth/data/datasources/auth_service.dart';
+import '../../../../core/di/injection.dart';
 import '../../../auth/data/repositories/auth_repository.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
@@ -20,14 +20,36 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Đăng xuất',
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute<void>(
-                  builder: (_) => LoginScreen(
-                    authRepository: AuthRepository(authService: AuthService()),
-                  ),
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Đăng xuất'),
+                  content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: const Text('Hủy'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: const Text('Đăng xuất', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
                 ),
               );
+
+              if (confirm == true && context.mounted) {
+                await getIt<AuthRepository>().logout();
+                if (!context.mounted) return;
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute<void>(
+                    builder: (_) => LoginScreen(
+                      authRepository: getIt<AuthRepository>(),
+                    ),
+                  ),
+                );
+              }
             },
           ),
         ],
