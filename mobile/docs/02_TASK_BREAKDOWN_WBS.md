@@ -55,13 +55,13 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-05 · View product details · `P0` · Medium · 2 pts
+### UC-05 · View product details · `P0` · Medium · 2 pts · ✅ Hoàn thành
 **Assignee**: Ngô Nhất Quý (CE190984)
 
-- **[Mobile]** Dựng `ProductDetailScreen` với Image Gallery (PageView/carousel), tên sản phẩm, giá VNĐ, mô tả.
-- **[Mobile]** Tạo `ProductDetailCubit` gọi `GET /api/products/{id}` và emit `ProductDetailLoaded`.
-- **[Mobile]** Hiển thị thông tin chi tiết: thương hiệu, danh mục, số lượng còn lại, điểm đánh giá trung bình.
-- **[Mobile]** Nút "Thêm vào giỏ" nổi bật ở cuối màn hình (sticky BottomBar).
+- [x] **[Mobile]** Dựng `ProductDetailScreen` với Image Gallery (PageView/carousel), tên sản phẩm, giá VNĐ, mô tả.
+- [x] **[Mobile]** Tạo `ProductDetailCubit` gọi `GET /api/products/{id}` và emit `ProductDetailLoaded`.
+- [x] **[Mobile]** Hiển thị thông tin chi tiết: thương hiệu, danh mục, số lượng còn lại, điểm đánh giá trung bình.
+- [x] **[Mobile]** Nút "Thêm vào giỏ" nổi bật ở cuối màn hình (sticky BottomBar).
 
 ---
 
