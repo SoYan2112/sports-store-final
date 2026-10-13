@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../product/presentation/screens/product_list_screen.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../view_models/login_view_model.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.authRepository});
@@ -159,6 +160,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Chưa có tài khoản? ',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13.5,
+                        ),
+                      ),
+                      GestureDetector(
+                        key: const Key('goToRegisterButton'),
+                        onTap: () {
+                          Navigator.of(context).push(RegisterScreen.route());
+                        },
+                        child: Text(
+                          'Đăng ký ngay',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.5,
+                            color: Theme.of(context).colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
