@@ -56,29 +56,12 @@ void main() {
         const ProductDetailLoading(),
         const ProductDetailLoaded(
           product: tProduct,
-          selectedSize: '39',
           quantity: 1,
         ),
       ],
       verify: (_) {
         verify(() => mockGetProductDetailUseCase('p1')).called(1);
       },
-    );
-
-    blocTest<ProductDetailCubit, ProductDetailState>(
-      'emits ProductDetailLoaded with updated selectedSize when selectSize is called',
-      build: () => cubit,
-      seed: () => const ProductDetailLoaded(
-        product: tProduct,
-        selectedSize: '39',
-      ),
-      act: (c) => c.selectSize('41'),
-      expect: () => [
-        const ProductDetailLoaded(
-          product: tProduct,
-          selectedSize: '41',
-        ),
-      ],
     );
 
     blocTest<ProductDetailCubit, ProductDetailState>(

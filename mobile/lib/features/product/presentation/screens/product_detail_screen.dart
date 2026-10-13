@@ -35,9 +35,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return BlocBuilder<ProductDetailCubit, ProductDetailState>(
       builder: (context, state) {
         final product = state is ProductDetailLoaded ? state.product : widget.product;
-        final selectedSize = state is ProductDetailLoaded
-            ? state.selectedSize
-            : (product.sizes.isNotEmpty ? product.sizes.first : null);
         final quantity = state is ProductDetailLoaded ? state.quantity : 1;
 
         return Scaffold(
@@ -112,30 +109,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       const Divider(height: 30),
-                      const Text(
-                        'Chọn kích cỡ:',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        children: product.sizes.map((size) {
-                          final isSelected = size == selectedSize;
-                          return ChoiceChip(
-                            label: Text(size),
-                            selected: isSelected,
-                            selectedColor: AppColors.primary,
-                            labelStyle: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            onSelected: (_) {
-                              context.read<ProductDetailCubit>().selectSize(size);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 16),
                       Row(
                         children: [
                           const Text(
@@ -217,7 +190,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Đã thêm $quantity x ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                  'Đã thêm $quantity x ${product.name} vào giỏ hàng!',
                                 ),
                               ),
                             );

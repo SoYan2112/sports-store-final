@@ -11,26 +11,19 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
 
   Future<void> loadProduct(String id, {ProductEntity? initialProduct}) async {
     if (initialProduct != null) {
-      emit(ProductDetailLoaded(
-        product: initialProduct,
-        selectedSize: initialProduct.sizes.isNotEmpty ? initialProduct.sizes.first : null,
-      ));
+      emit(ProductDetailLoaded(product: initialProduct));
     } else {
       emit(const ProductDetailLoading());
     }
 
     try {
       final product = await getProductDetailUseCase(id);
-      final currentSize = (state is ProductDetailLoaded)
-          ? (state as ProductDetailLoaded).selectedSize
-          : null;
       final currentQty = (state is ProductDetailLoaded)
           ? (state as ProductDetailLoaded).quantity
           : 1;
 
       emit(ProductDetailLoaded(
         product: product,
-        selectedSize: currentSize ?? (product.sizes.isNotEmpty ? product.sizes.first : null),
         quantity: currentQty,
       ));
     } catch (e) {
@@ -39,12 +32,6 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
           message: 'Không thể tải thông tin chi tiết sản phẩm. Vui lòng thử lại.',
         ));
       }
-    }
-  }
-
-  void selectSize(String size) {
-    if (state is ProductDetailLoaded) {
-      emit((state as ProductDetailLoaded).copyWith(selectedSize: size));
     }
   }
 
