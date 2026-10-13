@@ -9,7 +9,7 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 ---
 
 ## 📌 SPRINT 1 — Foundation & Authentication
-**Tiến độ**: ⏹ Chưa bắt đầu
+**Tiến độ**: 🔄 Đang thực hiện (2/9 pts · 22%)
 
 ---
 
@@ -44,14 +44,14 @@ Tài liệu này là kế hoạch thực thi chính thức, trình bày **từng
 
 ---
 
-### UC-04 · View product list · `P0` · Medium · 2 pts
+### UC-04 · View product list · `P0` · Medium · 2 pts · ✅ Hoàn thành
 **Assignee**: Thái San Yo (CE190435)
 
-- **[Mobile]** Dựng `ProductListScreen` dạng Grid 2 cột với `ProductCard` (ảnh 3:4, tên, giá VNĐ, badge).
-- **[Mobile]** Viết `ProductBloc` xử lý `FetchProductsEvent` → emit `ProductLoading`, `ProductLoaded`, `ProductError`.
-- **[Mobile]** Tạo `ProductRemoteDataSource.getProducts()` gọi `GET /api/products` với hỗ trợ phân trang (`page`, `size`).
-- **[Mobile]** Implement Infinite Scroll: trigger `FetchMoreProductsEvent` khi `ScrollController` gần cuối danh sách.
-- **[Mobile]** Hiển thị `ProductCardSkeleton` trong lúc loading lần đầu.
+- [x] **[Mobile]** Dựng `ProductListScreen` dạng Grid 2 cột với `ProductCard` (ảnh 3:4, tên, giá VNĐ, badge).
+- [x] **[Mobile]** Viết `ProductBloc` xử lý `FetchProductsEvent` → emit `ProductLoading`, `ProductLoaded`, `ProductError`.
+- [x] **[Mobile]** Tạo `ProductRemoteDataSource.getProducts()` gọi `GET /api/products` với hỗ trợ phân trang (`page`, `size`).
+- [x] **[Mobile]** Implement Infinite Scroll: trigger `FetchMoreProductsEvent` khi `ScrollController` gần cuối danh sách.
+- [x] **[Mobile]** Hiển thị `ProductCardSkeleton` trong lúc loading lần đầu.
 
 ---
 

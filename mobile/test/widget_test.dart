@@ -1,30 +1,49 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:mobile/main.dart';
+import 'package:mobile/core/utils/currency_formatter.dart';
+import 'package:mobile/features/product/domain/entities/product_entity.dart';
+import 'package:mobile/features/product/presentation/widgets/product_card.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('ProductCard displays title, brand, badge and formatted VND price',
+      (WidgetTester tester) async {
+    const product = ProductEntity(
+      id: 'p1',
+      name: 'Nike unveil joyride',
+      brand: 'Nike',
+      price: 1950000,
+      imageUrl: 'https://example.com/shoe.png',
+      badge: 'Hot',
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 200,
+            height: 300,
+            child: ProductCard(product: product),
+          ),
+        ),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Kiểm tra tên sản phẩm
+    expect(find.text('Nike unveil joyride'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Kiểm tra tên brand
+    expect(find.text('NIKE'), findsOneWidget);
+
+    // Kiểm tra badge
+    expect(find.text('Hot'), findsOneWidget);
+
+    // Kiểm tra giá tiền định dạng chuẩn VNĐ (1.950.000 ₫)
+    expect(find.text('1.950.000 ₫'), findsOneWidget);
+  });
+
+  test('CurrencyFormatter formats VND correctly with dot separator', () {
+    expect(CurrencyFormatter.formatVnd(1950000), '1.950.000 ₫');
+    expect(CurrencyFormatter.formatVnd(2350000), '2.350.000 ₫');
+    expect(CurrencyFormatter.formatVnd(500000), '500.000 ₫');
   });
 }
