@@ -7,4 +7,6 @@ abstract class ProductRepository {
     String? categoryId,
     String? keyword,
   });
+
+  Future<ProductEntity> getProductById(String id);
 }

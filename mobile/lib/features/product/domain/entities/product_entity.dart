@@ -11,6 +11,11 @@ class ProductEntity extends Equatable {
   final double rating;
   final int reviewCount;
   final String description;
+  final List<String> images;
+  final String category;
+  final int stock;
+  final List<String> sizes;
+  final List<int> colors;
 
   const ProductEntity({
     required this.id,
@@ -23,6 +28,11 @@ class ProductEntity extends Equatable {
     this.rating = 4.8,
     this.reviewCount = 0,
     this.description = '',
+    this.images = const [],
+    this.category = 'Giày thể thao',
+    this.stock = 15,
+    this.sizes = const ['38', '39', '40', '41', '42', '43'],
+    this.colors = const [0xFF1A1A1A, 0xFFFFFFFF, 0xFFFF6B00],
   });
 
   bool get hasDiscount => originalPrice != null && originalPrice! > price;
@@ -31,6 +41,9 @@ class ProductEntity extends Equatable {
     if (!hasDiscount) return 0;
     return (((originalPrice! - price) / originalPrice!) * 100).round();
   }
+
+  List<String> get galleryImages =>
+      images.isNotEmpty ? images : [imageUrl];
 
   @override
   List<Object?> get props => [
@@ -44,5 +57,10 @@ class ProductEntity extends Equatable {
         rating,
         reviewCount,
         description,
+        images,
+        category,
+        stock,
+        sizes,
+        colors,
       ];
 }
