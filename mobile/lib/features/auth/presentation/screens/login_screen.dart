@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../home/presentation/screens/home_screen.dart';
+import '../../../product/presentation/screens/product_list_screen.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../view_models/login_view_model.dart';
 
@@ -67,8 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đăng nhập thành công! Xin chào ${user.fullname}'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
     await Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => HomeScreen(user: user)),
+      MaterialPageRoute<void>(builder: (_) => const ProductListScreen()),
     );
   }
 

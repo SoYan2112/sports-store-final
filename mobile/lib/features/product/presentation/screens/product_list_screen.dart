@@ -7,6 +7,9 @@ import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
+import '../../../auth/data/datasources/auth_service.dart';
+import '../../../auth/data/repositories/auth_repository.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 import 'product_detail_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -88,23 +91,31 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.grid_view_rounded,
-                              size: 22,
-                              color: AppColors.textPrimary,
+                          InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: Navigator.canPop(context)
+                                ? () => Navigator.pop(context)
+                                : null,
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Navigator.canPop(context)
+                                    ? Icons.arrow_back_ios_new_rounded
+                                    : Icons.grid_view_rounded,
+                                size: 20,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -119,39 +130,79 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ),
                         ],
                       ),
-                      // Nút thông báo
-                      Stack(
+                      Row(
                         children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
+                          // Nút đăng xuất
+                          InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => LoginScreen(
+                                    authRepository: AuthRepository(
+                                      authService: AuthService(),
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.notifications_none_rounded,
-                              size: 24,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            right: 12,
+                                (route) => false,
+                              );
+                            },
                             child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.logout_rounded,
+                                size: 20,
+                                color: AppColors.textPrimary,
                               ),
                             ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Nút thông báo
+                          Stack(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.04),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.notifications_none_rounded,
+                                  size: 24,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Positioned(
+                                top: 10,
+                                right: 12,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
