@@ -1,57 +1,65 @@
-# Phân Công Nhiệm Vụ 5 Thành Viên (Team Assignment & Matrix)
-## Dự án: sports-store-mobile
+# Phân Công Nhiệm Vụ 5 Thành Viên (Team Assignment & Workload Matrix)
+## Dự án: sports-store-mobile (Multi-brand Sports Store)
 
-Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu trách nhiệm End-to-End cho mảng tính năng của mình (từ UI, BLoC State Management, Tích hợp API đến Unit Test), đồng thời hỗ trợ kiểm thử chéo (Cross-testing) và Code Review.
-
----
-
-### Tổng quan Vai trò 5 Thành viên
-
-| Thành viên | Mã SV | Vai trò chính (Domain Owner) | Trách nhiệm cốt lõi |
-| :--- | :--- | :--- | :--- |
-| **Nguyễn Hoài Ân** | CE190990 | **Core Foundation & Authentication** | Setup dự án, Clean Architecture, Network/Dio Interceptors, Auth (Login/Register/Token Cache) |
-| **Trần Hoàng Nhật** | CE190581 | **Product Catalog & Discovery** | Giao diện phong cách Adidas, Danh sách Sản phẩm, Lọc đa tiêu chí, Phân trang vô tận, Chi tiết sản phẩm & Tìm kiếm |
-| **Nguyễn Minh Nhật** | CE191491 | **Cart, Checkout & Vietnam Payment** | Giỏ hàng (CartBloc), Tính tổng tiền VNĐ, Checkout, Tích hợp COD & Cổng thanh toán (VNPAY/MoMo), Đặt hàng |
-| **Thái San Yo** | CE190435 | **Profile, Vietnam Address & Retention** | Sổ địa chỉ 3 cấp Việt Nam, Thông tin cá nhân, Hệ thống Voucher/Mã giảm giá, Đánh giá & Rating sản phẩm |
-| **Ngô Nhất Quý** | CE190984 | **Admin Operations & QA/Testing** | Phân hệ Admin (Quản lý Sản phẩm, Danh mục, Duyệt đơn), Widget Test, Audit lỗi và tối ưu hiệu năng toàn app |
+Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu trách nhiệm trọn vòng đời (End-to-End) cho các Use Cases được giao (UI Screen, BLoC/Cubit State Management, Repository/DataSource, kiểm thử Unit/Widget Test), đồng thời phối hợp Code Review chéo qua GitHub Pull Request.
 
 ---
 
-### Phân công UC Theo Thành viên
+### 📊 Bảng Ma Trận Khối Lượng Công Việc (Workload Matrix)
 
-#### Nguyễn Hoài Ân (CE190990) — Core Foundation & Auth
-- **Sprint 1**: UC-01 (Login)
-- **Backlog P1**: UC-26 (View profile), UC-27 (Edit profile)
-
-#### Trần Hoàng Nhật (CE190581) — Product Catalog & Discovery
-- **Sprint 1**: UC-02 (Register)
-- **Sprint 2**: UC-07 (View product categories)
-- **Backlog P1**: UC-19 (Search products), UC-20 (Filter products)
-
-#### Nguyễn Minh Nhật (CE191491) — Cart, Checkout & Payment
-- **Sprint 1**: UC-03 (Logout), UC-06 (Select size/color variant)
-- **Sprint 2**: UC-08 (Add to cart), UC-09 (View cart), UC-10 (Update quantity), UC-11 (Remove item)
-- **Sprint 3**: UC-13 (Review order summary), UC-14 (Place order), UC-15 (Select COD)
-
-#### Thái San Yo (CE190435) — Profile, Address & Voucher
-- **Sprint 1**: UC-04 (View product list)
-- **Sprint 3**: UC-12 (Select shipping address), UC-16 (View order history), UC-17 (View order details)
-- **Backlog P1**: UC-21 (Add address), UC-22 (Edit address), UC-23 (Delete address), UC-24 (Cancel order), UC-25 (Track order)
-
-#### Ngô Nhất Quý (CE190984) — Admin & QA
-- **Sprint 1**: UC-05 (View product details)
-- **Backlog P1**: (Testing & QA support across all sprints)
-- **Backlog P2**: UC-30 → UC-36 (Reviews, Notifications, Return, Support)
+| Thành viên | Mã SV | Domain phụ trách chính | Danh sách Use Cases | Tổng số UC | Tổng Points | Tiến độ cá nhân |
+| :--- | :---: | :--- | :--- | :---: | :---: | :---: |
+| **Thái San Yo** | **CE190435** | **Home Layout, Catalog & Shopping Cart** | **UC-04, UC-07, UC-11, UC-12, UC-13, UC-23** | **6 UCs** | **7 pts** | ⏳ 1 Done, 2 In Progress, 3 Not Yet |
+| **Nguyễn Hoài Ân** | **CE190990** | **Authentication, Checkout & Order History** | **UC-01, UC-08, UC-14, UC-15** | **4 UCs** | **8 pts** | ⏳ 1 Done, 3 Not Yet |
+| **Trần Hoàng Nhật** | **CE190581** | **Registration & Shipping Address (3 Cấp VN)** | **UC-02, UC-10, UC-18, UC-19** | **4 UCs** | **7 pts** | ⏳ 1 Done, 1 In Progress, 2 Not Yet |
+| **Nguyễn Minh Nhật**| **CE191491** | **Logout, Variants & Category Management** | **UC-03, UC-06, UC-16, UC-21, UC-22** | **5 UCs** | **8 pts** | ⏳ 2 Done, 3 Not Yet |
+| **Ngô Nhất Quý** | **CE190984** | **Product Detail, Search, Filter & Cancel Order**| **UC-05, UC-09, UC-17, UC-20** | **4 UCs** | **8 pts** | ⏳ 1 Done, 3 Not Yet |
+| **TỔNG CỘNG** | — | **5 Domain Owners** | **UC-01 → UC-23** | **23 UCs** | **38 pts** | **Tiến độ: 6/23 Done** |
 
 ---
 
-### Quy Trình Git & Phối Hợp Làm Việc (Workflow Rules)
+### 📌 Phân Công Chi Tiết Theo Từng Thành Viên
 
+#### 1. Thái San Yo (CE190435) — 6 UCs · 7 pts
+- **UC-04 · View product list** (`P0` · Simple · 1 pt · Sprint 1): Grid 2 cột, Shimmer Skeleton, BLoC Infinite Scroll. (✅ **Done**)
+- **UC-07 · Home layout** (`P1` · Simple · 1 pt · Sprint 1): `MainLayoutScreen` (BottomNavigationBar 4 tab), `HomeScreen` (Banner Carousel, Quick Category Chips, Featured Products) kết hợp cơ chế Lazy Login. (⏳ **In progress**)
+- **UC-11 · Add product to cart** (`P0` · Medium · 2 pts · Sprint 2): Logic thêm sản phẩm cùng size/màu vào `CartBloc`, lưu trạng thái cục bộ và phản hồi SnackBar/Badge. (⏳ **In progress**)
+- **UC-12 · View shopping cart** (`P0` · Simple · 1 pt · Sprint 2): `CartScreen`, danh sách item có ảnh, size, số lượng, tự động tính tổng tiền VNĐ. (⏹ Not yet)
+- **UC-13 · Remove item from cart** (`P0` · Simple · 1 pt · Sprint 2): Thao tác vuốt xóa (Dismissible) hoặc nút thùng rác, dialog xác nhận xóa sản phẩm khỏi giỏ. (⏹ Not yet)
+- **UC-23 · Remove product categories** (`P1` · Simple · 1 pt · Sprint 3): Chức năng xóa danh mục sản phẩm kèm kiểm tra ràng buộc sản phẩm tồn tại. (⏹ Not yet)
+
+#### 2. Nguyễn Hoài Ân (CE190990) — 4 UCs · 8 pts
+- **UC-01 · Login** (`P0` · Medium · 2 pts · Sprint 1): Màn hình `LoginScreen`, gọi API đăng nhập, lưu JWT vào `SharedPreferences`, nhánh `feat/login`. (✅ **Done**)
+- **UC-08 · Order selected items in cart** (`P0` · Complex · 3 pts · Sprint 2): Màn hình xác nhận thanh toán (Checkout), chọn phương thức COD, gọi API tạo đơn hàng mới. (⏹ Not yet)
+- **UC-14 · View order history** (`P0` · Simple · 1 pt · Sprint 2): Màn hình lịch sử đơn hàng, hiển thị danh sách đơn kèm trạng thái (Chờ xác nhận, Đang giao, Đã giao, Đã hủy). (⏹ Not yet)
+- **UC-15 · View order details** (`P0` · Medium · 2 pts · Sprint 3): Xem chi tiết từng đơn hàng: mã đơn, ngày đặt, địa chỉ nhận hàng, phương thức thanh toán, danh sách món và tổng thanh toán. (⏹ Not yet)
+
+#### 3. Trần Hoàng Nhật (CE190581) — 4 UCs · 7 pts
+- **UC-02 · Register** (`P0` · Medium · 2 pts · Sprint 1): Màn hình `RegisterScreen`, validate SĐT Việt Nam (+84), mật khẩu, gọi API đăng ký, nhánh `feat/register`. (✅ **Done**)
+- **UC-10 · Add shipping address** (`P1` · Medium · 2 pts · Sprint 2): Form thêm địa chỉ mới với danh mục hành chính 3 cấp Việt Nam (Tỉnh/Thành phố → Quận/Huyện → Phường/Xã). (⏳ **In progress**)
+- **UC-18 · Edit shipping address** (`P1` · Medium · 2 pts · Sprint 3): Cập nhật thông tin địa chỉ đã lưu, đánh dấu địa chỉ mặc định. (⏹ Not yet)
+- **UC-19 · Delete shipping address** (`P1` · Simple · 1 pt · Sprint 3): Xóa địa chỉ khỏi sổ địa chỉ người dùng kèm dialog xác nhận. (⏹ Not yet)
+
+#### 4. Nguyễn Minh Nhật (CE191491) — 5 UCs · 8 pts
+- **UC-03 · Logout** (`P0` · Simple · 1 pt · Sprint 1): Xóa token, reset navigation stack và state, nhánh `feat/logout`. (✅ **Done**)
+- **UC-06 · Select product variant** (`P0` · Complex · 3 pts · Sprint 1): Bộ chọn Size (38-43) & Màu sắc động, kiểm tra tồn kho theo từng variant, cập nhật trạng thái mua. (✅ **Done**)
+- **UC-16 · View product categories** (`P0` · Simple · 1 pt · Sprint 3): Màn hình hoặc drawer danh mục các dòng sản phẩm thể thao (Giày, Áo, Quần, Phụ kiện). (⏹ Not yet)
+- **UC-21 · Add product categories** (`P1` · Simple · 1 pt · Sprint 3): Form thêm danh mục sản phẩm mới với tên, mã và ảnh đại diện. (⏹ Not yet)
+- **UC-22 · Edit product categories** (`P1` · Medium · 2 pts · Sprint 3): Chỉnh sửa thông tin danh mục hiện có. (⏹ Not yet)
+
+#### 5. Ngô Nhất Quý (CE190984) — 4 UCs · 8 pts
+- **UC-05 · View product details** (`P0` · Medium · 2 pts · Sprint 1): `ProductDetailScreen` với Gallery ảnh đa góc nhìn, thông số kỹ thuật, mô tả và nút CTA "Add to cart". (✅ **Done**)
+- **UC-09 · Search products by keyword** (`P1` · Simple · 1 pt · Sprint 2): `SearchScreen` với thanh tìm kiếm có debounce 500ms, gợi ý từ khóa và lịch sử tìm kiếm gần đây. (⏹ Not yet)
+- **UC-17 · Filter products** (`P1` · Medium · 2 pts · Sprint 3): Bộ lọc nâng cao: khoảng giá (Price Range Slider), thương hiệu, xếp hạng sao, sắp xếp giá tăng/giảm. (⏹ Not yet)
+- **UC-20 · Cancel order** (`P1` · Complex · 3 pts · Sprint 3): Nghiệp vụ hủy đơn hàng khi đơn ở trạng thái "Chờ xác nhận" (Pending), cập nhật lý do hủy và hoàn trả trạng thái tồn kho. (⏹ Not yet)
+
+---
+
+### 🌿 Quy Trình Git & Chuẩn Phối Hợp Làm Việc
 1. **Quy tắc phân nhánh (Branching Convention)**:
-   - Nhánh chính: `main` (mã nguồn ổn định phát hành), `develop` (mã nguồn tích hợp của các sprint).
-   - Nhánh tính năng: `feature/UC-[ID]-[ten-tinh-nang]` (Ví dụ: `feature/UC-01-login`).
-   - Nhánh sửa lỗi: `bugfix/UC-[ID]-[ten-loi]`.
-2. **Quy tắc Pull Request (PR)**:
-   - Mỗi PR phải đính kèm mã UC ID tương ứng.
-   - Bắt buộc có ít nhất **1 thành viên khác duyệt (Code Review)** trước khi merge vào `develop`.
-   - Tất cả các lệnh `flutter test` và `flutter analyze` phải pass 100% không có lỗi nghiêm trọng.
+   - Nhánh chính: `main` (Production), `develop` (Integration).
+   - Nhánh tính năng: `feat/UC-[ID]-[short-name]` (VD: `feat/UC-07-home-layout`, `feat/UC-11-add-to-cart`).
+2. **Quy tắc Code Review & Merge**:
+   - Bắt buộc tạo Pull Request (PR) vào `develop`.
+   - Có ít nhất 1 thành viên review và approve trước khi merge.
+   - Chạy kiểm thử tự động `flutter test` bảo đảm không có lỗi hồi quy (regression).
