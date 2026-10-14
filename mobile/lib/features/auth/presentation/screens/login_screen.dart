@@ -15,6 +15,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  static final RegExp _emailRegex = RegExp(
+    r'^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$',
+  );
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late final LoginViewModel _viewModel;
@@ -84,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty) {
       return 'Vui lòng nhập email';
     }
-    if (!email.contains('@')) {
+    if (!_emailRegex.hasMatch(email)) {
       return 'Email không hợp lệ';
     }
     return null;
