@@ -12,11 +12,21 @@ import '../../features/product/domain/repositories/product_repository.dart';
 import '../../features/product/domain/usecases/get_product_detail_usecase.dart';
 import '../../features/product/domain/usecases/get_products_usecase.dart';
 import '../../features/product/presentation/bloc/product_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../storage/local_storage_service.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 
 final getIt = GetIt.instance;
 
-void initDependencies() {
+Future<void> initDependencies() async {
+  // Storage
+  final sharedPreferences = await SharedPreferences.getInstance();
+  getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  getIt.registerLazySingleton<LocalStorageService>(
+    () => LocalStorageService(getIt<SharedPreferences>()),
+  );
+
   // Network
   getIt.registerLazySingleton<DioClient>(() => DioClient());
   getIt.registerLazySingleton<Dio>(() => getIt<DioClient>().dio);
@@ -34,6 +44,12 @@ void initDependencies() {
   );
   getIt.registerFactory<RegisterCubit>(
     () => RegisterCubit(registerUseCase: getIt<RegisterUseCase>()),
+  );
+  getIt.registerLazySingleton<AuthCubit>(
+    () => AuthCubit(
+      storageService: getIt<LocalStorageService>(),
+      authRepository: getIt<AuthRepository>(),
+    ),
   );
 
   // Features - Product Data Source

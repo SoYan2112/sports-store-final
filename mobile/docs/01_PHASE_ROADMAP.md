@@ -9,10 +9,10 @@ Lộ trình dự án được chuẩn hóa theo danh mục **23 Use Cases** (t�
 
 | Giai đoạn | Thời gian | Số Use Cases | Tổng Story Points | Trọng tâm cốt lõi | Trạng thái |
 | :--- | :--- | :---: | :---: | :--- | :--- |
-| **Sprint 1** | 11/10/2026 – 13/10/2026 | 7 UCs (UC-01 → UC-07) | 12 pts | Nền tảng Auth, Core Product Catalog, Variant & Home Layout | ⏳ Đang thực hiện (6/7 Done, 1 In Progress) |
+| **Sprint 1** | 11/10/2026 – 13/10/2026 | 7 UCs (UC-01 → UC-07) | 12 pts | Nền tảng Auth, Core Product Catalog, Variant & Home Layout | ✅ Hoàn thành (7/7 Done, 12/12 pts) |
 | **Sprint 2** | 14/10/2026 – 21/10/2026 | 7 UCs (UC-08 → UC-14) | 11 pts | Giỏ hàng, Đặt hàng, Tìm kiếm, Sổ địa chỉ & Lịch sử đơn | ⏳ Đang thực hiện (2 In Progress, 5 Not Yet) |
 | **Sprint 3** | 22/10/2026 – 29/10/2026 | 9 UCs (UC-15 → UC-23) | 15 pts | Chi tiết đơn, Hủy đơn, Lọc nâng cao, Quản lý danh mục & Địa chỉ | ⏹ Sắp diễn ra |
-| **TỔNG CỘNG**| **3 tuần** | **23 UCs** | **38 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: ~32%** |
+| **TỔNG CỘNG**| **3 tuần** | **23 UCs** | **38 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: ~37%** |
 
 ---
 
@@ -28,7 +28,7 @@ Lộ trình dự án được chuẩn hóa theo danh mục **23 Use Cases** (t�
 4. **UC-04 · View product list** (`P0` · Simple · 1 pt) — Thái San Yo (CE190435) — ✅ **Done**
 5. **UC-05 · View product details** (`P0` · Medium · 2 pts) — Ngô Nhất Quý (CE190984) — ✅ **Done**
 6. **UC-06 · Select product variant** (`P0` · Complex · 3 pts) — Nguyễn Minh Nhật (CE191491) — ✅ **Done**
-7. **UC-07 · Home layout** (`P1` · Simple · 1 pt) — Thái San Yo (CE190435) — ⏳ **In progress**
+7. **UC-07 · Home layout** (`P1` · Simple · 1 pt) — Thái San Yo (CE190435) — [feat/home-layout](https://github.com/SoYan2112/sports-store-final/tree/feat/home-layout) — ✅ **Done**
 
 ---
 

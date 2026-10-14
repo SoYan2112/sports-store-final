@@ -6,7 +6,7 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 ---
 
 ## 🏃 SPRINT 1: Nền tảng Xác thực, Danh mục Sản phẩm & Home Layout (12 pts)
-**Thời gian**: 11/10/2026 – 13/10/2026 · **Tiến độ**: 6/7 Done (11/12 pts)
+**Thời gian**: 11/10/2026 – 13/10/2026 · **Tiến độ**: 7/7 Done (12/12 pts)
 
 ---
 
@@ -73,25 +73,25 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-07 · Home layout · `P1` · Simple · 1 pt · ⏳ Đang thực hiện
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-07 · Home layout · `P1` · Simple · 1 pt · ✅ Hoàn thành
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: `feat/home-layout`
 
-- [ ] **[Architecture / Shell]** Dựng `MainLayoutScreen` chứa `BottomNavigationBar` 4 tab:
+- [x] **[Architecture / Shell]** Dựng `MainLayoutScreen` chứa `BottomNavigationBar` 3 tab:
   - Tab 0: `HomeScreen` (Trang chủ & Khám phá).
-  - Tab 1: `ProductListScreen` (Duyệt toàn bộ danh mục sản phẩm).
-  - Tab 2: `CartScreen` (Giỏ hàng).
-  - Tab 3: `ProfileScreen` (Hồ sơ & Xác thực).
-- [ ] **[Lazy Login Flow]** Khởi tạo ứng dụng kiểm tra `accessToken` trong `SharedPreferences`:
+  - Tab 1: `CartScreen` (Giỏ hàng).
+  - Tab 2: `ProfileScreen` (Hồ sơ & Xác thực).
+- [x] **[Lazy Login Flow]** Khởi tạo ứng dụng kiểm tra `accessToken` trong `SharedPreferences`:
   - Chưa đăng nhập: Emit `AuthUnauthenticated` → Vào thẳng `MainLayoutScreen` (Khách vãng lai xem hàng tự do).
   - Đã có token: Emit `AuthAuthenticated` với dữ liệu User đã lưu.
-- [ ] **[Tab Profile Logic]** Bọc tab Profile bằng `BlocBuilder<AuthCubit, AuthState>`:
+- [x] **[Tab Profile Logic]** Bọc tab Profile bằng `BlocBuilder<AuthCubit, AuthState>`:
   - Trạng thái `AuthUnauthenticated`: Hiển thị giao diện Guest (Avatar mặc định, nút CTA "Đăng nhập / Đăng ký"). Bấm Đăng nhập mở đè `LoginScreen`.
-  - Trạng thái `AuthAuthenticated`: Hiển thị thông tin người dùng (Tên, Email, SĐT, nút Đăng xuất).
-- [ ] **[Home UI Components]** Dựng giao diện `HomeScreen`:
+  - Trạng thái `AuthAuthenticated`: Hiển thị thông tin người dùng (Tên, Email, nút Đăng xuất).
+- [x] **[Home UI Components]** Dựng giao diện `HomeScreen`:
   - `HomeHeader`: Chào người dùng / Khách, icon chuông thông báo.
   - `HomeBannerCarousel`: Banner trượt tự động các chiến dịch marketing thể thao bằng `PageView.builder` + `Timer.periodic`.
-  - `QuickCategoryChips`: Dãy danh mục nhanh nằm ngang (Giày chạy bộ, Bóng rổ, Quần áo, Phụ kiện).
-  - `FeaturedProductsSection`: Danh mục sản phẩm nổi bật có nút "Xem tất cả" chuyển sang Tab 1 (`ProductListScreen`).
+  - `QuickCategoryChips`: Dãy danh mục nhanh nằm ngang (Nike, Adidas, Puma, Reebok, Under Armour).
+  - `FeaturedProductsSection`: Grid 2 cột ngắn (4 sản phẩm hot) kèm nút "Xem tất cả" mở `ProductListScreen`.
+- [x] **[Testing]** Viết `auth_cubit_test.dart` kiểm thử đầy đủ các trạng thái Lazy Login đạt pass 100%.
 
 ---
 
