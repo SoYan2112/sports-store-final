@@ -9,12 +9,12 @@ Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu
 
 | Thành viên | Mã SV | Domain phụ trách chính | Danh sách Use Cases | Tổng số UC | Tổng Points | Tiến độ cá nhân |
 | :--- | :---: | :--- | :--- | :---: | :---: | :---: |
-| **Thái San Yo** | **CE190435** | **Home Layout, Catalog & Shopping Cart** | **UC-04, UC-07, UC-11, UC-12, UC-13, UC-23** | **6 UCs** | **7 pts** | ⏳ 1 Done, 2 In Progress, 3 Not Yet |
+| **Thái San Yo** | **CE190435** | **Home Layout, Catalog & Shopping Cart** | **UC-04, UC-07, UC-11, UC-12, UC-13, UC-23** | **6 UCs** | **7 pts** | ⏳ 2 Done, 1 In Progress, 3 Not Yet |
 | **Nguyễn Hoài Ân** | **CE190990** | **Authentication, Checkout & Order History** | **UC-01, UC-08, UC-14, UC-15** | **4 UCs** | **8 pts** | ⏳ 1 Done, 3 Not Yet |
 | **Trần Hoàng Nhật** | **CE190581** | **Registration & Shipping Address (3 Cấp VN)** | **UC-02, UC-10, UC-18, UC-19** | **4 UCs** | **7 pts** | ⏳ 1 Done, 1 In Progress, 2 Not Yet |
 | **Nguyễn Minh Nhật**| **CE191491** | **Logout, Variants & Category Management** | **UC-03, UC-06, UC-16, UC-21, UC-22** | **5 UCs** | **8 pts** | ⏳ 2 Done, 3 Not Yet |
 | **Ngô Nhất Quý** | **CE190984** | **Product Detail, Search, Filter & Cancel Order**| **UC-05, UC-09, UC-17, UC-20** | **4 UCs** | **8 pts** | ⏳ 1 Done, 3 Not Yet |
-| **TỔNG CỘNG** | — | **5 Domain Owners** | **UC-01 → UC-23** | **23 UCs** | **38 pts** | **Tiến độ: 6/23 Done** |
+| **TỔNG CỘNG** | — | **5 Domain Owners** | **UC-01 → UC-23** | **23 UCs** | **38 pts** | **Tiến độ: 7/23 Done** |
 
 ---
 
@@ -22,7 +22,7 @@ Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu
 
 #### 1. Thái San Yo (CE190435) — 6 UCs · 7 pts
 - **UC-04 · View product list** (`P0` · Simple · 1 pt · Sprint 1): Grid 2 cột, Shimmer Skeleton, BLoC Infinite Scroll. (✅ **Done**)
-- **UC-07 · Home layout** (`P1` · Simple · 1 pt · Sprint 1): `MainLayoutScreen` (BottomNavigationBar 4 tab), `HomeScreen` (Banner Carousel, Quick Category Chips, Featured Products) kết hợp cơ chế Lazy Login. (⏳ **In progress**)
+- **UC-07 · Home layout** (`P1` · Simple · 1 pt · Sprint 1): `MainLayoutScreen` (BottomNavigationBar 3 tab), `HomeScreen` (Banner Carousel, Brand Chips, Featured Products) kết hợp cơ chế Lazy Login. (✅ **Done**)
 - **UC-11 · Add product to cart** (`P0` · Medium · 2 pts · Sprint 2): Logic thêm sản phẩm cùng size/màu vào `CartBloc`, lưu trạng thái cục bộ và phản hồi SnackBar/Badge. (⏳ **In progress**)
 - **UC-12 · View shopping cart** (`P0` · Simple · 1 pt · Sprint 2): `CartScreen`, danh sách item có ảnh, size, số lượng, tự động tính tổng tiền VNĐ. (⏹ Not yet)
 - **UC-13 · Remove item from cart** (`P0` · Simple · 1 pt · Sprint 2): Thao tác vuốt xóa (Dismissible) hoặc nút thùng rác, dialog xác nhận xóa sản phẩm khỏi giỏ. (⏹ Not yet)

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
-import '../features/auth/data/repositories/auth_repository.dart';
-import '../features/auth/presentation/screens/login_screen.dart';
+import '../features/auth/presentation/cubit/auth_cubit.dart';
+import '../features/home/presentation/screens/main_layout_screen.dart';
 import '../features/product/presentation/bloc/product_bloc.dart';
 
 class SportsStoreApp extends StatelessWidget {
@@ -14,6 +14,9 @@ class SportsStoreApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<AuthCubit>(
+          create: (context) => getIt<AuthCubit>()..checkAuthStatus(),
+        ),
         BlocProvider<ProductBloc>(
           create: (context) => getIt<ProductBloc>(),
         ),
@@ -22,7 +25,7 @@ class SportsStoreApp extends StatelessWidget {
         title: 'Sports Store Mobile',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: LoginScreen(authRepository: getIt<AuthRepository>()),
+        home: const MainLayoutScreen(),
       ),
     );
   }

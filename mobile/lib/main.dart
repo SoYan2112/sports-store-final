@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'app/app.dart';
 import 'core/di/injection.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initDependencies();
+  await initDependencies();
   runApp(const SportsStoreApp());
 }

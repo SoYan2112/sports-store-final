@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../product/presentation/screens/product_list_screen.dart';
+import '../../../home/presentation/screens/main_layout_screen.dart';
 import '../../data/repositories/auth_repository.dart';
+import '../cubit/auth_cubit.dart';
 import '../view_models/login_view_model.dart';
 import 'register_screen.dart';
 
@@ -72,6 +74,16 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Cập nhật trạng thái vào AuthCubit và lưu SharedPreferences
+    await context.read<AuthCubit>().loginSuccess(
+      token: 'token_${user.id}',
+      userId: user.id.toString(),
+      name: user.fullname,
+      email: user.email,
+    );
+
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Đăng nhập thành công! Xin chào ${user.fullname}'),
@@ -79,9 +91,14 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    await Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const ProductListScreen()),
-    );
+    // Nếu màn hình Login được mở từ ProfileScreen thì pop về
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
+    } else {
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(builder: (_) => const MainLayoutScreen()),
+      );
+    }
   }
 
   String? _validateEmail(String email) {
