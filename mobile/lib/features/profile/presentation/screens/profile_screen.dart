@@ -97,18 +97,14 @@ class ProfileScreen extends StatelessWidget {
                   // Đẩy LoginScreen đè lên Navigator
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => LoginScreen(
-                        authRepository: getIt<AuthRepository>(),
-                      ),
+                      builder: (_) =>
+                          LoginScreen(authRepository: getIt<AuthRepository>()),
                     ),
                   );
                 },
                 child: const Text(
                   'Đăng nhập / Đăng ký',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
