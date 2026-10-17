@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
+import '../cubit/filter_cubit.dart';
+import '../cubit/filter_state.dart';
+import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
 import 'product_detail_screen.dart';
@@ -19,7 +23,7 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen> {
   final ScrollController _scrollController = ScrollController();
-  int _selectedBrandIndex = 0;
+  late final FilterCubit _filterCubit = getIt<FilterCubit>();
   final List<String> _brands = [
     'Tất cả',
     'Nike',
@@ -57,6 +61,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _filterCubit.close();
     super.dispose();
   }
 
@@ -66,7 +71,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider.value(
+      value: _filterCubit,
+      child: Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: RefreshIndicator(
@@ -223,18 +230,60 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.tune_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
+                      BlocBuilder<FilterCubit, FilterState>(
+                        builder: (context, filterState) {
+                          final isFiltered = !filterState.isDefault;
+                          return InkWell(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) => BlocProvider.value(
+                                  value: _filterCubit,
+                                  child: const FilterBottomSheet(),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: isFiltered ? AppColors.primary : Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.03),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.tune_rounded,
+                                    color: isFiltered ? Colors.white : AppColors.textPrimary,
+                                    size: 22,
+                                  ),
+                                ),
+                                if (isFiltered)
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -247,63 +296,66 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   padding: const EdgeInsets.only(top: 8, bottom: 16),
                   child: SizedBox(
                     height: 42,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: _brands.length,
-                      itemBuilder: (context, index) {
-                        final isSelected = _selectedBrandIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedBrandIndex = index;
-                              });
-                              final brand = index == 0 ? null : _brands[index];
-                              context.read<ProductBloc>().add(
-                                FetchProductsEvent(keyword: brand),
-                              );
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: isSelected
-                                        ? AppColors.primary.withValues(
-                                            alpha: 0.25,
-                                          )
-                                        : Colors.black.withValues(alpha: 0.02),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
+                    child: BlocBuilder<FilterCubit, FilterState>(
+                      builder: (context, filterState) {
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: _brands.length,
+                          itemBuilder: (context, index) {
+                            final brand = _brands[index];
+                            final isSelected = filterState.selectedBrand == brand;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  context.read<FilterCubit>().updateFilter(
+                                        brand: brand,
+                                        minPrice: filterState.minPrice,
+                                        maxPrice: filterState.maxPrice,
+                                      );
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 10,
                                   ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  _brands[index],
-                                  style: TextStyle(
+                                  decoration: BoxDecoration(
                                     color: isSelected
-                                        ? Colors.white
-                                        : AppColors.textPrimary,
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
+                                        ? AppColors.primary
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(24),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: isSelected
+                                            ? AppColors.primary.withValues(
+                                                alpha: 0.25,
+                                              )
+                                            : Colors.black.withValues(alpha: 0.02),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      brand,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -419,46 +471,84 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     );
                   } else if (state is ProductLoaded) {
-                    if (state.products.isEmpty) {
-                      return const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Text(
-                            'Không có sản phẩm nào phù hợp.',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: AppColors.textSecondary,
+                    return BlocBuilder<FilterCubit, FilterState>(
+                      builder: (context, filterState) {
+                        var filtered = state.products;
+                        if (filterState.selectedBrand != 'Tất cả') {
+                          filtered = filtered
+                              .where((p) =>
+                                  p.brand.toLowerCase() ==
+                                  filterState.selectedBrand.toLowerCase())
+                              .toList();
+                        }
+                        filtered = filtered
+                            .where((p) =>
+                                p.price >= filterState.minPrice &&
+                                p.price <= filterState.maxPrice)
+                            .toList();
+
+                        if (filtered.isEmpty) {
+                          return SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.filter_alt_off_rounded,
+                                    size: 56,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Không có sản phẩm nào phù hợp với bộ lọc.',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  OutlinedButton(
+                                    onPressed: () =>
+                                        context.read<FilterCubit>().reset(),
+                                    child: const Text('Đặt lại bộ lọc'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return SliverPadding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 16,
+                                ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final product = filtered[index];
+                                return ProductCard(
+                                  product: product,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      ProductDetailScreen.route(product),
+                                    );
+                                  },
+                                );
+                              },
+                              childCount: filtered.length,
                             ),
                           ),
-                        ),
-                      );
-                    }
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.65,
-                              crossAxisSpacing: 14,
-                              mainAxisSpacing: 16,
-                            ),
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final product = state.products[index];
-                          return ProductCard(
-                            product: product,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                ProductDetailScreen.route(product),
-                              );
-                            },
-                          );
-                        }, childCount: state.products.length),
-                      ),
+                        );
+                      },
                     );
                   }
 
@@ -493,6 +583,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }

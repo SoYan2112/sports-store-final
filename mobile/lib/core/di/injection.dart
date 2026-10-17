@@ -17,6 +17,7 @@ import '../storage/local_storage_service.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/search_cubit.dart';
+import '../../features/product/presentation/cubit/filter_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -81,5 +82,8 @@ Future<void> initDependencies() async {
   );
   getIt.registerFactory<SearchCubit>(
     () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
+  );
+  getIt.registerFactory<FilterCubit>(
+    () => FilterCubit(),
   );
 }
