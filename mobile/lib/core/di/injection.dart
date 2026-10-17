@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../storage/local_storage_service.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
+import '../../features/product/presentation/cubit/search_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -77,5 +78,8 @@ Future<void> initDependencies() async {
     () => ProductDetailCubit(
       getProductDetailUseCase: getIt<GetProductDetailUseCase>(),
     ),
+  );
+  getIt.registerFactory<SearchCubit>(
+    () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
   );
 }

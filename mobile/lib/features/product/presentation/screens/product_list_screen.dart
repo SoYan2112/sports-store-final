@@ -8,6 +8,7 @@ import '../bloc/product_state.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
 import 'product_detail_screen.dart';
+import 'search_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -182,41 +183,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.search_rounded,
-                                color: Colors.grey.shade400,
-                                size: 22,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Tìm kiếm sản phẩm thể thao...',
-                                    hintStyle: TextStyle(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(SearchScreen.route());
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.03),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.search_rounded,
+                                  color: Colors.grey.shade400,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Tìm kiếm sản phẩm thể thao...',
+                                    style: TextStyle(
                                       color: Colors.grey.shade400,
                                       fontSize: 14,
                                     ),
-                                    border: InputBorder.none,
-                                    isDense: true,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

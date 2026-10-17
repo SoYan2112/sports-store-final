@@ -10,6 +10,7 @@ import '../../../product/presentation/bloc/product_event.dart';
 import '../../../product/presentation/bloc/product_state.dart';
 import '../../../product/presentation/screens/product_detail_screen.dart';
 import '../../../product/presentation/screens/product_list_screen.dart';
+import '../../../product/presentation/screens/search_screen.dart';
 import '../../../product/presentation/widgets/product_card.dart';
 import '../../../product/presentation/widgets/product_card_skeleton.dart';
 
@@ -169,24 +170,54 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 8,
+                      Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(SearchScreen.route());
+                            },
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.04),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.search_rounded,
+                                size: 22,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.notifications_none_rounded,
-                          size: 22,
-                          color: AppColors.textPrimary,
-                        ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.notifications_none_rounded,
+                              size: 22,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
