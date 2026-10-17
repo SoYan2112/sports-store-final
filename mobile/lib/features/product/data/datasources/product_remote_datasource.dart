@@ -57,7 +57,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } on DioException {
       // Khi Backend chưa khởi chạy hoặc mất mạng trong giai đoạn phát triển,
       // fallback về mock dataset thể thao tươi sáng chất lượng cao để UI hiển thị và test mượt mà
-      return _getMockProducts(page: page, size: size);
+      return _getMockProducts(page: page, size: size, keyword: keyword);
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(message: e.toString());
@@ -95,6 +95,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   List<ProductModel> _getMockProducts({
     required int page,
     required int size,
+    String? keyword,
   }) {
     final allMock = [
       const ProductModel(
@@ -195,12 +196,21 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       ),
     ];
 
+    final filtered = (keyword == null || keyword.trim().isEmpty)
+        ? allMock
+        : allMock.where((p) {
+            final q = keyword.trim().toLowerCase();
+            return p.name.toLowerCase().contains(q) ||
+                p.brand.toLowerCase().contains(q) ||
+                p.category.toLowerCase().contains(q);
+          }).toList();
+
     final startIndex = (page - 1) * size;
-    if (startIndex >= allMock.length) {
+    if (startIndex >= filtered.length) {
       return [];
     }
-    final endIndex = (startIndex + size > allMock.length) ? allMock.length : startIndex + size;
-    return allMock.sublist(startIndex, endIndex);
+    final endIndex = (startIndex + size > filtered.length) ? filtered.length : startIndex + size;
+    return filtered.sublist(startIndex, endIndex);
   }
 
   ProductModel _getMockProductDetail(String id) {
