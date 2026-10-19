@@ -6,6 +6,7 @@ import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/home/presentation/screens/main_layout_screen.dart';
 import '../features/product/presentation/bloc/product_bloc.dart';
+import '../features/product/presentation/cubit/filter_cubit.dart';
 
 class SportsStoreApp extends StatelessWidget {
   const SportsStoreApp({super.key});
@@ -19,6 +20,9 @@ class SportsStoreApp extends StatelessWidget {
         ),
         BlocProvider<ProductBloc>(
           create: (context) => getIt<ProductBloc>(),
+        ),
+        BlocProvider<FilterCubit>(
+          create: (context) => getIt<FilterCubit>(),
         ),
       ],
       child: MaterialApp(

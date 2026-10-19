@@ -22,6 +22,7 @@ import '../../features/category/domain/usecases/get_categories_usecase.dart';
 import '../../features/category/presentation/cubit/category_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/search_cubit.dart';
+import '../../features/product/presentation/cubit/filter_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -100,5 +101,8 @@ Future<void> initDependencies() async {
   );
   getIt.registerFactory<SearchCubit>(
     () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
+  );
+  getIt.registerLazySingleton<FilterCubit>(
+    () => FilterCubit(),
   );
 }

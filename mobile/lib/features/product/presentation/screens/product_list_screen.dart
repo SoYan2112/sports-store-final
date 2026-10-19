@@ -7,6 +7,9 @@ import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_card_skeleton.dart';
+import '../cubit/filter_cubit.dart';
+import '../cubit/filter_state.dart';
+import '../widgets/filter_bottom_sheet.dart';
 import 'product_detail_screen.dart';
 import 'search_screen.dart';
 
@@ -26,7 +29,6 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen> {
   final ScrollController _scrollController = ScrollController();
-  int _selectedBrandIndex = 0;
   final List<String> _brands = [
     'Tất cả',
     'Nike',
@@ -236,17 +238,59 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.tune_rounded,
-                          color: Colors.white,
-                          size: 22,
+                      InkWell(
+                        key: const Key('product_filter_button'),
+                        onTap: () => FilterBottomSheet.show(context),
+                        borderRadius: BorderRadius.circular(16),
+                        child: BlocBuilder<FilterCubit, FilterState>(
+                          builder: (context, filterState) {
+                            final hasActive = !filterState.isDefault;
+                            return Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.tune_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                  if (hasActive)
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Text(
+                                          '${filterState.activeFilterCount}',
+                                          style: const TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -255,73 +299,79 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
 
               // 3. Danh sách lọc Thương hiệu (Brand Pill Selector)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 16),
-                  child: SizedBox(
-                    height: 42,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: _brands.length,
-                      itemBuilder: (context, index) {
-                        final isSelected = _selectedBrandIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedBrandIndex = index;
-                              });
-                              final brand = index == 0 ? null : _brands[index];
-                              context.read<ProductBloc>().add(
-                                FetchProductsEvent(keyword: brand),
-                              );
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: isSelected
-                                        ? AppColors.primary.withValues(
-                                            alpha: 0.25,
-                                          )
-                                        : Colors.black.withValues(alpha: 0.02),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
+              BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 16),
+                      child: SizedBox(
+                        height: 42,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: _brands.length,
+                          itemBuilder: (context, index) {
+                            final isSelected = index == 0
+                                ? filterState.selectedBrands.isEmpty
+                                : filterState.selectedBrands.contains(_brands[index]);
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  final brand = index == 0 ? null : _brands[index];
+                                  context.read<FilterCubit>().updateFilter(
+                                    brands: brand == null ? [] : [brand],
+                                    categories: filterState.selectedCategories,
+                                    minPrice: filterState.minPrice,
+                                    maxPrice: filterState.maxPrice,
+                                  );
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 10,
                                   ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  _brands[index],
-                                  style: TextStyle(
+                                  decoration: BoxDecoration(
                                     color: isSelected
-                                        ? Colors.white
-                                        : AppColors.textPrimary,
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
+                                        ? AppColors.primary
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(24),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: isSelected
+                                            ? AppColors.primary.withValues(
+                                                alpha: 0.25,
+                                              )
+                                            : Colors.black.withValues(alpha: 0.02),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _brands[index],
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
 
               // 4. Section Title: "Sản phẩm nổi bật"
@@ -374,108 +424,144 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
 
               // 5. Grid View 2 Cột với BlocBuilder
-              BlocBuilder<ProductBloc, ProductState>(
-                builder: (context, state) {
-                  if (state is ProductLoading) {
-                    // Hiển thị skeleton loading 6 ô dạng lưới 2 cột
-                    return SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.65,
-                              crossAxisSpacing: 14,
-                              mainAxisSpacing: 16,
-                            ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => const ProductCardSkeleton(),
-                          childCount: 6,
-                        ),
-                      ),
-                    );
-                  } else if (state is ProductError) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.cloud_off_rounded,
-                                size: 64,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                state.message,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  color: AppColors.textSecondary,
+              BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  return BlocBuilder<ProductBloc, ProductState>(
+                    builder: (context, state) {
+                      if (state is ProductLoading) {
+                        // Hiển thị skeleton loading 6 ô dạng lưới 2 cột
+                        return SliverPadding(
+                          padding: const EdgeInsets.all(20),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 16,
                                 ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => const ProductCardSkeleton(),
+                              childCount: 6,
+                            ),
+                          ),
+                        );
+                      } else if (state is ProductError) {
+                        return SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.cloud_off_rounded,
+                                    size: 64,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    state.message,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      context.read<ProductBloc>().add(
+                                        const FetchProductsEvent(),
+                                      );
+                                    },
+                                    child: const Text('Thử lại'),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 20),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<ProductBloc>().add(
-                                    const FetchProductsEvent(),
+                            ),
+                          ),
+                        );
+                      } else if (state is ProductLoaded) {
+                        final filteredProducts = state.products
+                            .where((p) => filterState.matches(p))
+                            .toList();
+
+                        if (filteredProducts.isEmpty) {
+                          return SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off_rounded,
+                                    size: 64,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    'Không tìm thấy sản phẩm phù hợp.',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  if (!filterState.isDefault) ...[
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      key: const Key('product_reset_filter_button'),
+                                      onPressed: () =>
+                                          context.read<FilterCubit>().reset(),
+                                      icon: const Icon(Icons.refresh_rounded, size: 18),
+                                      label: const Text('Đặt lại bộ lọc'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        return SliverPadding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 16,
+                                ),
+                            delegate: SliverChildBuilderDelegate((context, index) {
+                              final product = filteredProducts[index];
+                              return ProductCard(
+                                product: product,
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    ProductDetailScreen.route(product),
                                   );
                                 },
-                                child: const Text('Thử lại'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  } else if (state is ProductLoaded) {
-                    if (state.products.isEmpty) {
-                      return const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Text(
-                            'Không có sản phẩm nào phù hợp.',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.65,
-                              crossAxisSpacing: 14,
-                              mainAxisSpacing: 16,
-                            ),
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final product = state.products[index];
-                          return ProductCard(
-                            product: product,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                ProductDetailScreen.route(product),
                               );
-                            },
-                          );
-                        }, childCount: state.products.length),
-                      ),
-                    );
-                  }
+                            }, childCount: filteredProducts.length),
+                          ),
+                        );
+                      }
 
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    },
+                  );
                 },
               ),
 
