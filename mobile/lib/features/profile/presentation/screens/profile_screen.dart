@@ -255,9 +255,10 @@ class ProfileScreen extends StatelessWidget {
     );
 
     if (confirm == true && context.mounted) {
+      final messenger = ScaffoldMessenger.maybeOf(context);
       await context.read<AuthCubit>().logout();
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger?.showSnackBar(
         const SnackBar(
           content: Text('Đã đăng xuất thành công'),
           backgroundColor: Colors.green,

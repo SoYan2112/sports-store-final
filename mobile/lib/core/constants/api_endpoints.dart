@@ -7,4 +7,7 @@ class ApiEndpoints {
 
   // Products
   static const String products = '/products';
+
+  // Categories
+  static const String categories = '/categories';
 }

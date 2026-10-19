@@ -172,7 +172,7 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 ---
 
 ## 📦 SPRINT 3: Quản lý Đơn hàng, Bộ lọc & Quản trị Danh mục (15 pts)
-**Thời gian**: 22/10/2026 – 29/10/2026 · **Tiến độ**: 0/9 Not yet (0/15 pts)
+**Thời gian**: 22/10/2026 – 29/10/2026 · **Tiến độ**: 1/9 Hoàn thành (1/15 pts)
 
 ---
 
@@ -184,11 +184,11 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-16 · View product categories · `P0` · Simple · 1 pt · ⏹ Chưa bắt đầu
+### UC-16 · View product categories · `P0` · Simple · 1 pt · ✅ Hoàn thành
 **Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026
 
-- [ ] **[Presentation]** Dựng `CategoryListScreen` dạng lưới danh mục với ảnh đại diện sắc nét cho từng ngành hàng thể thao.
-- [ ] **[Navigation]** Bấm vào danh mục → Mở `ProductListScreen` kèm tham số lọc `categoryId`.
+- [x] **[Presentation]** Dựng `CategoryListScreen` dạng lưới danh mục với ảnh đại diện sắc nét cho từng ngành hàng thể thao.
+- [x] **[Navigation]** Bấm vào danh mục → Mở `ProductListScreen` kèm tham số lọc `categoryId`.
 
 ---
 

@@ -11,7 +11,14 @@ import 'product_detail_screen.dart';
 import 'search_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({super.key});
+  final String? categoryId;
+  final String? categoryName;
+
+  const ProductListScreen({
+    super.key,
+    this.categoryId,
+    this.categoryName,
+  });
 
   @override
   State<ProductListScreen> createState() => _ProductListScreenState();
@@ -32,8 +39,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-    // Kích hoạt tải danh sách sản phẩm lần đầu
-    context.read<ProductBloc>().add(const FetchProductsEvent());
+    // Kích hoạt tải danh sách sản phẩm lần đầu (kèm lọc theo danh mục nếu có)
+    context.read<ProductBloc>().add(FetchProductsEvent(categoryId: widget.categoryId));
 
     // Thiết lập Infinite Scroll: kích hoạt FetchMoreProductsEvent khi cuộn gần cuối danh sách
     _scrollController.addListener(_onScroll);
@@ -85,49 +92,55 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     vertical: 12,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          InkWell(
-                            borderRadius: BorderRadius.circular(14),
-                            onTap: Navigator.canPop(context)
-                                ? () => Navigator.pop(context)
-                                : null,
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.04),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                Navigator.canPop(context)
-                                    ? Icons.arrow_back_ios_new_rounded
-                                    : Icons.grid_view_rounded,
-                                size: 20,
-                                color: AppColors.textPrimary,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: Navigator.canPop(context)
+                                  ? () => Navigator.pop(context)
+                                  : null,
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.04),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Navigator.canPop(context)
+                                      ? Icons.arrow_back_ios_new_rounded
+                                      : Icons.grid_view_rounded,
+                                  size: 20,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          const Text(
-                            'Sports Store',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary,
-                              letterSpacing: -0.5,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                widget.categoryName ?? 'Sports Store',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 12),
                       Row(
                         children: [
                           // Nút thông báo
