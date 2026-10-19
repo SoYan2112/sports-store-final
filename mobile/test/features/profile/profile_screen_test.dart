@@ -47,6 +47,10 @@ void main() {
       expect(find.text('Nguyễn Văn A'), findsOneWidget);
       expect(find.text('a@gmail.com'), findsOneWidget);
 
+      // Kiểm tra thẻ Kho Voucher & Ưu đãi
+      expect(find.text('Kho Voucher & Ưu đãi'), findsOneWidget);
+      expect(find.text('Xem mã giảm giá & freeship có sẵn'), findsOneWidget);
+
       // Kiểm tra thẻ Đăng xuất
       expect(find.text('Đăng xuất'), findsOneWidget);
       expect(find.byIcon(Icons.logout_rounded), findsOneWidget);
