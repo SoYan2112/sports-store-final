@@ -55,7 +55,7 @@ Lộ trình dự án được chuẩn hóa theo danh mục **23 Use Cases** (t�
 
 #### Danh sách Use Cases:
 15. **UC-15 · View order details** (`P0` · Medium · 2 pts) — Nguyễn Hoài Ân (CE190990) — ⏹ Not yet
-16. **UC-16 · View product categories** (`P0` · Simple · 1 pt) — Nguyễn Minh Nhật (CE191491) — ⏹ Not yet
+16. **UC-16 · View product categories** (`P0` · Simple · 1 pt) — Nguyễn Minh Nhật (CE191491) — ✅ Done
 17. **UC-17 · Filter products** (`P1` · Medium · 2 pts) — Ngô Nhất Quý (CE190984) — ⏹ Not yet
 18. **UC-18 · Edit shipping address** (`P1` · Medium · 2 pts) — Trần Hoàng Nhật (CE190581) — ⏹ Not yet
 19. **UC-19 · Delete shipping address** (`P1` · Simple · 1 pt) — Trần Hoàng Nhật (CE190581) — ⏹ Not yet

@@ -15,6 +15,11 @@ import '../../features/product/presentation/bloc/product_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../storage/local_storage_service.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/category/data/datasources/category_remote_datasource.dart';
+import '../../features/category/data/repositories/category_repository_impl.dart';
+import '../../features/category/domain/repositories/category_repository.dart';
+import '../../features/category/domain/usecases/get_categories_usecase.dart';
+import '../../features/category/presentation/cubit/category_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/search_cubit.dart';
 
@@ -51,6 +56,20 @@ Future<void> initDependencies() async {
       storageService: getIt<LocalStorageService>(),
       authRepository: getIt<AuthRepository>(),
     ),
+  );
+
+  // Features - Category Data Source & Repository
+  getIt.registerLazySingleton<CategoryRemoteDataSource>(
+    () => CategoryRemoteDataSourceImpl(dio: getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(remoteDataSource: getIt<CategoryRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetCategoriesUseCase>(
+    () => GetCategoriesUseCase(getIt<CategoryRepository>()),
+  );
+  getIt.registerFactory<CategoryCubit>(
+    () => CategoryCubit(getCategoriesUseCase: getIt<GetCategoriesUseCase>()),
   );
 
   // Features - Product Data Source

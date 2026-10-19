@@ -57,7 +57,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } on DioException {
       // Khi Backend chưa khởi chạy hoặc mất mạng trong giai đoạn phát triển,
       // fallback về mock dataset thể thao tươi sáng chất lượng cao để UI hiển thị và test mượt mà
-      return _getMockProducts(page: page, size: size, keyword: keyword);
+      return _getMockProducts(
+        page: page,
+        size: size,
+        categoryId: categoryId,
+        keyword: keyword,
+      );
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(message: e.toString());
@@ -95,6 +100,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   List<ProductModel> _getMockProducts({
     required int page,
     required int size,
+    String? categoryId,
     String? keyword,
   }) {
     final allMock = [
@@ -193,17 +199,195 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         rating: 4.9,
         reviewCount: 320,
         description: 'Biểu tượng chạy bộ 40 năm với túi khí đôi Zoom Air trước và sau.',
+        category: 'Giày thể thao',
+      ),
+      // --- 2. Áo thể thao (cat_tops) ---
+      const ProductModel(
+        id: 'p_top_1',
+        name: 'Áo thun chạy bộ Nike Dri-FIT',
+        brand: 'Nike',
+        price: 650000,
+        originalPrice: 850000,
+        imageUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+        badge: 'Best Seller',
+        rating: 4.8,
+        reviewCount: 145,
+        description: 'Vải Dri-FIT siêu nhẹ, thấm hút mồ hôi và thoáng khí tối ưu.',
+        category: 'Áo thể thao',
+      ),
+      const ProductModel(
+        id: 'p_top_2',
+        name: 'Áo khoác gió Adidas Tiro Track',
+        brand: 'Adidas',
+        price: 1450000,
+        originalPrice: 1800000,
+        imageUrl: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop&q=80',
+        badge: 'Hot',
+        rating: 4.9,
+        reviewCount: 89,
+        description: 'Chất liệu chắn gió cản nước nhẹ nhàng, 3 sọc thể thao kinh điển.',
+        category: 'Áo thể thao',
+      ),
+      const ProductModel(
+        id: 'p_top_3',
+        name: 'Áo ba lỗ tập gym Puma Train Fav',
+        brand: 'Puma',
+        price: 520000,
+        originalPrice: null,
+        imageUrl: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&auto=format&fit=crop&q=80',
+        badge: 'New',
+        rating: 4.7,
+        reviewCount: 38,
+        description: 'Thiết kế khoét nách rộng hỗ trợ biên độ vận động tối đa.',
+        category: 'Áo thể thao',
+      ),
+
+      // --- 3. Quần thể thao (cat_bottoms) ---
+      const ProductModel(
+        id: 'p_bot_1',
+        name: 'Quần shorts chạy bộ 2-in-1 Pro',
+        brand: 'Nike',
+        price: 790000,
+        originalPrice: 950000,
+        imageUrl: 'https://images.unsplash.com/photo-1517438476312-10d79c077509?w=600&auto=format&fit=crop&q=80',
+        badge: 'Hot',
+        rating: 4.8,
+        reviewCount: 112,
+        description: 'Có lớp bó cơ bên trong chống cọ xát và túi đựng điện thoại tiện ích.',
+        category: 'Quần thể thao',
+      ),
+      const ProductModel(
+        id: 'p_bot_2',
+        name: 'Quần dài Jogger Adidas Essentials',
+        brand: 'Adidas',
+        price: 1290000,
+        originalPrice: 1600000,
+        imageUrl: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600&auto=format&fit=crop&q=80',
+        badge: 'Best Seller',
+        rating: 4.9,
+        reviewCount: 205,
+        description: 'Vải nỉ bông ấm áp, ống côn ôm mắt cá tôn dáng thể thao.',
+        category: 'Quần thể thao',
+      ),
+
+      // --- 4. Phụ kiện thể thao (cat_accessories) ---
+      const ProductModel(
+        id: 'p_acc_1',
+        name: 'Balo thể thao chống nước đa năng',
+        brand: 'Nike',
+        price: 890000,
+        originalPrice: 1100000,
+        imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
+        badge: 'Hot',
+        rating: 4.9,
+        reviewCount: 78,
+        description: 'Có ngăn riêng biệt đựng giày và laptop, chống nước bề mặt.',
+        category: 'Phụ kiện thể thao',
+      ),
+      const ProductModel(
+        id: 'p_acc_2',
+        name: 'Mũ lưỡi trai thoáng khí Adidas Aeroready',
+        brand: 'Adidas',
+        price: 350000,
+        originalPrice: null,
+        imageUrl: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&auto=format&fit=crop&q=80',
+        badge: 'New',
+        rating: 4.8,
+        reviewCount: 64,
+        description: 'Công nghệ Aeroready thấm hút mồ hôi, vành che nắng cong thể thao.',
+        category: 'Phụ kiện thể thao',
+      ),
+
+      // --- 5. Dụng cụ tập luyện (cat_gear) ---
+      const ProductModel(
+        id: 'p_gear_1',
+        name: 'Bộ dây kháng lực Power Band ngũ sắc',
+        brand: 'Under Armour',
+        price: 420000,
+        originalPrice: 550000,
+        imageUrl: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&auto=format&fit=crop&q=80',
+        badge: 'Best Seller',
+        rating: 4.9,
+        reviewCount: 160,
+        description: '5 mức lực khác nhau từ 10lbs đến 50lbs phù hợp mọi bài tập gym tại nhà.',
+        category: 'Dụng cụ tập luyện',
+      ),
+      const ProductModel(
+        id: 'p_gear_2',
+        name: 'Thảm tập Yoga định tuyến chống trượt TPE',
+        brand: 'Puma',
+        price: 590000,
+        originalPrice: 750000,
+        imageUrl: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=600&auto=format&fit=crop&q=80',
+        badge: 'Hot',
+        rating: 4.8,
+        reviewCount: 95,
+        description: 'Độ dày 6mm êm ái bảo vệ khớp xương, hoa văn định tuyến chuẩn dáng.',
+        category: 'Dụng cụ tập luyện',
+      ),
+
+      // --- 6. Đồ bảo hộ & Hỗ trợ (cat_protection) ---
+      const ProductModel(
+        id: 'p_prot_1',
+        name: 'Băng bảo vệ khớp gối thể thao Pro Knee',
+        brand: 'Under Armour',
+        price: 320000,
+        originalPrice: 400000,
+        imageUrl: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&auto=format&fit=crop&q=80',
+        badge: 'Sale -20%',
+        rating: 4.7,
+        reviewCount: 82,
+        description: 'Vải dệt kim đàn hồi 3D hỗ trợ bánh chè và giảm chấn động khi nhảy.',
+        category: 'Đồ bảo hộ & Hỗ trợ',
+      ),
+      const ProductModel(
+        id: 'p_prot_2',
+        name: 'Băng quấn cổ tay tập Gym trợ lực',
+        brand: 'Reebok',
+        price: 250000,
+        originalPrice: null,
+        imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80',
+        badge: 'Hot',
+        rating: 4.9,
+        reviewCount: 104,
+        description: 'Khóa dán siêu bền bảo vệ khớp cổ tay trong các bài đẩy tạ nặng.',
+        category: 'Đồ bảo hộ & Hỗ trợ',
       ),
     ];
 
-    final filtered = (keyword == null || keyword.trim().isEmpty)
-        ? allMock
-        : allMock.where((p) {
-            final q = keyword.trim().toLowerCase();
-            return p.name.toLowerCase().contains(q) ||
-                p.brand.toLowerCase().contains(q) ||
-                p.category.toLowerCase().contains(q);
-          }).toList();
+    var filtered = allMock;
+
+    if (categoryId != null && categoryId.trim().isNotEmpty) {
+      filtered = filtered.where((p) {
+        final catLower = p.category.toLowerCase();
+        if (categoryId == 'cat_shoes') {
+          return catLower.contains('giày') || catLower.contains('shoe');
+        } else if (categoryId == 'cat_tops') {
+          return catLower.contains('áo') || catLower.contains('top');
+        } else if (categoryId == 'cat_bottoms') {
+          return catLower.contains('quần') || catLower.contains('bottom');
+        } else if (categoryId == 'cat_accessories') {
+          return catLower.contains('phụ kiện') ||
+              catLower.contains('balo') ||
+              catLower.contains('mũ') ||
+              catLower.contains('tất');
+        } else if (categoryId == 'cat_gear') {
+          return catLower.contains('dụng cụ') || catLower.contains('tập');
+        } else if (categoryId == 'cat_protection') {
+          return catLower.contains('bảo hộ') || catLower.contains('băng');
+        }
+        return catLower.contains(categoryId.toLowerCase());
+      }).toList();
+    }
+
+    if (keyword != null && keyword.trim().isNotEmpty) {
+      final q = keyword.trim().toLowerCase();
+      filtered = filtered.where((p) {
+        return p.name.toLowerCase().contains(q) ||
+            p.brand.toLowerCase().contains(q) ||
+            p.category.toLowerCase().contains(q);
+      }).toList();
+    }
 
     final startIndex = (page - 1) * size;
     if (startIndex >= filtered.length) {
