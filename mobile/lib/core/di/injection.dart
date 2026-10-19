@@ -22,6 +22,11 @@ import '../../features/category/domain/usecases/get_categories_usecase.dart';
 import '../../features/category/presentation/cubit/category_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/search_cubit.dart';
+import '../../features/voucher/data/datasources/voucher_remote_datasource.dart';
+import '../../features/voucher/data/repositories/voucher_repository_impl.dart';
+import '../../features/voucher/domain/repositories/voucher_repository.dart';
+import '../../features/voucher/domain/usecases/get_vouchers_usecase.dart';
+import '../../features/voucher/presentation/cubit/voucher_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -100,5 +105,21 @@ Future<void> initDependencies() async {
   );
   getIt.registerFactory<SearchCubit>(
     () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
+  );
+
+  // Features - Voucher
+  getIt.registerLazySingleton<VoucherRemoteDataSource>(
+    () => VoucherRemoteDataSourceImpl(dio: getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<VoucherRepository>(
+    () => VoucherRepositoryImpl(
+      remoteDataSource: getIt<VoucherRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetVouchersUseCase>(
+    () => GetVouchersUseCase(getIt<VoucherRepository>()),
+  );
+  getIt.registerFactory<VoucherCubit>(
+    () => VoucherCubit(getVouchersUseCase: getIt<GetVouchersUseCase>()),
   );
 }
