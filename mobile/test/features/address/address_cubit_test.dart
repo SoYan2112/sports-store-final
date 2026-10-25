@@ -1,0 +1,121 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:mobile/features/address/domain/entities/address_entity.dart';
+import 'package:mobile/features/address/domain/usecases/add_address_usecase.dart';
+import 'package:mobile/features/address/domain/usecases/get_addresses_usecase.dart';
+import 'package:mobile/features/address/presentation/cubit/address_cubit.dart';
+import 'package:mobile/features/address/presentation/cubit/address_state.dart';
+
+class MockGetAddressesUseCase extends Mock implements GetAddressesUseCase {}
+class MockAddAddressUseCase extends Mock implements AddAddressUseCase {}
+
+class FakeAddressEntity extends Fake implements AddressEntity {}
+
+void main() {
+  late MockGetAddressesUseCase mockGetAddressesUseCase;
+  late MockAddAddressUseCase mockAddAddressUseCase;
+  late AddressCubit addressCubit;
+
+  const tAddress = AddressEntity(
+    id: 'addr_001',
+    recipientName: 'Trần Hoàng Nhật',
+    phoneNumber: '0905123456',
+    province: 'TP. Hồ Chí Minh',
+    district: 'Quận 1',
+    ward: 'Phường Bến Nghé',
+    streetAddress: '123 Đường Lê Duẩn',
+    label: AddressLabel.home,
+    isDefault: true,
+  );
+
+  setUpAll(() {
+    registerFallbackValue(FakeAddressEntity());
+  });
+
+  setUp(() {
+    mockGetAddressesUseCase = MockGetAddressesUseCase();
+    mockAddAddressUseCase = MockAddAddressUseCase();
+    addressCubit = AddressCubit(
+      getAddressesUseCase: mockGetAddressesUseCase,
+      addAddressUseCase: mockAddAddressUseCase,
+    );
+  });
+
+  tearDown(() {
+    addressCubit.close();
+  });
+
+  group('AddressCubit', () {
+    test('initial state should be AddressInitial', () {
+      expect(addressCubit.state, const AddressInitial());
+    });
+
+    blocTest<AddressCubit, AddressState>(
+      'emits [AddressLoading, AddressLoaded] when loadAddresses succeeds',
+      build: () {
+        when(() => mockGetAddressesUseCase())
+            .thenAnswer((_) async => [tAddress]);
+        return addressCubit;
+      },
+      act: (cubit) => cubit.loadAddresses(),
+      expect: () => [
+        const AddressLoading(),
+        const AddressLoaded(addresses: [tAddress]),
+      ],
+      verify: (_) {
+        verify(() => mockGetAddressesUseCase()).called(1);
+      },
+    );
+
+    blocTest<AddressCubit, AddressState>(
+      'emits [AddressLoading, AddressError] when loadAddresses fails',
+      build: () {
+        when(() => mockGetAddressesUseCase())
+            .thenThrow(Exception('Lỗi kết nối'));
+        return addressCubit;
+      },
+      act: (cubit) => cubit.loadAddresses(),
+      expect: () => [
+        const AddressLoading(),
+        const AddressError('Exception: Lỗi kết nối'),
+      ],
+      verify: (_) {
+        verify(() => mockGetAddressesUseCase()).called(1);
+      },
+    );
+
+    blocTest<AddressCubit, AddressState>(
+      'emits [AddressAddLoading, AddressAddSuccess, AddressLoaded] when addAddress succeeds',
+      build: () {
+        when(() => mockAddAddressUseCase(any()))
+            .thenAnswer((_) async => tAddress);
+        when(() => mockGetAddressesUseCase())
+            .thenAnswer((_) async => [tAddress]);
+        return addressCubit;
+      },
+      act: (cubit) => cubit.addAddress(
+        recipientName: 'Trần Hoàng Nhật',
+        phoneNumber: '0905123456',
+        province: 'TP. Hồ Chí Minh',
+        district: 'Quận 1',
+        ward: 'Phường Bến Nghé',
+        streetAddress: '123 Đường Lê Duẩn',
+        label: AddressLabel.home,
+        isDefault: true,
+      ),
+      expect: () => [
+        const AddressAddLoading(),
+        const AddressAddSuccess(
+          newAddress: tAddress,
+          addresses: [tAddress],
+        ),
+        const AddressLoaded(addresses: [tAddress]),
+      ],
+      verify: (_) {
+        verify(() => mockAddAddressUseCase(any())).called(1);
+        verify(() => mockGetAddressesUseCase()).called(1);
+      },
+    );
+  });
+}

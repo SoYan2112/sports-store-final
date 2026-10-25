@@ -27,6 +27,12 @@ import '../../features/voucher/data/repositories/voucher_repository_impl.dart';
 import '../../features/voucher/domain/repositories/voucher_repository.dart';
 import '../../features/voucher/domain/usecases/get_vouchers_usecase.dart';
 import '../../features/voucher/presentation/cubit/voucher_cubit.dart';
+import '../../features/address/data/datasources/address_remote_datasource.dart';
+import '../../features/address/data/repositories/address_repository_impl.dart';
+import '../../features/address/domain/repositories/address_repository.dart';
+import '../../features/address/domain/usecases/add_address_usecase.dart';
+import '../../features/address/domain/usecases/get_addresses_usecase.dart';
+import '../../features/address/presentation/cubit/address_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -121,5 +127,30 @@ Future<void> initDependencies() async {
   );
   getIt.registerFactory<VoucherCubit>(
     () => VoucherCubit(getVouchersUseCase: getIt<GetVouchersUseCase>()),
+  );
+
+  // Features - Address
+  getIt.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(
+      dio: getIt<Dio>(),
+      sharedPreferences: getIt<SharedPreferences>(),
+    ),
+  );
+  getIt.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(
+      remoteDataSource: getIt<AddressRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetAddressesUseCase>(
+    () => GetAddressesUseCase(getIt<AddressRepository>()),
+  );
+  getIt.registerLazySingleton<AddAddressUseCase>(
+    () => AddAddressUseCase(getIt<AddressRepository>()),
+  );
+  getIt.registerFactory<AddressCubit>(
+    () => AddressCubit(
+      getAddressesUseCase: getIt<GetAddressesUseCase>(),
+      addAddressUseCase: getIt<AddAddressUseCase>(),
+    ),
   );
 }
