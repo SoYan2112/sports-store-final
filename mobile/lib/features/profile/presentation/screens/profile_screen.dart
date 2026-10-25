@@ -9,6 +9,7 @@ import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../voucher/presentation/screens/voucher_list_screen.dart';
 import '../../../address/presentation/screens/address_list_screen.dart';
+import '../../../order/presentation/screens/order_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -35,6 +36,32 @@ class ProfileScreen extends StatelessWidget {
             return _buildUserView(context, state);
           }
           return _buildGuestView(context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildOrderHistoryButton(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        leading: const Icon(
+          Icons.receipt_long_outlined,
+          color: AppColors.primary,
+        ),
+        title: const Text(
+          'Lịch sử đơn hàng',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: const Text('Xem danh sách đơn hàng'),
+        trailing: const Icon(Icons.chevron_right_rounded),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const OrderHistoryScreen()),
+          );
         },
       ),
     );
@@ -110,6 +137,8 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            _buildOrderHistoryButton(context),
             const SizedBox(height: 12),
             TextButton.icon(
               onPressed: () {
@@ -200,6 +229,9 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 16),
+
+        _buildOrderHistoryButton(context),
         const SizedBox(height: 16),
 
         // 2. Thẻ Kho Voucher & Ưu đãi
