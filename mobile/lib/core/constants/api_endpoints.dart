@@ -13,4 +13,7 @@ class ApiEndpoints {
 
   // Vouchers
   static const String vouchers = '/vouchers';
+
+  // Addresses
+  static const String addresses = '/addresses';
 }
