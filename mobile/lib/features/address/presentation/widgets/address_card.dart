@@ -91,14 +91,7 @@ class AddressCard extends StatelessWidget {
                         onTap: onEdit,
                         child: const Padding(
                           padding: EdgeInsets.only(left: 8),
-                          child: Text(
-                            'Thiết lập',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
-                          ),
+                          
                         ),
                       ),
                   ],
