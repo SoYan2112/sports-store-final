@@ -31,6 +31,7 @@ import '../../features/address/data/datasources/address_remote_datasource.dart';
 import '../../features/address/data/repositories/address_repository_impl.dart';
 import '../../features/address/domain/repositories/address_repository.dart';
 import '../../features/address/domain/usecases/add_address_usecase.dart';
+import '../../features/address/domain/usecases/delete_address_usecase.dart';
 import '../../features/address/domain/usecases/get_addresses_usecase.dart';
 import '../../features/address/domain/usecases/update_address_usecase.dart';
 import '../../features/address/presentation/cubit/address_cubit.dart';
@@ -151,11 +152,15 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton<UpdateAddressUseCase>(
     () => UpdateAddressUseCase(getIt<AddressRepository>()),
   );
+  getIt.registerLazySingleton<DeleteAddressUseCase>(
+    () => DeleteAddressUseCase(getIt<AddressRepository>()),
+  );
   getIt.registerFactory<AddressCubit>(
     () => AddressCubit(
       getAddressesUseCase: getIt<GetAddressesUseCase>(),
       addAddressUseCase: getIt<AddAddressUseCase>(),
       updateAddressUseCase: getIt<UpdateAddressUseCase>(),
+      deleteAddressUseCase: getIt<DeleteAddressUseCase>(),
     ),
   );
 }

@@ -149,6 +149,57 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     }
   }
 
+  Future<void> _confirmDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: const Text(
+          'Xóa địa chỉ',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: const Text(
+          'Bạn có chắc chắn muốn xóa địa chỉ này không? Thao tác này không thể hoàn tác.',
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            key: const Key('cancelDeleteButton'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'Hủy',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          TextButton(
+            key: const Key('confirmDeleteButton'),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text(
+              'Xóa',
+              style: TextStyle(
+                color: Color(0xFFE53935),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      context.read<AddressCubit>().deleteAddress(widget.address.id);
+    }
+  }
+
   void _submit() {
     if (!_validateInputs()) return;
 
@@ -178,6 +229,15 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             ),
           );
           Navigator.of(context).pop(state.updatedAddress);
+        } else if (state is AddressDeleteSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đã xóa địa chỉ giao hàng thành công!'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          Navigator.of(context).pop();
         } else if (state is AddressError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -190,6 +250,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       },
       builder: (context, state) {
         final isSubmitting = state is AddressUpdateLoading;
+        final isDeleting = state is AddressDeleteLoading;
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -213,6 +274,27 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
+            actions: [
+              IconButton(
+                key: const Key('appBarDeleteButton'),
+                icon: isDeleting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFFE53935),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Color(0xFFE53935),
+                        size: 22,
+                      ),
+                tooltip: 'Xóa địa chỉ',
+                onPressed: (isSubmitting || isDeleting) ? null : _confirmDelete,
+              ),
+            ],
           ),
           body: SafeArea(
             child: Column(
@@ -397,6 +479,38 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                                 ],
                               ),
                             ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // NÚT XÓA ĐỊA CHỈ (SHOPEE STYLE)
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton.icon(
+                            key: const Key('deleteAddressButton'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFFE53935),
+                              side: BorderSide(
+                                color: const Color(0xFFE53935).withValues(alpha: 0.5),
+                                width: 1.2,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              backgroundColor:
+                                  const Color(0xFFE53935).withValues(alpha: 0.04),
+                            ),
+                            icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                            label: const Text(
+                              'Xóa địa chỉ này',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            onPressed:
+                                (isSubmitting || isDeleting) ? null : _confirmDelete,
                           ),
                         ),
                         const SizedBox(height: 24),
