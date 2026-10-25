@@ -59,6 +59,23 @@ class AddressUpdateSuccess extends AddressState {
   List<Object?> get props => [updatedAddress, addresses];
 }
 
+class AddressDeleteLoading extends AddressState {
+  const AddressDeleteLoading();
+}
+
+class AddressDeleteSuccess extends AddressState {
+  final String deletedAddressId;
+  final List<AddressEntity> addresses;
+
+  const AddressDeleteSuccess({
+    required this.deletedAddressId,
+    required this.addresses,
+  });
+
+  @override
+  List<Object?> get props => [deletedAddressId, addresses];
+}
+
 class AddressError extends AddressState {
   final String message;
 

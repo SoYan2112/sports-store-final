@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/address_entity.dart';
 import '../../domain/usecases/add_address_usecase.dart';
+import '../../domain/usecases/delete_address_usecase.dart';
 import '../../domain/usecases/get_addresses_usecase.dart';
 import '../../domain/usecases/update_address_usecase.dart';
 import 'address_state.dart';
@@ -9,11 +10,13 @@ class AddressCubit extends Cubit<AddressState> {
   final GetAddressesUseCase getAddressesUseCase;
   final AddAddressUseCase addAddressUseCase;
   final UpdateAddressUseCase updateAddressUseCase;
+  final DeleteAddressUseCase deleteAddressUseCase;
 
   AddressCubit({
     required this.getAddressesUseCase,
     required this.addAddressUseCase,
     required this.updateAddressUseCase,
+    required this.deleteAddressUseCase,
   }) : super(const AddressInitial());
 
   /// Lấy danh sách địa chỉ giao hàng
@@ -96,6 +99,22 @@ class AddressCubit extends Cubit<AddressState> {
       emit(AddressLoaded(addresses: updatedList));
     } catch (e) {
       emit(AddressError('Không thể cập nhật địa chỉ: ${e.toString()}'));
+    }
+  }
+
+  /// Xóa địa chỉ giao hàng (UC-19)
+  Future<void> deleteAddress(String addressId) async {
+    emit(const AddressDeleteLoading());
+    try {
+      await deleteAddressUseCase(addressId);
+      final updatedList = await getAddressesUseCase();
+      emit(AddressDeleteSuccess(
+        deletedAddressId: addressId,
+        addresses: updatedList,
+      ));
+      emit(AddressLoaded(addresses: updatedList));
+    } catch (e) {
+      emit(AddressError('Không thể xóa địa chỉ: ${e.toString()}'));
     }
   }
 }

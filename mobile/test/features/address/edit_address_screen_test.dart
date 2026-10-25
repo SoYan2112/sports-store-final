@@ -54,7 +54,10 @@ void main() {
       expect(find.byKey(const Key('editAreaSelectorTile')), findsOneWidget);
       expect(find.byKey(const Key('editStreetAddressField')), findsOneWidget);
       expect(find.byKey(const Key('updateAddressButton')), findsOneWidget);
+      expect(find.byKey(const Key('deleteAddressButton')), findsOneWidget);
+      expect(find.byKey(const Key('appBarDeleteButton')), findsOneWidget);
       expect(find.text('CẬP NHẬT'), findsOneWidget);
+      expect(find.text('Xóa địa chỉ này'), findsOneWidget);
 
       // Kiểm tra dữ liệu cũ đã được điền sẵn
       expect(find.text('Trần Hoàng Nhật'), findsOneWidget);
@@ -127,6 +130,52 @@ void main() {
             label: any(named: 'label'),
             isDefault: any(named: 'isDefault'),
           ));
+    });
+
+    testWidgets(
+        'shows confirmation dialog when tapping delete and calls cubit.deleteAddress',
+        (tester) async {
+      when(() => mockAddressCubit.deleteAddress(any()))
+          .thenAnswer((_) async {});
+
+      await tester.pumpWidget(buildTestableWidget());
+
+      // Nhấn nút Xóa trên AppBar
+      await tester.tap(find.byKey(const Key('appBarDeleteButton')));
+      await tester.pumpAndSettle();
+
+      // Kiểm tra dialog xác nhận hiển thị
+      expect(find.text('Xóa địa chỉ'), findsOneWidget);
+      expect(
+        find.text(
+            'Bạn có chắc chắn muốn xóa địa chỉ này không? Thao tác này không thể hoàn tác.'),
+        findsOneWidget,
+      );
+
+      // Nhấn nút Xóa trên dialog
+      await tester.tap(find.byKey(const Key('confirmDeleteButton')));
+      await tester.pumpAndSettle();
+
+      verify(() => mockAddressCubit.deleteAddress('addr_sample_01')).called(1);
+    });
+
+    testWidgets(
+        'cancels delete dialog when tapping cancel button',
+        (tester) async {
+      await tester.pumpWidget(buildTestableWidget());
+
+      // Nhấn nút Xóa trên AppBar
+      await tester.tap(find.byKey(const Key('appBarDeleteButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Xóa địa chỉ'), findsOneWidget);
+
+      // Nhấn nút Hủy
+      await tester.tap(find.byKey(const Key('cancelDeleteButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Xóa địa chỉ'), findsNothing);
+      verifyNever(() => mockAddressCubit.deleteAddress(any()));
     });
   });
 }
