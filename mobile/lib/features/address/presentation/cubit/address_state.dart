@@ -42,6 +42,23 @@ class AddressAddSuccess extends AddressState {
   List<Object?> get props => [newAddress, addresses];
 }
 
+class AddressUpdateLoading extends AddressState {
+  const AddressUpdateLoading();
+}
+
+class AddressUpdateSuccess extends AddressState {
+  final AddressEntity updatedAddress;
+  final List<AddressEntity> addresses;
+
+  const AddressUpdateSuccess({
+    required this.updatedAddress,
+    required this.addresses,
+  });
+
+  @override
+  List<Object?> get props => [updatedAddress, addresses];
+}
+
 class AddressError extends AddressState {
   final String message;
 

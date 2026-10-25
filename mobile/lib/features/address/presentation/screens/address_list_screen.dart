@@ -8,6 +8,7 @@ import '../cubit/address_cubit.dart';
 import '../cubit/address_state.dart';
 import '../widgets/address_card.dart';
 import 'add_address_screen.dart';
+import 'edit_address_screen.dart';
 
 class AddressListScreen extends StatelessWidget {
   final AddressCubit? cubit;
@@ -160,7 +161,18 @@ class _AddressListView extends StatelessWidget {
                   onTap: () {
                     if (isSelectMode) {
                       Navigator.of(context).pop(item);
+                    } else {
+                      final cubit = context.read<AddressCubit>();
+                      Navigator.of(context).push(
+                        EditAddressScreen.route(address: item, cubit: cubit),
+                      );
                     }
+                  },
+                  onEdit: () {
+                    final cubit = context.read<AddressCubit>();
+                    Navigator.of(context).push(
+                      EditAddressScreen.route(address: item, cubit: cubit),
+                    );
                   },
                 );
               },

@@ -4,17 +4,20 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mobile/features/address/domain/entities/address_entity.dart';
 import 'package:mobile/features/address/domain/usecases/add_address_usecase.dart';
 import 'package:mobile/features/address/domain/usecases/get_addresses_usecase.dart';
+import 'package:mobile/features/address/domain/usecases/update_address_usecase.dart';
 import 'package:mobile/features/address/presentation/cubit/address_cubit.dart';
 import 'package:mobile/features/address/presentation/cubit/address_state.dart';
 
 class MockGetAddressesUseCase extends Mock implements GetAddressesUseCase {}
 class MockAddAddressUseCase extends Mock implements AddAddressUseCase {}
+class MockUpdateAddressUseCase extends Mock implements UpdateAddressUseCase {}
 
 class FakeAddressEntity extends Fake implements AddressEntity {}
 
 void main() {
   late MockGetAddressesUseCase mockGetAddressesUseCase;
   late MockAddAddressUseCase mockAddAddressUseCase;
+  late MockUpdateAddressUseCase mockUpdateAddressUseCase;
   late AddressCubit addressCubit;
 
   const tAddress = AddressEntity(
@@ -36,9 +39,11 @@ void main() {
   setUp(() {
     mockGetAddressesUseCase = MockGetAddressesUseCase();
     mockAddAddressUseCase = MockAddAddressUseCase();
+    mockUpdateAddressUseCase = MockUpdateAddressUseCase();
     addressCubit = AddressCubit(
       getAddressesUseCase: mockGetAddressesUseCase,
       addAddressUseCase: mockAddAddressUseCase,
+      updateAddressUseCase: mockUpdateAddressUseCase,
     );
   });
 
@@ -114,6 +119,40 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockAddAddressUseCase(any())).called(1);
+        verify(() => mockGetAddressesUseCase()).called(1);
+      },
+    );
+
+    blocTest<AddressCubit, AddressState>(
+      'emits [AddressUpdateLoading, AddressUpdateSuccess, AddressLoaded] when updateAddress succeeds',
+      build: () {
+        when(() => mockUpdateAddressUseCase(any()))
+            .thenAnswer((_) async => tAddress);
+        when(() => mockGetAddressesUseCase())
+            .thenAnswer((_) async => [tAddress]);
+        return addressCubit;
+      },
+      act: (cubit) => cubit.updateAddress(
+        id: 'addr_001',
+        recipientName: 'Trần Hoàng Nhật',
+        phoneNumber: '0905123456',
+        province: 'TP. Hồ Chí Minh',
+        district: 'Quận 1',
+        ward: 'Phường Bến Nghé',
+        streetAddress: '123 Đường Lê Duẩn',
+        label: AddressLabel.home,
+        isDefault: true,
+      ),
+      expect: () => [
+        const AddressUpdateLoading(),
+        AddressUpdateSuccess(
+          updatedAddress: tAddress,
+          addresses: const [tAddress],
+        ),
+        const AddressLoaded(addresses: [tAddress]),
+      ],
+      verify: (_) {
+        verify(() => mockUpdateAddressUseCase(any())).called(1);
         verify(() => mockGetAddressesUseCase()).called(1);
       },
     );
