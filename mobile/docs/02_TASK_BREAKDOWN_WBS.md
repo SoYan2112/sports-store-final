@@ -1,7 +1,7 @@
 # Bảng Phân Rã Công Việc Kỹ Thuật (Work Breakdown Structure - WBS)
 ## Dự án: sports-store-mobile (Multi-brand Sports Store)
 
-Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho **23 Use Cases** (tổng 38 Story Points) trải dài qua 3 Sprint. Kiến trúc tuân thủ nghiêm ngặt **Feature-First Clean Architecture**, BLoC/Cubit State Management, Dio Interceptors, Local Storage (`SharedPreferences`) và cơ chế xác thực **Lazy Login**.
+Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho **24 Use Cases** (tổng 39 Story Points) trải dài qua 3 Sprint. Kiến trúc tuân thủ nghiêm ngặt **Feature-First Clean Architecture**, BLoC/Cubit State Management, Dio Interceptors, Local Storage (`SharedPreferences`) và cơ chế xác thực **Lazy Login**.
 
 ---
 
@@ -69,12 +69,12 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 - [x] **[Presentation]** Dựng bộ chọn Size giày (38, 39, 40, 41, 42, 43) dạng Pill Button tròn chuẩn ngón tay bấm.
 - [x] **[Presentation]** Dựng bộ chọn màu sắc (Color Palette Circles) với viền highlight và icon check khi được chọn.
 - [x] **[Business Logic]** Kiểm tra số lượng tồn kho (`stock`) theo từng cặp size/color; disable nút mua nếu biến thể hết hàng.
-- [x] **[Interactive Feedback]** Cập nhật hình ảnh tương ứng với phiên bản màu đang chọn và rung nhẹ phản hồi xúc giác.
+- [x] **[Interactive Feedback]** Cập nhật hình ảnh tương ứng với phiên bản màu đang chọn và phản hồi giao diện tức thì.
 
 ---
 
 ### UC-07 · Home layout · `P1` · Simple · 1 pt · ✅ Hoàn thành
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: `feat/home-layout`
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 15/10/2026 · **Branch**: [feat/home-layout](https://github.com/SoYan2112/sports-store-final/commit/8ae3a4c5677629c151cebb39f520ff7f77bc1e33)
 
 - [x] **[Architecture / Shell]** Dựng `MainLayoutScreen` chứa `BottomNavigationBar` 3 tab:
   - Tab 0: `HomeScreen` (Trang chủ & Khám phá).
@@ -95,43 +95,46 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-## 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng (11 pts)
-**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 2/7 In progress (4/11 pts)
+## 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng (10 pts)
+**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 3/7 Done, 4 In progress (4/10 pts)
 
 ---
 
-### UC-08 · Order selected items in cart · `P0` · Complex · 3 pts · ⏹ Chưa bắt đầu
-**Assignee**: Nguyễn Hoài Ân (CE190990) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-08 · Order items · `P0` · Complex · 3 pts · ⏳ Đang thực hiện
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/order-items](https://github.com/SoYan2112/sports-store-final/tree/feat/order-items)  
+*Ghi chú: Ân làm screen success rồi [commit](https://github.com/SoYan2112/sports-store-final/commit/6021ed4fef43a27c5dbd2aa1ad8244574cffd2d2), commit lên branch [feat/order-items](https://github.com/SoYan2112/sports-store-final/tree/feat/order-items)*
 
 - [ ] **[Presentation]** Dựng `CheckoutScreen` hiển thị tóm tắt đơn hàng: Danh sách món chọn mua, địa chỉ nhận hàng, phương thức vận chuyển.
 - [ ] **[Payment Method]** Tích hợp lựa chọn phương thức thanh toán: **COD (Thanh toán khi nhận hàng)** mặc định, hỗ trợ mở rộng VNPAY/MoMo.
 - [ ] **[State Management]** Xây dựng `CheckoutBloc` xử lý event `PlaceOrderEvent` emit `CheckoutLoading`, `CheckoutSuccess(orderId)`, `CheckoutFailure`.
 - [ ] **[Domain & Data]** `CreateOrderUseCase`, `OrderRepository.createOrder()` gọi `POST /api/orders` gửi payload chi tiết.
-- [ ] **[Post-Checkout]** Xóa các item đã đặt khỏi `CartBloc`, điều hướng sang màn hình Đặt hàng thành công (`OrderSuccessScreen`).
+- [x] **[Post-Checkout]** Dựng màn hình Đặt hàng thành công (`ordered-screen.dart` / `OrderSuccessScreen`).
 
 ---
 
-### UC-09 · Search products by keyword · `P1` · Simple · 1 pt · ⏹ Chưa bắt đầu
-**Assignee**: Ngô Nhất Quý (CE190984) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-09 · Search products by keyword · `P1` · Simple · 1 pt · ✅ Hoàn thành (17/10/2026)
+**Assignee**: Ngô Nhất Quý (CE190984) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/search-products-by-keyword](https://github.com/SoYan2112/sports-store-final/tree/feat/search-products-by-keyword)
 
-- [ ] **[Presentation]** Dựng `SearchScreen` với thanh tìm kiếm tự động focus bàn phím, nút Clear nhanh nội dung.
-- [ ] **[Debounce Logic]** Triển khai cơ chế Debounce 400-500ms khi gõ phím để tránh gửi request dồn dập lên server.
-- [ ] **[State Management]** Xây dựng `SearchBloc` lắng nghe `SearchQueryChanged` emit `SearchLoading`, `SearchLoaded`, `SearchEmpty`.
-- [ ] **[Search History]** Lưu lịch sử tìm kiếm gần nhất (tối đa 10 từ khóa) vào `SharedPreferences`, cho phép xóa từng từ khóa hoặc xóa tất cả.
-
----
-
-### UC-10 · Add shipping address · `P1` · Medium · 2 pts · ⏳ Đang thực hiện
-**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 14/10/2026 – 21/10/2026
-
-- [ ] **[Presentation]** Dựng `AddAddressScreen` gồm: Tên người nhận, Số điện thoại người nhận, Địa chỉ cụ thể (Số nhà, tên đường).
-- [ ] **[Vietnam 3-Tier Address]** Dropdown cascading chọn địa chỉ 3 cấp chuẩn hành chính Việt Nam: Tỉnh/Thành phố → Quận/Huyện → Phường/Xã.
-- [ ] **[State Management]** `AddressCubit` xử lý nạp danh mục địa phương và phát state lưu địa chỉ mới.
-- [ ] **[Data Layer]** `AddressRepository.addAddress()` lưu địa chỉ vào hệ thống và đồng bộ cache người dùng.
+- [x] **[Presentation]** Dựng `SearchScreen` với thanh tìm kiếm tự động focus bàn phím, nút Clear nhanh nội dung.
+- [x] **[Debounce Logic]** Triển khai cơ chế Debounce 400-500ms khi gõ phím để tránh gửi request dồn dập lên server.
+- [x] **[State Management]** Xây dựng `SearchCubit` lắng nghe `search()` emit `SearchLoading`, `SearchLoaded`, `SearchEmpty`.
+- [x] **[Search History]** Lưu lịch sử tìm kiếm gần nhất vào `SharedPreferences`, cho phép xóa từng từ khóa hoặc xóa tất cả.
+- [x] **[Testing]** Viết `search_cubit_test.dart` và `search_screen_test.dart` đạt pass 100%.
 
 ---
 
-### UC-11 · Add product to cart · `P0` · Medium · 2 pts · ⏳ Đang thực hiện
+### UC-10 · Add shipping address · `P1` · Medium · 2 pts · ✅ Hoàn thành (25/10/2026)
+**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/add-shipping-address](https://github.com/SoYan2112/sports-store-final/tree/feat/add-shipping-address)
+
+- [x] **[Presentation]** Dựng `AddAddressScreen` gồm: Tên người nhận, Số điện thoại người nhận, Địa chỉ cụ thể (Số nhà, tên đường).
+- [x] **[Vietnam 3-Tier Address]** `VietnamAddressPickerBottomSheet` chọn địa chỉ 3 cấp chuẩn hành chính Việt Nam: Tỉnh/Thành phố → Quận/Huyện → Phường/Xã.
+- [x] **[State Management]** `AddressCubit` xử lý nạp danh mục địa phương và phát state lưu địa chỉ mới.
+- [x] **[Data Layer]** `AddressRepository.addAddress()` lưu địa chỉ vào hệ thống và đồng bộ cache người dùng qua `SharedPreferences`.
+- [x] **[Testing]** Viết `add_address_screen_test.dart` và `address_cubit_test.dart` pass 100%.
+
+---
+
+### UC-11 · Add product to cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
 **Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
 
 - [ ] **[Domain & Entity]** Thiết kế `CartItemEntity` gồm: `productId`, `name`, `price`, `imageUrl`, `selectedSize`, `selectedColor`, `quantity`.
@@ -143,36 +146,36 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-12 · View shopping cart · `P0` · Simple · 1 pt · ⏹ Chưa bắt đầu
+### UC-12 · View shopping cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
 **Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
 
-- [ ] **[Presentation]** Dựng `CartScreen` hiển thị danh sách các món đồ đã chọn trong giỏ hàng.
+- [x] **[Presentation]** Dựng `CartScreen` hiển thị giao diện danh sách các món đồ đã chọn trong giỏ hàng.
 - [ ] **[Quantity Selector]** Bộ nút tăng/giảm số lượng (+ / -) cho từng item, tự động cập nhật lại tổng tiền.
 - [ ] **[Price Calculation]** Tự động tính: Tạm tính (Subtotal), Phí vận chuyển ước tính, Tổng thanh toán hiển thị chuẩn format VNĐ.
 - [ ] **[Empty State]** Màn hình giỏ hàng trống thân thiện với minh họa thể thao và nút CTA "Tiếp tục mua sắm".
 
 ---
 
-### UC-13 · Remove item from cart · `P0` · Simple · 1 pt · ⏹ Chưa bắt đầu
+### UC-13 · Remove item from cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
 **Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
 
-- [ ] **[Interaction]** Hỗ trợ thao tác vuốt ngang để xóa (`Dismissible` widget) có nền đỏ và icon thùng rác.
+- [ ] **[Interaction]** Hỗ trợ thao tác vuốt ngang để xóa (`Dismissible` widget) có nền đỏ và icon thùng rác hoặc icon xóa tại item.
 - [ ] **[Confirmation]** Hộp thoại xác nhận: "Bạn có chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng?".
 - [ ] **[State Update]** Bắn `RemoveFromCartEvent` vào `CartBloc`, cập nhật lại danh sách và tổng tiền tức thì.
 
 ---
 
-### UC-14 · View order history · `P0` · Simple · 1 pt · ⏹ Chưa bắt đầu
-**Assignee**: Nguyễn Hoài Ân (CE190990) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-14 · View order history · `P0` · Simple · 1 pt · ✅ Hoàn thành (26/10/2026)
+**Assignee**: Nguyễn Hoài Ân (CE190990) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/view-order-history](https://github.com/SoYan2112/sports-store-final/tree/feat/view-order-history)
 
-- [ ] **[Presentation]** Dựng `OrderHistoryScreen` với các Tab trạng thái đơn hàng: Tất cả, Chờ xác nhận, Đang giao, Đã hoàn thành, Đã hủy.
-- [ ] **[UI Card]** `OrderCard` hiển thị: Mã đơn hàng, ngày đặt, ảnh thu nhỏ sản phẩm đầu tiên, tổng số tiền và badge trạng thái màu sắc riêng.
-- [ ] **[State Management]** `OrderBloc` xử lý `FetchOrderHistoryEvent` emit `OrderHistoryLoading`, `OrderHistoryLoaded`.
+- [x] **[Presentation]** Dựng `OrderHistoryScreen` với các Tab trạng thái đơn hàng: Tất cả, Chờ xác nhận, Đang giao, Đã hoàn thành, Đã hủy.
+- [x] **[UI Card]** Hiển thị danh sách thẻ đơn hàng kèm ngày đặt, trạng thái đơn, giá tiền chuẩn định dạng VNĐ.
+- [x] **[Integration]** Tích hợp đường dẫn mở từ `ProfileScreen`.
 
 ---
 
-## 📦 SPRINT 3: Quản lý Đơn hàng, Bộ lọc & Quản trị Danh mục (15 pts)
-**Thời gian**: 22/10/2026 – 29/10/2026 · **Tiến độ**: 1/9 Hoàn thành (1/15 pts)
+## 📦 SPRINT 3: Quản lý Đơn hàng nâng cao, Bộ lọc, Voucher & Đánh giá (17 pts)
+**Thời gian**: 22/10/2026 – 29/10/2026 · **Tiến độ**: 4/10 Hoàn thành (6/17 pts)
 
 ---
 
@@ -184,38 +187,42 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-16 · View product categories · `P0` · Simple · 1 pt · ✅ Hoàn thành
-**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026
+### UC-16 · View product categories · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
+**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026 · **Branch**: [feat/view-product-categories](https://github.com/SoYan2112/sports-store-final/tree/feat/view-product-categories)
 
 - [x] **[Presentation]** Dựng `CategoryListScreen` dạng lưới danh mục với ảnh đại diện sắc nét cho từng ngành hàng thể thao.
 - [x] **[Navigation]** Bấm vào danh mục → Mở `ProductListScreen` kèm tham số lọc `categoryId`.
+- [ ] **[Refinement]** Hoàn thiện liên kết bộ lọc đồng bộ giữa Category và Home layout.
 
 ---
 
-### UC-17 · Filter products · `P1` · Medium · 2 pts · ⏹ Chưa bắt đầu
-**Assignee**: Ngô Nhất Quý (CE190984) · **Thời gian**: 22/10/2026 – 29/10/2026
+### UC-17 · Filter products · `P1` · Medium · 2 pts · ✅ Hoàn thành (26/10/2026)
+**Assignee**: Ngô Nhất Quý (CE190984) · **Thời gian**: 22/10/2026 – 29/10/2026 · **Branch**: [feat/filter-products](https://github.com/SoYan2112/sports-store-final/tree/feat/filter-products)
 
-- [ ] **[UI BottomSheet]** Dựng `FilterBottomSheet` gồm: Khoảng giá (RangeSlider VNĐ), Thương hiệu (Nike, Adidas, Puma, Reebok), Đánh giá sao (≥ 4 sao).
-- [ ] **[State Management]** Truyền bộ lọc vào `ProductBloc` qua `FetchProductsEvent(filterParams)` để tải lại danh sách tương ứng.
-
----
-
-### UC-18 · Edit shipping address · `P1` · Medium · 2 pts · ⏹ Chưa bắt đầu
-**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 22/10/2026 – 29/10/2026
-
-- [ ] **[Presentation]** Màn hình chỉnh sửa địa chỉ, tự động điền sẵn các thông tin cũ của địa chỉ cần sửa.
-- [ ] **[Logic]** Cho phép đặt làm địa chỉ giao hàng mặc định (Default Address).
+- [x] **[UI BottomSheet]** Dựng `FilterBottomSheet` gồm: Bộ chọn Khoảng giá min-max, Lọc theo Thương hiệu (Nike, Adidas, Puma, Jordan...), Danh mục con.
+- [x] **[State Management]** Xây dựng `FilterCubit` quản lý `FilterState`, tích hợp liên thông với `HomeScreen` và `ProductListScreen`.
+- [x] **[Testing]** Viết `filter_cubit_test.dart` và `filter_bottom_sheet_test.dart` pass 100%.
 
 ---
 
-### UC-19 · Delete shipping address · `P1` · Simple · 1 pt · ⏹ Chưa bắt đầu
-**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 22/10/2026 – 29/10/2026
+### UC-18 · Edit shipping address · `P1` · Medium · 2 pts · ✅ Hoàn thành (25/10/2026)
+**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 22/10/2026 – 29/10/2026 · **Branch**: [feat/edit-shipping-address](https://github.com/SoYan2112/sports-store-final/tree/feat/edit-shipping-address)
 
-- [ ] **[Interaction]** Nút xóa địa chỉ với hộp thoại xác nhận, không cho phép xóa nếu là địa chỉ duy nhất đang dùng cho đơn hàng chờ giao.
+- [x] **[Presentation]** Dựng `EditAddressScreen` tự động load và điền sẵn thông tin cũ của địa chỉ.
+- [x] **[Logic]** Cho phép chỉnh sửa thông tin chi tiết và đặt làm địa chỉ mặc định (`isDefault`).
+- [x] **[Testing]** Viết `edit_address_screen_test.dart` pass 100%.
 
 ---
 
-### UC-20 · Cancel order · `P1` · Complex · 3 pts · ⏹ Chưa bắt đầu
+### UC-19 · Delete shipping address · `P1` · Simple · 1 pt · ✅ Hoàn thành (25/10/2026)
+**Assignee**: Trần Hoàng Nhật (CE190581) · **Thời gian**: 22/10/2026 – 29/10/2026 · **Branch**: [feat/delete-shipping-address](https://github.com/SoYan2112/sports-store-final/tree/feat/delete-shipping-address)
+
+- [x] **[Presentation & Interaction]** Nút Xóa địa chỉ trên thẻ `AddressCard` trong `AddressListScreen` kèm AlertDialog xác nhận xóa.
+- [x] **[Domain & Data]** Triển khai `DeleteAddressUseCase` và xử lý cập nhật state trong `AddressCubit`.
+
+---
+
+### UC-20 · Cancel order · `P1` · Complex · 3 pts · ⏳ Đang thực hiện
 **Assignee**: Ngô Nhất Quý (CE190984) · **Thời gian**: 22/10/2026 – 29/10/2026
 
 - [ ] **[Business Logic]** Kiểm tra điều kiện hủy: Chỉ cho phép hủy khi đơn ở trạng thái `Pending` (Chờ xác nhận).
@@ -224,23 +231,37 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-21 · Add product categories · `P1` · Simple · 1 pt · ⏹ Chưa bắt đầu
-**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026
+### UC-21 · View voucher list · `P1` · Simple · 1 pt · ✅ Hoàn thành (26/10/2026)
+**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026 · **Branch**: [feat/view-voucher-list](https://github.com/SoYan2112/sports-store-final/tree/feat/view-voucher-list)
 
-- [ ] **[Admin Feature]** Màn hình thêm danh mục sản phẩm mới: Tên danh mục, Mô tả ngắn, Tải ảnh URL hoặc chọn ảnh đại diện.
-- [ ] **[Validation]** Kiểm tra không cho trùng tên danh mục đã có trong hệ thống.
-
----
-
-### UC-22 · Edit product categories · `P1` · Medium · 2 pts · ⏹ Chưa bắt đầu
-**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026
-
-- [ ] **[Admin Feature]** Chỉnh sửa tên, ảnh đại diện và thứ tự hiển thị của danh mục.
+- [x] **[Presentation]** Dựng `VoucherListScreen` hiển thị kho voucher trong trang cá nhân `ProfileScreen`.
+- [x] **[UI Component]** Thiết kế thẻ `VoucherCard` hiển thị: Mã code, Mức giảm (VNĐ / %), Điều kiện áp dụng, Hạn sử dụng, Nút copy mã.
+- [x] **[State Management & Data]** `VoucherCubit`, `GetVouchersUseCase`, `VoucherRepositoryImpl` và mock/remote data source.
+- [x] **[Testing]** Viết `voucher_card_test.dart`, `voucher_cubit_test.dart`, `voucher_list_screen_test.dart` pass 100%.
 
 ---
 
-### UC-23 · Remove product categories · `P1` · Simple · 1 pt · ⏹ Chưa bắt đầu
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 22/10/2026 – 29/10/2026
+### UC-22 · Apply voucher · `P1` · Medium · 2 pts · ⏹ Chưa bắt đầu
+**Assignee**: Nguyễn Minh Nhật (CE191491) · **Thời gian**: 22/10/2026 – 29/10/2026
 
-- [ ] **[Admin Feature]** Xóa danh mục sản phẩm khỏi hệ thống.
-- [ ] **[Integrity Check]** Kiểm tra ràng buộc dữ liệu: Nếu còn sản phẩm thuộc danh mục này, cảnh báo yêu cầu di chuyển sản phẩm trước khi xóa.
+- [ ] **[Presentation]** Ô nhập mã giảm giá và nút "Chọn voucher từ kho" trong màn hình Checkout (`CheckoutScreen`).
+- [ ] **[Business Logic]** Kiểm tra tính hợp lệ: Giá trị đơn hàng tối thiểu, ngày hết hạn, danh mục áp dụng.
+- [ ] **[State Update]** Cập nhật số tiền giảm giá và tính toán lại tổng tiền thanh toán hiển thị theo format VNĐ.
+
+---
+
+### UC-23 · View product rating · `P1` · Simple · 1 pt · ⏹ Chưa bắt đầu
+**Assignee**: Nguyễn Hoài Ân (CE190990) · **Thời gian**: 22/10/2026 – 29/10/2026
+
+- [ ] **[Presentation]** Phần đánh giá tại `ProductDetailScreen`: Thống kê số sao trung bình (1-5 sao), thanh phân bổ điểm đánh giá.
+- [ ] **[Review List]** Danh sách các bài nhận xét của khách hàng kèm tên, ngày đánh giá, số sao và bình luận chi tiết.
+- [ ] **[Data & Domain]** `GetProductReviewsUseCase`, gọi API nạp danh sách đánh giá theo `productId`.
+
+---
+
+### UC-24 · Add product rating · `P2` · Medium · 2 pts · ⏹ Chưa bắt đầu
+**Assignee**: Nguyễn Hoài Ân (CE190990) · **Thời gian**: 22/10/2026 – 29/10/2026
+
+- [ ] **[Presentation]** Màn hình / BottomSheet viết đánh giá sản phẩm sau khi đơn hàng chuyển sang trạng thái "Đã hoàn thành".
+- [ ] **[Interactive Form]** Bộ chọn số sao đánh giá (Star rating tương tác), ô nhập cảm nhận nhận xét, nút tải đính kèm hình ảnh thực tế.
+- [ ] **[API Integration]** Gọi `POST /api/products/{id}/reviews`, gửi payload đánh giá lên server và cập nhật lại điểm đánh giá.

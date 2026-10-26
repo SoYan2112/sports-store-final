@@ -117,6 +117,7 @@ Future<void> initDependencies() async {
   );
   getIt.registerLazySingleton<FilterCubit>(
     () => FilterCubit(),
+  );
 
   // Features - Voucher
   getIt.registerLazySingleton<VoucherRemoteDataSource>(
