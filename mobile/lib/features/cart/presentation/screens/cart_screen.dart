@@ -64,17 +64,78 @@ class CartScreen extends StatelessWidget {
                     itemCount: state.items.length,
                     itemBuilder: (context, index) {
                       final item = state.items[index];
-                      return CartItemCard(
-                        item: item,
-                        onQuantityChanged: (newQty) {
-                          context.read<CartBloc>().add(
-                                UpdateCartItemQuantityEvent(
-                                  itemId: item.id,
-                                  quantity: newQty,
+                      return Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          padding: const EdgeInsets.only(right: 20),
+                          alignment: Alignment.centerRight,
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.delete_outline,
+                                  color: Colors.white, size: 28),
+                              SizedBox(width: 8),
+                              Text(
+                                'Xóa',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              );
+                              ),
+                            ],
+                          ),
+                        ),
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                            context: context,
+                            builder: (dialogCtx) => AlertDialog(
+                              title: const Text('Bỏ sản phẩm'),
+                              content: Text(
+                                  'Bạn có chắc chắn muốn bỏ "${item.name}" khỏi giỏ hàng?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(dialogCtx, false),
+                                  child: const Text('Hủy'),
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                      foregroundColor: Colors.red),
+                                  onPressed: () =>
+                                      Navigator.pop(dialogCtx, true),
+                                  child: const Text('Đồng ý'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
-                        onRemove: () => _confirmRemoveItem(context, item.id, item.name),
+                        onDismissed: (direction) {
+                          context
+                              .read<CartBloc>()
+                              .add(RemoveCartItemEvent(item.id));
+                        },
+                        child: CartItemCard(
+                          item: item,
+                          onQuantityChanged: (newQty) {
+                            context.read<CartBloc>().add(
+                                  UpdateCartItemQuantityEvent(
+                                    itemId: item.id,
+                                    quantity: newQty,
+                                  ),
+                                );
+                          },
+                          onRemove: () =>
+                              _confirmRemoveItem(context, item.id, item.name),
+                        ),
                       );
                     },
                   ),
@@ -218,7 +279,8 @@ class CartScreen extends StatelessWidget {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Chức năng Đặt hàng (Checkout) đang sẵn sàng để kết nối!'),
+                    content: Text(
+                        'Chức năng Đặt hàng (Checkout) đang sẵn sàng để kết nối!'),
                   ),
                 );
               },
@@ -236,7 +298,8 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  void _confirmRemoveItem(BuildContext context, String itemId, String itemName) {
+  void _confirmRemoveItem(
+      BuildContext context, String itemId, String itemName) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -265,7 +328,8 @@ class CartScreen extends StatelessWidget {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: const Text('Xóa toàn bộ giỏ hàng'),
-        content: const Text('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?'),
+        content: const Text(
+            'Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),

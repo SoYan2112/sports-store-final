@@ -96,7 +96,7 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 ---
 
 ## 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng (10 pts)
-**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 5/7 Done, 2 In progress (6/10 pts)
+**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 6/7 Done, 1 In progress (7/10 pts)
 
 ---
 
@@ -158,12 +158,13 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-13 · Remove item from cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-13 · Remove item from cart · `P0` · Simple · 1 pt · ✅ Hoàn thành (27/10/2026)
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/remove-item-from-cart](https://github.com/SoYan2112/sports-store-final/tree/feat/remove-item-from-cart)
 
-- [ ] **[Interaction]** Hỗ trợ thao tác vuốt ngang để xóa (`Dismissible` widget) có nền đỏ và icon thùng rác hoặc icon xóa tại item.
-- [ ] **[Confirmation]** Hộp thoại xác nhận: "Bạn có chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng?".
-- [ ] **[State Update]** Bắn `RemoveFromCartEvent` vào `CartBloc`, cập nhật lại danh sách và tổng tiền tức thì.
+- [x] **[Interaction]** Hỗ trợ thao tác vuốt ngang để xóa (`Dismissible` widget) có nền đỏ và icon thùng rác, kèm nút icon X tại từng thẻ sản phẩm.
+- [x] **[Confirmation]** Hộp thoại xác nhận: "Bạn có chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng?".
+- [x] **[State Update]** Bắn `RemoveFromCartEvent` và `ClearCartEvent` vào `CartBloc`, cập nhật lại danh sách và tổng tiền tức thì.
+- [x] **[Testing]** Viết `cart_bloc_test.dart` và `cart_screen_test.dart` pass 100%.
 
 ---
 

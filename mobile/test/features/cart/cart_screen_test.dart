@@ -64,7 +64,7 @@ void main() {
       expect(find.text('Thanh toán'), findsOneWidget);
       expect(find.text('Tạm tính (2 món):'), findsOneWidget);
       expect(find.text('3.900.000 ₫'), findsOneWidget);
+      expect(find.byType(Dismissible), findsOneWidget);
     });
   });
 }
-
