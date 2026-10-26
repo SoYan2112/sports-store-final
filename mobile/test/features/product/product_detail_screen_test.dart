@@ -1,7 +1,11 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:mobile/features/cart/presentation/bloc/cart_event.dart';
+import 'package:mobile/features/cart/presentation/bloc/cart_state.dart';
 import 'package:mobile/features/product/domain/entities/product_entity.dart';
 import 'package:mobile/features/product/domain/usecases/get_product_detail_usecase.dart';
 import 'package:mobile/features/product/presentation/cubit/product_detail_cubit.dart';
@@ -11,8 +15,17 @@ import 'package:mobile/features/product/presentation/screens/product_detail_scre
 class MockGetProductDetailUseCase extends Mock
     implements GetProductDetailUseCase {}
 
+class MockCartBloc extends MockBloc<CartEvent, CartState> implements CartBloc {}
+
+class FakeCartEvent extends Fake implements CartEvent {}
+
 void main() {
   late MockGetProductDetailUseCase mockGetProductDetailUseCase;
+  late MockCartBloc mockCartBloc;
+
+  setUpAll(() {
+    registerFallbackValue(FakeCartEvent());
+  });
 
   const tProduct = ProductEntity(
     id: 'p1',
@@ -32,9 +45,27 @@ void main() {
 
   setUp(() {
     mockGetProductDetailUseCase = MockGetProductDetailUseCase();
+    mockCartBloc = MockCartBloc();
     when(() => mockGetProductDetailUseCase(any()))
         .thenAnswer((_) async => tProduct);
+    when(() => mockCartBloc.state).thenReturn(const CartLoaded(items: []));
   });
+
+  tearDown(() {
+    mockCartBloc.close();
+  });
+
+  Widget createWidgetUnderTest(ProductDetailCubit cubit) {
+    return MaterialApp(
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<ProductDetailCubit>.value(value: cubit),
+          BlocProvider<CartBloc>.value(value: mockCartBloc),
+        ],
+        child: const ProductDetailScreen(product: tProduct),
+      ),
+    );
+  }
 
   testWidgets('ProductDetailScreen renders product info and CTA button',
       (WidgetTester tester) async {
@@ -46,17 +77,7 @@ void main() {
       quantity: 1,
     ));
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: BlocProvider<ProductDetailCubit>.value(
-          value: cubit,
-          child: const ProductDetailScreen(
-            product: tProduct,
-          ),
-        ),
-      ),
-    );
-
+    await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pump();
 
     // Kiểm tra tên sản phẩm và thương hiệu
@@ -96,17 +117,7 @@ void main() {
       selectedColor: 0xFF1A1A1A,
     ));
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: BlocProvider<ProductDetailCubit>.value(
-          value: cubit,
-          child: const ProductDetailScreen(
-            product: tProduct,
-          ),
-        ),
-      ),
-    );
-
+    await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pump();
 
     // Nút Thêm vào giỏ hàng được enabled khi đã chọn đủ size & màu
@@ -115,6 +126,12 @@ void main() {
 
     // Kiểm tra text đã chọn
     expect(find.text('Đã chọn: 40'), findsOneWidget);
+
+    // Tapping add to cart triggers CartBloc event
+    await tester.tap(find.byKey(const Key('addToCartButton')));
+    await tester.pump();
+
+    verify(() => mockCartBloc.add(any(that: isA<AddToCartEvent>()))).called(1);
 
     await cubit.close();
   });

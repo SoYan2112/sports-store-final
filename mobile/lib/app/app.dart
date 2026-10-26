@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/cubit/auth_cubit.dart';
+import '../features/cart/presentation/bloc/cart_bloc.dart';
+import '../features/cart/presentation/bloc/cart_event.dart';
 import '../features/home/presentation/screens/main_layout_screen.dart';
 import '../features/product/presentation/bloc/product_bloc.dart';
 import '../features/product/presentation/cubit/filter_cubit.dart';
@@ -18,11 +20,10 @@ class SportsStoreApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => getIt<AuthCubit>()..checkAuthStatus(),
         ),
-        BlocProvider<ProductBloc>(
-          create: (context) => getIt<ProductBloc>(),
-        ),
-        BlocProvider<FilterCubit>(
-          create: (context) => getIt<FilterCubit>(),
+        BlocProvider<ProductBloc>(create: (context) => getIt<ProductBloc>()),
+        BlocProvider<FilterCubit>(create: (context) => getIt<FilterCubit>()),
+        BlocProvider<CartBloc>(
+          create: (context) => getIt<CartBloc>()..add(const LoadCartEvent()),
         ),
       ],
       child: MaterialApp(

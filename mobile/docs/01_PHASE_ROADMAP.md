@@ -10,9 +10,9 @@ Lộ trình dự án được chuẩn hóa theo danh mục **24 Use Cases** (t�
 | Giai đoạn | Thời gian | Số Use Cases | Tổng Story Points | Trọng tâm cốt lõi | Trạng thái |
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | **Sprint 1** | 11/10/2026 – 13/10/2026 | 7 UCs (UC-01 → UC-07) | 12 pts | Nền tảng Auth, Core Product Catalog, Variant & Home Layout | ✅ Hoàn thành (7/7 Done, 12/12 pts) |
-| **Sprint 2** | 14/10/2026 – 21/10/2026 | 7 UCs (UC-08 → UC-14) | 10 pts | Giỏ hàng, Đặt hàng, Tìm kiếm, Sổ địa chỉ & Lịch sử đơn | ⏳ Đang thực hiện (3 Done, 4 In Progress, 4/10 pts) |
+| **Sprint 2** | 14/10/2026 – 21/10/2026 | 7 UCs (UC-08 → UC-14) | 10 pts | Giỏ hàng, Đặt hàng, Tìm kiếm, Sổ địa chỉ & Lịch sử đơn | ⏳ Đang thực hiện (4 Done, 3 In Progress, 5/10 pts) |
 | **Sprint 3** | 22/10/2026 – 29/10/2026 | 10 UCs (UC-15 → UC-24) | 17 pts | Chi tiết đơn, Hủy đơn, Lọc, Voucher & Đánh giá sản phẩm | ⏳ Đang thực hiện (4 Done, 2 In Progress, 4 Not Yet, 6/17 pts) |
-| **TỔNG CỘNG**| **3 tuần** | **24 UCs** | **39 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: 14/24 UCs (22/39 pts ~56.4%)** |
+| **TỔNG CỘNG**| **3 tuần** | **24 UCs** | **39 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: 15/24 UCs (23/39 pts ~59.0%)** |
 
 ---
 
@@ -35,6 +35,7 @@ Lộ trình dự án được chuẩn hóa theo danh mục **24 Use Cases** (t�
 ### 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng
 - **Thời gian**: 14/10/2026 – 21/10/2026
 - **Tổng điểm**: 10 Story Points
+- **Tiến độ**: 4/7 Done (5/10 pts)
 - **Mục tiêu**: Hoàn thiện phễu mua sắm: Thêm sản phẩm vào giỏ, điều chỉnh số lượng, tạo địa chỉ giao hàng Việt Nam, thanh toán COD và theo dõi lịch sử đơn hàng.
 
 #### Danh sách Use Cases:

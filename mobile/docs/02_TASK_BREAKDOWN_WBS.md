@@ -96,7 +96,7 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 ---
 
 ## 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng (10 pts)
-**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 3/7 Done, 4 In progress (4/10 pts)
+**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 4/7 Done, 3 In progress (5/10 pts)
 
 ---
 
@@ -134,15 +134,16 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-11 · Add product to cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-11 · Add product to cart · `P0` · Simple · 1 pt · ✅ Hoàn thành (27/10/2026)
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/add-product-to-cart](https://github.com/SoYan2112/sports-store-final/tree/feat/add-product-to-cart)
 
-- [ ] **[Domain & Entity]** Thiết kế `CartItemEntity` gồm: `productId`, `name`, `price`, `imageUrl`, `selectedSize`, `selectedColor`, `quantity`.
-- [ ] **[State Management]** Xây dựng `CartBloc` xử lý `AddToCartEvent`:
+- [x] **[Domain & Entity]** Thiết kế `CartItemEntity` gồm: `productId`, `name`, `price`, `imageUrl`, `selectedSize`, `selectedColor`, `quantity`.
+- [x] **[State Management]** Xây dựng `CartBloc` xử lý `AddToCartEvent`:
   - Nếu sản phẩm cùng size/màu đã có trong giỏ: Tăng `quantity += 1`.
   - Nếu là sản phẩm/biến thể mới: Nối vào danh sách giỏ hàng.
-- [ ] **[Local Persistence]** Lưu cache giỏ hàng tạm thời vào `SharedPreferences` để không bị mất khi đóng app.
-- [ ] **[UI Feedback]** Hiển thị SnackBar xác nhận đẹp mắt với nút "Đi đến giỏ hàng", cập nhật Badge số lượng trên icon Cart.
+- [x] **[Local Persistence]** Lưu cache giỏ hàng tạm thời vào `SharedPreferences` để không bị mất khi đóng app.
+- [x] **[UI Feedback]** Hiển thị SnackBar xác nhận đẹp mắt với nút "Đi đến giỏ hàng", cập nhật Badge số lượng trên icon Cart.
+- [x] **[Testing]** Viết `cart_item_entity_test.dart` và `cart_bloc_test.dart` pass 100%.
 
 ---
 
