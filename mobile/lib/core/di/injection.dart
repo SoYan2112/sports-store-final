@@ -22,6 +22,7 @@ import '../../features/category/domain/usecases/get_categories_usecase.dart';
 import '../../features/category/presentation/cubit/category_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/search_cubit.dart';
+import '../../features/product/presentation/cubit/filter_cubit.dart';
 import '../../features/voucher/data/datasources/voucher_remote_datasource.dart';
 import '../../features/voucher/data/repositories/voucher_repository_impl.dart';
 import '../../features/voucher/domain/repositories/voucher_repository.dart';
@@ -114,6 +115,8 @@ Future<void> initDependencies() async {
   getIt.registerFactory<SearchCubit>(
     () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
   );
+  getIt.registerLazySingleton<FilterCubit>(
+    () => FilterCubit(),
 
   // Features - Voucher
   getIt.registerLazySingleton<VoucherRemoteDataSource>(

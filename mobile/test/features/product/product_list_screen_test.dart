@@ -6,6 +6,7 @@ import 'package:mobile/features/product/domain/entities/product_entity.dart';
 import 'package:mobile/features/product/domain/usecases/get_products_usecase.dart';
 import 'package:mobile/features/product/presentation/bloc/product_bloc.dart';
 import 'package:mobile/features/product/presentation/bloc/product_state.dart';
+import 'package:mobile/features/product/presentation/cubit/filter_cubit.dart';
 import 'package:mobile/features/product/presentation/screens/product_list_screen.dart';
 
 class MockGetProductsUseCase extends Mock implements GetProductsUseCase {}
@@ -13,6 +14,7 @@ class MockGetProductsUseCase extends Mock implements GetProductsUseCase {}
 void main() {
   late MockGetProductsUseCase mockGetProductsUseCase;
   late ProductBloc productBloc;
+  late FilterCubit filterCubit;
 
   const tProduct = ProductEntity(
     id: 'p1',
@@ -38,10 +40,12 @@ void main() {
         )).thenAnswer((_) async => [tProduct]);
 
     productBloc = ProductBloc(getProductsUseCase: mockGetProductsUseCase);
+    filterCubit = FilterCubit();
   });
 
   tearDown(() {
     productBloc.close();
+    filterCubit.close();
   });
 
   testWidgets('ProductListScreen renders category title and products without overflow',
@@ -55,8 +59,11 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: BlocProvider<ProductBloc>.value(
-          value: productBloc,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<ProductBloc>.value(value: productBloc),
+            BlocProvider<FilterCubit>.value(value: filterCubit),
+          ],
           child: const ProductListScreen(
             categoryId: 'cat_shoes',
             categoryName: 'Giày thể thao',
