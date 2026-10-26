@@ -96,7 +96,7 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 ---
 
 ## 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng (10 pts)
-**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 4/7 Done, 3 In progress (5/10 pts)
+**Thời gian**: 14/10/2026 – 21/10/2026 · **Tiến độ**: 5/7 Done, 2 In progress (6/10 pts)
 
 ---
 
@@ -147,13 +147,14 @@ Tài liệu này chi tiết hóa toàn bộ các nhiệm vụ kỹ thuật cho *
 
 ---
 
-### UC-12 · View shopping cart · `P0` · Simple · 1 pt · ⏳ Đang thực hiện
-**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026
+### UC-12 · View shopping cart · `P0` · Simple · 1 pt · ✅ Hoàn thành (27/10/2026)
+**Assignee**: Thái San Yo (CE190435) · **Thời gian**: 14/10/2026 – 21/10/2026 · **Branch**: [feat/view-shopping-cart](https://github.com/SoYan2112/sports-store-final/tree/feat/view-shopping-cart)
 
-- [x] **[Presentation]** Dựng `CartScreen` hiển thị giao diện danh sách các món đồ đã chọn trong giỏ hàng.
-- [ ] **[Quantity Selector]** Bộ nút tăng/giảm số lượng (+ / -) cho từng item, tự động cập nhật lại tổng tiền.
-- [ ] **[Price Calculation]** Tự động tính: Tạm tính (Subtotal), Phí vận chuyển ước tính, Tổng thanh toán hiển thị chuẩn format VNĐ.
-- [ ] **[Empty State]** Màn hình giỏ hàng trống thân thiện với minh họa thể thao và nút CTA "Tiếp tục mua sắm".
+- [x] **[Presentation]** Dựng `CartScreen` hiển thị danh sách các món đồ đã chọn trong giỏ hàng.
+- [x] **[Quantity Selector]** Bộ nút tăng/giảm số lượng (+ / -) cho từng item, tự động cập nhật lại tổng tiền.
+- [x] **[Price Calculation]** Tự động tính: Tạm tính (Subtotal), Tổng thanh toán hiển thị chuẩn format VNĐ (`3.900.000 ₫`).
+- [x] **[Empty State]** Màn hình giỏ hàng trống thân thiện với minh họa thể thao và nút CTA "Khám phá ngay".
+- [x] **[Testing]** Viết `cart_screen_test.dart` đạt pass 100%.
 
 ---
 
