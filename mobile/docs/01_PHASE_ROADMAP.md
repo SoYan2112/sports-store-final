@@ -10,9 +10,9 @@ Lộ trình dự án được chuẩn hóa theo danh mục **24 Use Cases** (t�
 | Giai đoạn | Thời gian | Số Use Cases | Tổng Story Points | Trọng tâm cốt lõi | Trạng thái |
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | **Sprint 1** | 11/10/2026 – 13/10/2026 | 7 UCs (UC-01 → UC-07) | 12 pts | Nền tảng Auth, Core Product Catalog, Variant & Home Layout | ✅ Hoàn thành (7/7 Done, 12/12 pts) |
-| **Sprint 2** | 14/10/2026 – 21/10/2026 | 7 UCs (UC-08 → UC-14) | 10 pts | Giỏ hàng, Đặt hàng, Tìm kiếm, Sổ địa chỉ & Lịch sử đơn | ⏳ Đang thực hiện (5 Done, 2 In Progress, 6/10 pts) |
+| **Sprint 2** | 14/10/2026 – 21/10/2026 | 7 UCs (UC-08 → UC-14) | 10 pts | Giỏ hàng, Đặt hàng, Tìm kiếm, Sổ địa chỉ & Lịch sử đơn | ⏳ Đang thực hiện (6 Done, 1 In Progress, 7/10 pts) |
 | **Sprint 3** | 22/10/2026 – 29/10/2026 | 10 UCs (UC-15 → UC-24) | 17 pts | Chi tiết đơn, Hủy đơn, Lọc, Voucher & Đánh giá sản phẩm | ⏳ Đang thực hiện (4 Done, 2 In Progress, 4 Not Yet, 6/17 pts) |
-| **TỔNG CỘNG**| **3 tuần** | **24 UCs** | **39 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: 16/24 UCs (24/39 pts ~61.5%)** |
+| **TỔNG CỘNG**| **3 tuần** | **24 UCs** | **39 pts** | **Hoàn chỉnh luồng E-commerce thể thao chuẩn Việt Nam** | **Tiến độ chung: 17/24 UCs (25/39 pts ~64.1%)** |
 
 ---
 
@@ -35,7 +35,7 @@ Lộ trình dự án được chuẩn hóa theo danh mục **24 Use Cases** (t�
 ### 🛒 SPRINT 2: Giỏ hàng, Đặt hàng, Tìm kiếm & Địa chỉ giao hàng
 - **Thời gian**: 14/10/2026 – 21/10/2026
 - **Tổng điểm**: 10 Story Points
-- **Tiến độ**: 5/7 Done (6/10 pts)
+- **Tiến độ**: 6/7 Done (7/10 pts)
 - **Mục tiêu**: Hoàn thiện phễu mua sắm: Thêm sản phẩm vào giỏ, điều chỉnh số lượng, tạo địa chỉ giao hàng Việt Nam, thanh toán COD và theo dõi lịch sử đơn hàng.
 
 #### Danh sách Use Cases:
@@ -44,7 +44,7 @@ Lộ trình dự án được chuẩn hóa theo danh mục **24 Use Cases** (t�
 10. **UC-10 · Add shipping address** (P1 · Medium · 2 pts) — Trần Hoàng Nhật (CE190581) — [feat/add-shipping-address](https://github.com/SoYan2112/sports-store-final/tree/feat/add-shipping-address) — ✅ **Done**
 11. **UC-11 · Add product to cart** (P0 · Simple · 1 pt) — Thái San Yo (CE190435) — ⏳ **In progress**
 12. **UC-12 · View shopping cart** (P0 · Simple · 1 pt) — Thái San Yo (CE190435) — [feat/view-shopping-cart](https://github.com/SoYan2112/sports-store-final/tree/feat/view-shopping-cart) — ✅ **Done**
-13. **UC-13 · Remove item from cart** (P0 · Simple · 1 pt) — Thái San Yo (CE190435) — ⏳ **In progress**
+13. **UC-13 · Remove item from cart** (P0 · Simple · 1 pt) — Thái San Yo (CE190435) — [feat/remove-item-from-cart](https://github.com/SoYan2112/sports-store-final/tree/feat/remove-item-from-cart) — ✅ **Done**
 14. **UC-14 · View order history** (P0 · Simple · 1 pt) — Nguyễn Hoài Ân (CE190990) — [feat/view-order-history](https://github.com/SoYan2112/sports-store-final/tree/feat/view-order-history) — ✅ **Done**
 
 ---

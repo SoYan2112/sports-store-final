@@ -9,12 +9,12 @@ Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu
 
 | Thành viên | Mã SV | Domain phụ trách chính | Danh sách Use Cases | Tổng số UC | Tổng Points | Tiến độ cá nhân |
 | :--- | :---: | :--- | :--- | :---: | :---: | :---: |
-| **Thái San Yo** | **CE190435** | **Home Layout, Catalog, Checkout & Shopping Cart** | **UC-04, UC-07, UC-08, UC-11, UC-12, UC-13** | **6 UCs** | **8 pts** | ⏳ 4 Done, 2 In Progress |
+| **Thái San Yo** | **CE190435** | **Home Layout, Catalog, Checkout & Shopping Cart** | **UC-04, UC-07, UC-08, UC-11, UC-12, UC-13** | **6 UCs** | **8 pts** | ⏳ 5 Done, 1 In Progress |
 | **Nguyễn Hoài Ân** | **CE190990** | **Authentication, Order History, Details & Rating** | **UC-01, UC-14, UC-15, UC-23, UC-24** | **5 UCs** | **8 pts** | ⏳ 2 Done, 3 Not Yet |
 | **Trần Hoàng Nhật** | **CE190581** | **Registration & Shipping Address (3 Cấp VN)** | **UC-02, UC-10, UC-18, UC-19** | **4 UCs** | **7 pts** | ✅ 4 Done (100%) |
 | **Nguyễn Minh Nhật**| **CE191491** | **Logout, Variants, Categories & Voucher** | **UC-03, UC-06, UC-16, UC-21, UC-22** | **5 UCs** | **8 pts** | ⏳ 3 Done, 1 In Progress, 1 Not Yet |
 | **Ngô Nhất Quý** | **CE190984** | **Product Detail, Search, Filter & Cancel Order** | **UC-05, UC-09, UC-17, UC-20** | **4 UCs** | **8 pts** | ⏳ 3 Done, 1 In Progress |
-| **TỔNG CỘNG** | — | **5 Domain Owners** | **UC-01 → UC-24** | **24 UCs** | **39 pts** | **Tiến độ: 16/24 Done (24/39 pts)** |
+| **TỔNG CỘNG** | — | **5 Domain Owners** | **UC-01 → UC-24** | **24 UCs** | **39 pts** | **Tiến độ: 17/24 Done (25/39 pts)** |
 
 ---
 
@@ -26,7 +26,7 @@ Phân công theo mô hình **Feature / Domain Owner**: Mỗi thành viên chịu
 - **UC-08 · Order items** (`P0` · Complex · 3 pts · Sprint 2): Màn hình xác nhận thanh toán (Checkout), chọn phương thức COD, gọi API tạo đơn hàng mới, nhánh `feat/order-items`. (⏳ **In progress** — Ân làm screen success rồi commit)
 - **UC-11 · Add product to cart** (`P0` · Simple · 1 pt · Sprint 2): Logic thêm sản phẩm cùng size/màu vào `CartBloc`, lưu trạng thái cục bộ và phản hồi SnackBar/Badge. (✅ **Done**)
 - **UC-12 · View shopping cart** (`P0` · Simple · 1 pt · Sprint 2): `CartScreen`, danh sách item có ảnh, size, số lượng, tự động tính tổng tiền VNĐ, nhánh `feat/view-shopping-cart`. (✅ **Done**)
-- **UC-13 · Remove item from cart** (`P0` · Simple · 1 pt · Sprint 2): Thao tác vuốt xóa (Dismissible) hoặc nút thùng rác, dialog xác nhận xóa sản phẩm khỏi giỏ. (⏳ **In progress**)
+- **UC-13 · Remove item from cart** (`P0` · Simple · 1 pt · Sprint 2): Thao tác vuốt xóa (Dismissible) hoặc nút thùng rác, dialog xác nhận xóa sản phẩm khỏi giỏ, nhánh `feat/remove-item-from-cart`. (✅ **Done**)
 
 #### 2. Nguyễn Hoài Ân (CE190990) — 5 UCs · 8 pts
 - **UC-01 · Login** (`P0` · Medium · 2 pts · Sprint 1): Màn hình `LoginScreen`, gọi API đăng nhập, lưu JWT vào `SharedPreferences`, nhánh `feat/login`. (✅ **Done**)

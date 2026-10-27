@@ -29,11 +29,11 @@ Thư mục `docs/` chứa toàn bộ tài liệu kỹ thuật và kế hoạch d
 
 ### Trạng thái dự án
 
-> 🚀 **Đang triển khai — Đã hoàn thành 16/24 Use Cases (~61.5% khối lượng dự án).**
+> 🚀 **Đang triển khai — Đã hoàn thành 17/24 Use Cases (~64.1% khối lượng dự án).**
 
 | Sprint | Thời gian | Use Cases | Points | Trạng thái |
 |:---|:---:|:---:|:---:|:---:|
 | **Sprint 1** | 11/10 – 13/10/2026 | UC-01 → UC-07 | 12 pts | ✅ Hoàn thành (7/7 Done, 12/12 pts) |
-| **Sprint 2** | 14/10 – 21/10/2026 | UC-08 → UC-14 | 10 pts | ⏳ Đang thực hiện (5 Done, 2 In Progress, 6/10 pts) |
+| **Sprint 2** | 14/10 – 21/10/2026 | UC-08 → UC-14 | 10 pts | ⏳ Đang thực hiện (6 Done, 1 In Progress, 7/10 pts) |
 | **Sprint 3** | 22/10 – 29/10/2026 | UC-15 → UC-24 | 17 pts | ⏳ Đang thực hiện (4 Done, 2 In Progress, 4 Not Yet, 6/17 pts) |
-| **TỔNG CỘNG** | **3 Tuần** | **24 UCs** | **39 pts** | **Tiến độ chung: 16/24 Done (24/39 pts ~61.5%)** |
+| **TỔNG CỘNG** | **3 Tuần** | **24 UCs** | **39 pts** | **Tiến độ chung: 17/24 Done (25/39 pts ~64.1%)** |
