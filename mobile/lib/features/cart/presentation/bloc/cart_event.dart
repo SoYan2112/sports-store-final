@@ -47,3 +47,6 @@ class ClearCartEvent extends CartEvent {
   const ClearCartEvent();
 }
 
+class ResetCartEvent extends CartEvent {
+  const ResetCartEvent();
+}

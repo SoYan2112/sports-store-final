@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:mobile/features/auth/presentation/cubit/auth_state.dart';
 import 'package:mobile/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:mobile/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:mobile/features/cart/presentation/bloc/cart_event.dart';
@@ -10,12 +12,15 @@ import 'package:mobile/features/cart/presentation/bloc/cart_state.dart';
 import 'package:mobile/features/cart/presentation/screens/cart_screen.dart';
 
 class MockCartBloc extends MockBloc<CartEvent, CartState> implements CartBloc {}
+class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
 
 void main() {
   late MockCartBloc mockCartBloc;
+  late MockAuthCubit mockAuthCubit;
 
   setUp(() {
     mockCartBloc = MockCartBloc();
+    mockAuthCubit = MockAuthCubit();
   });
 
   Widget createWidgetUnderTest() {
@@ -65,6 +70,25 @@ void main() {
       expect(find.text('Tạm tính (2 món):'), findsOneWidget);
       expect(find.text('3.900.000 ₫'), findsOneWidget);
       expect(find.byType(Dismissible), findsOneWidget);
+    });
+
+    testWidgets('displays unauthenticated UI when user is not logged in', (tester) async {
+      when(() => mockAuthCubit.state).thenReturn(const AuthUnauthenticated());
+
+      await tester.pumpWidget(MaterialApp(
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthCubit>.value(value: mockAuthCubit),
+            BlocProvider<CartBloc>.value(value: mockCartBloc),
+          ],
+          child: const CartScreen(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('BẠN CHƯA ĐĂNG NHẬP'), findsOneWidget);
+      expect(find.text('ĐĂNG NHẬP NGAY'), findsOneWidget);
+      expect(find.byIcon(Icons.lock_outline_rounded), findsOneWidget);
     });
   });
 }

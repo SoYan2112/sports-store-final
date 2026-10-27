@@ -21,6 +21,13 @@ class LocalStorageService {
     return _prefs.getString(_keyAccessToken);
   }
 
+  /// Lấy ID người dùng hiện tại
+  String? getUserId() {
+    final token = getAccessToken();
+    if (token == null || token.isEmpty) return null;
+    return _prefs.getString(_keyUserId);
+  }
+
   /// Lưu thông tin phiên đăng nhập
   Future<bool> saveAuthSession({
     required String token,

@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../auth/data/datasources/auth_service.dart';
+import '../../../auth/data/repositories/auth_repository.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
@@ -13,22 +19,49 @@ class CartScreen extends StatelessWidget {
 
   const CartScreen({super.key, this.onExploreTap});
 
+  AuthCubit? _tryGetAuthCubit(BuildContext context) {
+    try {
+      return context.read<AuthCubit>();
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Giỏ hàng',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+    final authCubit = _tryGetAuthCubit(context);
+    if (authCubit != null) {
+      return BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, authState) {
+          if (authState is! AuthAuthenticated) {
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              appBar: _buildAppBar(context, showActions: false),
+              body: _buildUnauthenticatedCart(context),
+            );
+          }
+          return _buildCartScaffold(context);
+        },
+      );
+    }
+
+    return _buildCartScaffold(context);
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, {bool showActions = true}) {
+    return AppBar(
+      title: const Text(
+        'Giỏ hàng',
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        if (showActions)
           BlocBuilder<CartBloc, CartState>(
             builder: (context, state) {
               if (state is CartLoaded && state.items.isNotEmpty) {
@@ -41,8 +74,14 @@ class CartScreen extends StatelessWidget {
               return const SizedBox.shrink();
             },
           ),
-        ],
-      ),
+      ],
+    );
+  }
+
+  Widget _buildCartScaffold(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: _buildAppBar(context, showActions: true),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
@@ -164,6 +203,87 @@ class CartScreen extends StatelessWidget {
 
           return _buildEmptyCart(context);
         },
+      ),
+    );
+  }
+
+  Widget _buildUnauthenticatedCart(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(26),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.04),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.lock_outline_rounded,
+                size: 72,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'BẠN CHƯA ĐĂNG NHẬP',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
+                color: AppColors.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Vui lòng đăng nhập để xem các sản phẩm trong giỏ hàng và tiến hành thanh toán.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LoginScreen(
+                        authRepository: getIt.isRegistered<AuthRepository>()
+                            ? getIt<AuthRepository>()
+                            : AuthRepository(authService: AuthService()),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'ĐĂNG NHẬP NGAY',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

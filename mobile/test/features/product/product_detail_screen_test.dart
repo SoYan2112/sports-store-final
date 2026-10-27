@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:mobile/features/auth/presentation/cubit/auth_state.dart';
+import 'package:mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:mobile/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:mobile/features/cart/presentation/bloc/cart_event.dart';
 import 'package:mobile/features/cart/presentation/bloc/cart_state.dart';
@@ -16,6 +19,7 @@ class MockGetProductDetailUseCase extends Mock
     implements GetProductDetailUseCase {}
 
 class MockCartBloc extends MockBloc<CartEvent, CartState> implements CartBloc {}
+class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
 
 class FakeCartEvent extends Fake implements CartEvent {}
 
@@ -127,12 +131,56 @@ void main() {
     // Kiểm tra text đã chọn
     expect(find.text('Đã chọn: 40'), findsOneWidget);
 
-    // Tapping add to cart triggers CartBloc event
+    // Tapping add to cart triggers CartBloc event khi không có AuthCubit (widget test fallback)
     await tester.tap(find.byKey(const Key('addToCartButton')));
     await tester.pump();
 
     verify(() => mockCartBloc.add(any(that: isA<AddToCartEvent>()))).called(1);
 
     await cubit.close();
+  });
+
+  testWidgets(
+      'ProductDetailScreen redirects to LoginScreen when unauthenticated and tap add to cart',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    final mockAuthCubit = MockAuthCubit();
+    when(() => mockAuthCubit.state).thenReturn(const AuthUnauthenticated());
+
+    final cubit = ProductDetailCubit(
+      getProductDetailUseCase: mockGetProductDetailUseCase,
+    );
+    cubit.emit(const ProductDetailLoaded(
+      product: tProduct,
+      quantity: 1,
+      selectedSize: '40',
+      selectedColor: 0xFF1A1A1A,
+    ));
+
+    await tester.pumpWidget(MaterialApp(
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthCubit>.value(value: mockAuthCubit),
+          BlocProvider<ProductDetailCubit>.value(value: cubit),
+          BlocProvider<CartBloc>.value(value: mockCartBloc),
+        ],
+        child: const ProductDetailScreen(product: tProduct),
+      ),
+    ));
+    await tester.pump();
+
+    // Tap add to cart
+    await tester.tap(find.byKey(const Key('addToCartButton')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    // Phải mở màn hình Đăng nhập (LoginScreen)
+    expect(find.byType(LoginScreen), findsOneWidget);
+
+    await cubit.close();
+    await mockAuthCubit.close();
   });
 }
