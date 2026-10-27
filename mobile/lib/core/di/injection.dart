@@ -1,3 +1,12 @@
+import '../../features/cart/data/datasources/cart_local_datasource.dart';
+import '../../features/cart/data/repositories/cart_repository_impl.dart';
+import '../../features/cart/domain/repositories/cart_repository.dart';
+import '../../features/cart/domain/usecases/add_to_cart_usecase.dart';
+import '../../features/cart/domain/usecases/clear_cart_usecase.dart';
+import '../../features/cart/domain/usecases/get_cart_usecase.dart';
+import '../../features/cart/domain/usecases/remove_from_cart_usecase.dart';
+import '../../features/cart/domain/usecases/update_cart_quantity_usecase.dart';
+import '../../features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import '../network/dio_client.dart';
@@ -165,6 +174,38 @@ Future<void> initDependencies() async {
       addAddressUseCase: getIt<AddAddressUseCase>(),
       updateAddressUseCase: getIt<UpdateAddressUseCase>(),
       deleteAddressUseCase: getIt<DeleteAddressUseCase>(),
+    ),
+  );
+
+  // Features - Cart
+  getIt.registerLazySingleton<CartLocalDataSource>(
+    () => CartLocalDataSourceImpl(sharedPreferences: getIt<SharedPreferences>()),
+  );
+  getIt.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(localDataSource: getIt<CartLocalDataSource>()),
+  );
+  getIt.registerLazySingleton<GetCartUseCase>(
+    () => GetCartUseCase(getIt<CartRepository>()),
+  );
+  getIt.registerLazySingleton<AddToCartUseCase>(
+    () => AddToCartUseCase(getIt<CartRepository>()),
+  );
+  getIt.registerLazySingleton<UpdateCartQuantityUseCase>(
+    () => UpdateCartQuantityUseCase(getIt<CartRepository>()),
+  );
+  getIt.registerLazySingleton<RemoveFromCartUseCase>(
+    () => RemoveFromCartUseCase(getIt<CartRepository>()),
+  );
+  getIt.registerLazySingleton<ClearCartUseCase>(
+    () => ClearCartUseCase(getIt<CartRepository>()),
+  );
+  getIt.registerLazySingleton<CartBloc>(
+    () => CartBloc(
+      getCartUseCase: getIt<GetCartUseCase>(),
+      addToCartUseCase: getIt<AddToCartUseCase>(),
+      updateCartQuantityUseCase: getIt<UpdateCartQuantityUseCase>(),
+      removeFromCartUseCase: getIt<RemoveFromCartUseCase>(),
+      clearCartUseCase: getIt<ClearCartUseCase>(),
     ),
   );
 }

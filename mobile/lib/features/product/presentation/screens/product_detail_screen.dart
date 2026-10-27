@@ -1,3 +1,8 @@
+import '../../../cart/domain/entities/cart_item_entity.dart';
+import '../../../cart/presentation/bloc/cart_bloc.dart';
+import '../../../cart/presentation/bloc/cart_event.dart';
+import '../../../cart/presentation/bloc/cart_state.dart';
+import '../../../cart/presentation/screens/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -47,6 +52,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           appBar: AppBar(
             title: const Text('Chi tiết sản phẩm'),
             centerTitle: true,
+            actions: [
+              BlocBuilder<CartBloc, CartState>(
+                builder: (context, cartState) {
+                  final count = cartState is CartLoaded ? cartState.totalQuantity : 0;
+                  return IconButton(
+                    icon: Badge(
+                      isLabelVisible: count > 0,
+                      label: Text(''),
+                      backgroundColor: AppColors.primary,
+                      child: const Icon(Icons.shopping_bag_outlined),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -319,10 +345,56 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     onPressed: canAddToCart
                         ? () {
+                            final cartItem = CartItemEntity(
+                              id: CartItemEntity.generateId(
+                                product.id,
+                                selectedSize!,
+                                selectedColor ?? 0xFF1A1A1A,
+                              ),
+                              productId: product.id,
+                              name: product.name,
+                              brand: product.brand,
+                              price: product.price,
+                              imageUrl: product.imageUrl,
+                              selectedSize: selectedSize,
+                              selectedColor: selectedColor ?? 0xFF1A1A1A,
+                              quantity: quantity,
+                              stock: product.stock,
+                            );
+                            context.read<CartBloc>().add(AddToCartEvent(cartItem));
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                  'Đã thêm $quantity x ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: AppColors.textPrimary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Colors.greenAccent,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Đã thêm $quantity x ${product.name} (Size $selectedSize) vào giỏ hàng!',
+                                        style: const TextStyle(color: Colors.white, fontSize: 13),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                action: SnackBarAction(
+                                  label: 'Xem giỏ',
+                                  textColor: AppColors.primary,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const CartScreen()),
+                                    );
+                                  },
                                 ),
                               ),
                             );
