@@ -7,8 +7,10 @@ import '../../features/cart/domain/usecases/get_cart_usecase.dart';
 import '../../features/cart/domain/usecases/remove_from_cart_usecase.dart';
 import '../../features/cart/domain/usecases/update_cart_quantity_usecase.dart';
 import '../../features/cart/presentation/bloc/cart_bloc.dart';
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+
 import '../network/dio_client.dart';
 import '../../features/auth/data/datasources/auth_service.dart';
 import '../../features/auth/data/repositories/auth_repository.dart';
@@ -21,7 +23,9 @@ import '../../features/product/domain/repositories/product_repository.dart';
 import '../../features/product/domain/usecases/get_product_detail_usecase.dart';
 import '../../features/product/domain/usecases/get_products_usecase.dart';
 import '../../features/product/presentation/bloc/product_bloc.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../storage/local_storage_service.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 import '../../features/category/data/datasources/category_remote_datasource.dart';
@@ -86,7 +90,9 @@ Future<void> initDependencies() async {
     () => CategoryRemoteDataSourceImpl(dio: getIt<Dio>()),
   );
   getIt.registerLazySingleton<CategoryRepository>(
-    () => CategoryRepositoryImpl(remoteDataSource: getIt<CategoryRemoteDataSource>()),
+    () => CategoryRepositoryImpl(
+      remoteDataSource: getIt<CategoryRemoteDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<GetCategoriesUseCase>(
     () => GetCategoriesUseCase(getIt<CategoryRepository>()),
@@ -101,7 +107,10 @@ Future<void> initDependencies() async {
   );
 
   // Features - Product Repository
-  getIt.registerLazySingleton<ProductRepository>( () => ProductRepositoryImpl(remoteDataSource: getIt<ProductRemoteDataSource>()),
+  getIt.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImpl(
+      remoteDataSource: getIt<ProductRemoteDataSource>(),
+    ),
   );
 
   // Features - Product Use Cases
@@ -124,9 +133,7 @@ Future<void> initDependencies() async {
   getIt.registerFactory<SearchCubit>(
     () => SearchCubit(getProductsUseCase: getIt<GetProductsUseCase>()),
   );
-  getIt.registerLazySingleton<FilterCubit>(
-    () => FilterCubit(),
-  );
+  getIt.registerLazySingleton<FilterCubit>(() => FilterCubit());
 
   // Features - Voucher
   getIt.registerLazySingleton<VoucherRemoteDataSource>(
@@ -179,7 +186,10 @@ Future<void> initDependencies() async {
 
   // Features - Cart
   getIt.registerLazySingleton<CartLocalDataSource>(
-    () => CartLocalDataSourceImpl(sharedPreferences: getIt<SharedPreferences>()),
+    () => CartLocalDataSourceImpl(
+      sharedPreferences: getIt<SharedPreferences>(),
+      storageService: getIt<LocalStorageService>(),
+    ),
   );
   getIt.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(localDataSource: getIt<CartLocalDataSource>()),

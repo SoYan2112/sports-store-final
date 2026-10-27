@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/cubit/auth_cubit.dart';
+import '../features/auth/presentation/cubit/auth_state.dart';
 import '../features/cart/presentation/bloc/cart_bloc.dart';
 import '../features/cart/presentation/bloc/cart_event.dart';
 import '../features/home/presentation/screens/main_layout_screen.dart';
@@ -30,7 +31,16 @@ class SportsStoreApp extends StatelessWidget {
         title: 'Sports Store Mobile',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const MainLayoutScreen(),
+        home: BlocListener<AuthCubit, AuthState>(
+          listener: (context, authState) {
+            if (authState is AuthAuthenticated) {
+              context.read<CartBloc>().add(const LoadCartEvent());
+            } else if (authState is AuthUnauthenticated) {
+              context.read<CartBloc>().add(const ResetCartEvent());
+            }
+          },
+          child: const MainLayoutScreen(),
+        ),
       ),
     );
   }

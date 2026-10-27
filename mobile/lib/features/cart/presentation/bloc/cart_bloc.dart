@@ -27,6 +27,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<UpdateCartItemQuantityEvent>(_onUpdateQuantity);
     on<RemoveCartItemEvent>(_onRemoveItem);
     on<ClearCartEvent>(_onClearCart);
+    on<ResetCartEvent>(_onResetCart);
   }
 
   Future<void> _onLoadCart(
@@ -109,5 +110,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       emit(CartError('Không thể làm trống giỏ hàng: ${e.toString()}'));
     }
   }
-}
 
+  void _onResetCart(
+    ResetCartEvent event,
+    Emitter<CartState> emit,
+  ) {
+    emit(const CartLoaded(items: []));
+  }
+}

@@ -303,55 +303,66 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(14),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.sports_basketball_rounded,
+                                color: AppColors.primary,
+                                size: 24,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.sports_basketball_rounded,
-                              color: AppColors.primary,
-                              size: 24,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: BlocBuilder<AuthCubit, AuthState>(
+                                builder: (context, state) {
+                                  final name = (state is AuthAuthenticated)
+                                      ? state.userName
+                                      : 'Khách hàng';
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Xin chào, $name 👋',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        state is AuthAuthenticated
+                                            ? 'Chào mừng bạn quay trở lại'
+                                            : 'Khám phá đồ thể thao cao cấp',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          BlocBuilder<AuthCubit, AuthState>(
-                            builder: (context, state) {
-                              final name = (state is AuthAuthenticated)
-                                  ? state.userName
-                                  : 'Khách hàng';
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Xin chào, $name 👋',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    state is AuthAuthenticated
-                                        ? 'Chào mừng bạn quay trở lại'
-                                        : 'Khám phá đồ thể thao cao cấp',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 10),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           InkWell(
                             onTap: () {
@@ -401,26 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 size: 22,
                                 color: AppColors.textPrimary,
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.notifications_none_rounded,
-                              size: 22,
-                              color: AppColors.textPrimary,
                             ),
                           ),
                         ],

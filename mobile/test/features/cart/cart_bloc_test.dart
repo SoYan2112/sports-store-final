@@ -16,32 +16,32 @@ class MockAddToCartUseCase extends Mock implements AddToCartUseCase {}
 class MockUpdateCartQuantityUseCase extends Mock implements UpdateCartQuantityUseCase {}
 class MockRemoveFromCartUseCase extends Mock implements RemoveFromCartUseCase {}
 class MockClearCartUseCase extends Mock implements ClearCartUseCase {}
+class FakeCartItemEntity extends Fake implements CartItemEntity {}
 
 void main() {
+  late CartBloc cartBloc;
   late MockGetCartUseCase mockGetCartUseCase;
   late MockAddToCartUseCase mockAddToCartUseCase;
   late MockUpdateCartQuantityUseCase mockUpdateCartQuantityUseCase;
   late MockRemoveFromCartUseCase mockRemoveFromCartUseCase;
   late MockClearCartUseCase mockClearCartUseCase;
-  late CartBloc cartBloc;
 
-  const testItem = CartItemEntity(
-    id: 'p1_42_4279934490',
+  setUpAll(() {
+    registerFallbackValue(FakeCartItemEntity());
+  });
+
+  final testItem = CartItemEntity(
+    id: CartItemEntity.generateId('p1', '42', 0xFF1A1A1A),
     productId: 'p1',
-    name: 'Nike Joyride Run',
+    name: 'Nike Air Max',
     brand: 'Nike',
-    price: 1950000,
+    price: 2500000,
     imageUrl: 'https://example.com/shoe.png',
     selectedSize: '42',
     selectedColor: 0xFF1A1A1A,
     quantity: 1,
     stock: 10,
   );
-
-  setUpAll(() {
-    registerFallbackValue(testItem);
-    registerFallbackValue(<CartItemEntity>[]);
-  });
 
   setUp(() {
     mockGetCartUseCase = MockGetCartUseCase();
@@ -77,7 +77,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadCartEvent()),
       expect: () => [
         const CartLoading(),
-        const CartLoaded(items: [testItem]),
+        CartLoaded(items: [testItem]),
       ],
     );
 
@@ -90,12 +90,12 @@ void main() {
             )).thenAnswer((_) async => [testItem]);
         return cartBloc;
       },
-      act: (bloc) => bloc.add(const AddToCartEvent(testItem)),
+      act: (bloc) => bloc.add(AddToCartEvent(testItem)),
       expect: () => [
-        const CartLoaded(
+        CartLoaded(
           items: [testItem],
           lastAddedItem: testItem,
-          notificationMessage: 'Đã thêm Nike Joyride Run vào giỏ hàng!',
+          notificationMessage: 'Đã thêm ${testItem.name} vào giỏ hàng!',
         ),
       ],
     );
@@ -142,6 +142,15 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(const ClearCartEvent()),
+      expect: () => [
+        const CartLoaded(items: []),
+      ],
+    );
+
+    blocTest<CartBloc, CartState>(
+      'emits [CartLoaded] with empty list when ResetCartEvent is added',
+      build: () => cartBloc,
+      act: (bloc) => bloc.add(const ResetCartEvent()),
       expect: () => [
         const CartLoaded(items: []),
       ],
