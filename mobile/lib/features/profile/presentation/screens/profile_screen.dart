@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../auth/data/datasources/auth_service.dart';
 import '../../../auth/data/repositories/auth_repository.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
@@ -12,16 +13,21 @@ import '../../../address/presentation/screens/address_list_screen.dart';
 import '../../../order/presentation/screens/order_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final String title;
+
+  const ProfileScreen({
+    super.key,
+    this.title = 'Tài khoản',
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Tài khoản',
-          style: TextStyle(
+        title: Text(
+          title,
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -126,35 +132,17 @@ class ProfileScreen extends StatelessWidget {
                   // Đẩy LoginScreen đè lên Navigator
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) =>
-                          LoginScreen(authRepository: getIt<AuthRepository>()),
+                      builder: (_) => LoginScreen(
+                        authRepository: getIt.isRegistered<AuthRepository>()
+                            ? getIt<AuthRepository>()
+                            : AuthRepository(authService: AuthService()),
+                      ),
                     ),
                   );
                 },
                 child: const Text(
                   'Đăng nhập / Đăng ký',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildOrderHistoryButton(context),
-            const SizedBox(height: 12),
-            TextButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(VoucherListScreen.route());
-              },
-              icon: const Icon(
-                Icons.confirmation_number_outlined,
-                size: 18,
-                color: AppColors.primary,
-              ),
-              label: const Text(
-                'Khám phá kho voucher ưu đãi',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
                 ),
               ),
             ),
