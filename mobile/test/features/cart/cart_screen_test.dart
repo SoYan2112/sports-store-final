@@ -86,9 +86,10 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('BẠN CHƯA ĐĂNG NHẬP'), findsOneWidget);
-      expect(find.text('ĐĂNG NHẬP NGAY'), findsOneWidget);
-      expect(find.byIcon(Icons.lock_outline_rounded), findsOneWidget);
+      expect(find.text('Giỏ hàng'), findsOneWidget);
+      expect(find.text('Chào mừng đến với Sports Store'), findsOneWidget);
+      expect(find.text('Đăng nhập / Đăng ký'), findsOneWidget);
+      expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
     });
   });
 }

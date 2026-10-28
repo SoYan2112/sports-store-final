@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/di/injection.dart';
 import '../../../../core/utils/currency_formatter.dart';
-import '../../../auth/data/datasources/auth_service.dart';
-import '../../../auth/data/repositories/auth_repository.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/cubit/auth_state.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../order/presentation/screens/checkout_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
@@ -34,11 +32,7 @@ class CartScreen extends StatelessWidget {
       return BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           if (authState is! AuthAuthenticated) {
-            return Scaffold(
-              backgroundColor: AppColors.background,
-              appBar: _buildAppBar(context, showActions: false),
-              body: _buildUnauthenticatedCart(context),
-            );
+            return const ProfileScreen(title: 'Giỏ hàng');
           }
           return _buildCartScaffold(context);
         },
@@ -207,87 +201,6 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUnauthenticatedCart(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(26),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.04),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.lock_outline_rounded,
-                size: 72,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'BẠN CHƯA ĐĂNG NHẬP',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.5,
-                color: AppColors.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Vui lòng đăng nhập để xem các sản phẩm trong giỏ hàng và tiến hành thanh toán.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LoginScreen(
-                        authRepository: getIt.isRegistered<AuthRepository>()
-                            ? getIt<AuthRepository>()
-                            : AuthRepository(authService: AuthService()),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'ĐĂNG NHẬP NGAY',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyCart(BuildContext context) {
     return Center(
       child: Padding(
@@ -397,11 +310,8 @@ class CartScreen extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        'Chức năng Đặt hàng (Checkout) đang sẵn sàng để kết nối!'),
-                  ),
+                Navigator.of(context).push(
+                  CheckoutScreen.route(items: state.items),
                 );
               },
               child: const Text(

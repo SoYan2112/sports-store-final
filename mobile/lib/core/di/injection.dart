@@ -49,6 +49,11 @@ import '../../features/address/domain/usecases/delete_address_usecase.dart';
 import '../../features/address/domain/usecases/get_addresses_usecase.dart';
 import '../../features/address/domain/usecases/update_address_usecase.dart';
 import '../../features/address/presentation/cubit/address_cubit.dart';
+import '../../features/order/data/datasources/order_remote_datasource.dart';
+import '../../features/order/data/repositories/order_repository_impl.dart';
+import '../../features/order/domain/repositories/order_repository.dart';
+import '../../features/order/domain/usecases/create_order_usecase.dart';
+import '../../features/order/presentation/bloc/checkout_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -216,6 +221,29 @@ Future<void> initDependencies() async {
       updateCartQuantityUseCase: getIt<UpdateCartQuantityUseCase>(),
       removeFromCartUseCase: getIt<RemoveFromCartUseCase>(),
       clearCartUseCase: getIt<ClearCartUseCase>(),
+    ),
+  );
+
+  // Features - Order & Checkout
+  getIt.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(
+      dio: getIt<Dio>(),
+      sharedPreferences: getIt<SharedPreferences>(),
+      storageService: getIt<LocalStorageService>(),
+    ),
+  );
+  getIt.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(
+      remoteDataSource: getIt<OrderRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<CreateOrderUseCase>(
+    () => CreateOrderUseCase(getIt<OrderRepository>()),
+  );
+  getIt.registerFactory<CheckoutBloc>(
+    () => CheckoutBloc(
+      createOrderUseCase: getIt<CreateOrderUseCase>(),
+      getAddressesUseCase: getIt<GetAddressesUseCase>(),
     ),
   );
 }
