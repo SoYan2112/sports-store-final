@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../address/domain/entities/address_entity.dart';
 import '../../../cart/domain/entities/cart_item_entity.dart';
+import '../../../voucher/domain/entities/voucher_entity.dart';
 import '../../domain/entities/order_entity.dart';
 
 abstract class CheckoutEvent extends Equatable {
@@ -42,6 +43,23 @@ class SelectShippingMethodEvent extends CheckoutEvent {
   List<Object?> get props => [shippingMethod];
 }
 
+class ApplyVoucherEvent extends CheckoutEvent {
+  final VoucherEntity voucher;
+  final double subtotal;
+
+  const ApplyVoucherEvent({
+    required this.voucher,
+    required this.subtotal,
+  });
+
+  @override
+  List<Object?> get props => [voucher, subtotal];
+}
+
+class RemoveVoucherEvent extends CheckoutEvent {
+  const RemoveVoucherEvent();
+}
+
 class PlaceOrderEvent extends CheckoutEvent {
   final List<CartItemEntity> items;
   final String? note;
@@ -54,4 +72,3 @@ class PlaceOrderEvent extends CheckoutEvent {
   @override
   List<Object?> get props => [items, note];
 }
-

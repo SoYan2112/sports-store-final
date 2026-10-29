@@ -13,6 +13,7 @@ import 'package:mobile/features/order/domain/usecases/create_order_usecase.dart'
 import 'package:mobile/features/order/presentation/bloc/checkout_bloc.dart';
 import 'package:mobile/features/order/presentation/bloc/checkout_event.dart';
 import 'package:mobile/features/order/presentation/bloc/checkout_state.dart';
+import 'package:mobile/features/voucher/domain/entities/voucher_entity.dart';
 
 class MockCreateOrderUseCase extends Mock implements CreateOrderUseCase {}
 
@@ -217,6 +218,90 @@ void main() {
           selectedAddress: tAddress,
           createdOrder: tOrder,
         ),
+      ],
+    );
+
+    final tVoucherPercentage = VoucherEntity(
+      id: 'v_summer20',
+      code: 'SUMMER20',
+      title: 'Giảm 20% đơn từ 400k',
+      description: 'Áp dụng cho đồ thể thao',
+      type: VoucherType.percentage,
+      discountValue: 20,
+      minOrderValue: 400000,
+      maxDiscountAmount: 100000,
+      startDate: DateTime.now().subtract(const Duration(days: 1)),
+      endDate: DateTime.now().add(const Duration(days: 10)),
+    );
+
+    final tVoucherExpired = VoucherEntity(
+      id: 'v_expired',
+      code: 'EXPIRED10',
+      title: 'Mã đã hết hạn',
+      description: 'Hết hạn',
+      type: VoucherType.fixedAmount,
+      discountValue: 50000,
+      minOrderValue: 200000,
+      startDate: DateTime.now().subtract(const Duration(days: 10)),
+      endDate: DateTime.now().subtract(const Duration(days: 1)),
+    );
+
+    blocTest<CheckoutBloc, CheckoutState>(
+      'emits state with appliedVoucher and discountAmount when ApplyVoucherEvent succeeds',
+      build: () => checkoutBloc,
+      act: (bloc) => bloc.add(ApplyVoucherEvent(
+        voucher: tVoucherPercentage,
+        subtotal: 500000,
+      )),
+      expect: () => [
+        isA<CheckoutState>()
+            .having((s) => s.appliedVoucher?.code, 'code', 'SUMMER20')
+            .having((s) => s.discountAmount, 'discountAmount', 100000),
+      ],
+    );
+
+    blocTest<CheckoutBloc, CheckoutState>(
+      'emits failure state when applied voucher is expired',
+      build: () => checkoutBloc,
+      act: (bloc) => bloc.add(ApplyVoucherEvent(
+        voucher: tVoucherExpired,
+        subtotal: 500000,
+      )),
+      expect: () => [
+        isA<CheckoutState>()
+            .having((s) => s.status, 'status', CheckoutStatus.failure)
+            .having((s) => s.errorMessage, 'errorMessage',
+                contains('hết hạn sử dụng')),
+      ],
+    );
+
+    blocTest<CheckoutBloc, CheckoutState>(
+      'emits failure state when subtotal is below minOrderValue',
+      build: () => checkoutBloc,
+      act: (bloc) => bloc.add(ApplyVoucherEvent(
+        voucher: tVoucherPercentage,
+        subtotal: 300000,
+      )),
+      expect: () => [
+        isA<CheckoutState>()
+            .having((s) => s.status, 'status', CheckoutStatus.failure)
+            .having((s) => s.errorMessage, 'errorMessage',
+                contains('chưa đạt giá trị tối thiểu')),
+      ],
+    );
+
+    blocTest<CheckoutBloc, CheckoutState>(
+      'removes applied voucher and resets discountAmount when RemoveVoucherEvent called',
+      build: () => checkoutBloc,
+      seed: () => CheckoutState(
+        appliedVoucher: tVoucherPercentage,
+        discountAmount: 100000,
+      ),
+      act: (bloc) => bloc.add(const RemoveVoucherEvent()),
+      expect: () => [
+        isA<CheckoutState>()
+            .having((s) => s.appliedVoucher, 'appliedVoucher', isNull)
+            .having((s) => s.discountAmount, 'discountAmount', 0.0),
       ],
     );
   });
