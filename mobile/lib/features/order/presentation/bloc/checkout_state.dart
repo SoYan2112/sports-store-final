@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../address/domain/entities/address_entity.dart';
+import '../../../voucher/domain/entities/voucher_entity.dart';
 import '../../domain/entities/order_entity.dart';
 
 enum CheckoutStatus {
@@ -19,6 +20,8 @@ class CheckoutState extends Equatable {
   final ShippingMethod shippingMethod;
   final OrderEntity? createdOrder;
   final String? errorMessage;
+  final VoucherEntity? appliedVoucher;
+  final double discountAmount;
 
   const CheckoutState({
     this.status = CheckoutStatus.initial,
@@ -27,6 +30,8 @@ class CheckoutState extends Equatable {
     this.shippingMethod = ShippingMethod.standard,
     this.createdOrder,
     this.errorMessage,
+    this.appliedVoucher,
+    this.discountAmount = 0.0,
   });
 
   bool get isSubmitting => status == CheckoutStatus.submitting;
@@ -40,6 +45,9 @@ class CheckoutState extends Equatable {
     OrderEntity? createdOrder,
     String? errorMessage,
     bool clearError = false,
+    VoucherEntity? appliedVoucher,
+    bool clearVoucher = false,
+    double? discountAmount,
   }) {
     return CheckoutState(
       status: status ?? this.status,
@@ -48,6 +56,10 @@ class CheckoutState extends Equatable {
       shippingMethod: shippingMethod ?? this.shippingMethod,
       createdOrder: createdOrder ?? this.createdOrder,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      appliedVoucher:
+          clearVoucher ? null : (appliedVoucher ?? this.appliedVoucher),
+      discountAmount:
+          clearVoucher ? 0.0 : (discountAmount ?? this.discountAmount),
     );
   }
 
@@ -59,6 +71,7 @@ class CheckoutState extends Equatable {
         shippingMethod,
         createdOrder,
         errorMessage,
+        appliedVoucher,
+        discountAmount,
       ];
 }
-

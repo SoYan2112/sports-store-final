@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../address/domain/entities/address_entity.dart';
 import '../../../address/domain/usecases/get_addresses_usecase.dart';
+import '../../../voucher/domain/entities/voucher_entity.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/usecases/create_order_usecase.dart';
 import 'checkout_event.dart';
@@ -19,6 +20,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     on<SelectShippingAddressEvent>(_onSelectShippingAddress);
     on<SelectPaymentMethodEvent>(_onSelectPaymentMethod);
     on<SelectShippingMethodEvent>(_onSelectShippingMethod);
+    on<ApplyVoucherEvent>(_onApplyVoucher);
+    on<RemoveVoucherEvent>(_onRemoveVoucher);
     on<PlaceOrderEvent>(_onPlaceOrder);
   }
 
@@ -26,7 +29,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     LoadCheckoutDataEvent event,
     Emitter<CheckoutState> emit,
   ) async {
-    emit(state.copyWith(status: CheckoutStatus.loadingAddress, clearError: true));
+    emit(state.copyWith(
+        status: CheckoutStatus.loadingAddress, clearError: true));
     try {
       AddressEntity? defaultAddress;
       if (getAddressesUseCase != null) {
@@ -74,9 +78,93 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     SelectShippingMethodEvent event,
     Emitter<CheckoutState> emit,
   ) {
+    double updatedDiscount = state.discountAmount;
+
+    // Nếu đang áp dụng voucher Freeship, cập nhật lại số tiền giảm theo phí ship mới
+    if (state.appliedVoucher != null &&
+        state.appliedVoucher!.type == VoucherType.freeShipping) {
+      final shippingFee = event.shippingMethod.fee;
+      updatedDiscount = state.appliedVoucher!.discountValue > shippingFee
+          ? shippingFee
+          : state.appliedVoucher!.discountValue;
+    }
+
     emit(state.copyWith(
       status: CheckoutStatus.ready,
       shippingMethod: event.shippingMethod,
+      discountAmount: updatedDiscount,
+      clearError: true,
+    ));
+  }
+
+  void _onApplyVoucher(
+    ApplyVoucherEvent event,
+    Emitter<CheckoutState> emit,
+  ) {
+    final voucher = event.voucher;
+    final subtotal = event.subtotal;
+
+    // 1. Kiểm tra hạn dùng
+    if (voucher.isExpired) {
+      emit(state.copyWith(
+        status: CheckoutStatus.failure,
+        errorMessage: 'Mã giảm giá "${voucher.code}" đã hết hạn sử dụng.',
+      ));
+      return;
+    }
+
+    // 2. Kiểm tra giá trị đơn hàng tối thiểu
+    if (subtotal < voucher.minOrderValue) {
+      emit(state.copyWith(
+        status: CheckoutStatus.failure,
+        errorMessage:
+            'Đơn hàng chưa đạt giá trị tối thiểu ${voucher.formattedMinOrder}.',
+      ));
+      return;
+    }
+
+    // 3. Tính toán số tiền chiết khấu
+    double calculatedDiscount = 0.0;
+    final shippingFee = state.shippingMethod.fee;
+
+    switch (voucher.type) {
+      case VoucherType.percentage:
+        calculatedDiscount = subtotal * (voucher.discountValue / 100);
+        if (voucher.maxDiscountAmount != null &&
+            calculatedDiscount > voucher.maxDiscountAmount!) {
+          calculatedDiscount = voucher.maxDiscountAmount!;
+        }
+        break;
+
+      case VoucherType.fixedAmount:
+        calculatedDiscount = voucher.discountValue;
+        if (calculatedDiscount > subtotal) {
+          calculatedDiscount = subtotal;
+        }
+        break;
+
+      case VoucherType.freeShipping:
+        calculatedDiscount = voucher.discountValue > shippingFee
+            ? shippingFee
+            : voucher.discountValue;
+        break;
+    }
+
+    emit(state.copyWith(
+      status: CheckoutStatus.ready,
+      appliedVoucher: voucher,
+      discountAmount: calculatedDiscount,
+      clearError: true,
+    ));
+  }
+
+  void _onRemoveVoucher(
+    RemoveVoucherEvent event,
+    Emitter<CheckoutState> emit,
+  ) {
+    emit(state.copyWith(
+      status: CheckoutStatus.ready,
+      clearVoucher: true,
       clearError: true,
     ));
   }
@@ -122,6 +210,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
           shippingMethod: state.shippingMethod,
           subtotal: subtotal,
           shippingFee: state.shippingMethod.fee,
+          discountAmount: state.discountAmount,
           note: event.note?.trim().isEmpty == true ? null : event.note?.trim(),
         ),
       );
@@ -139,4 +228,3 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     }
   }
 }
-

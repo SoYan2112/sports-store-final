@@ -9,12 +9,27 @@ import '../widgets/voucher_card.dart';
 
 class VoucherListScreen extends StatelessWidget {
   final VoucherCubit? cubit;
+  final bool isSelectMode;
+  final double? currentOrderValue;
 
-  const VoucherListScreen({super.key, this.cubit});
+  const VoucherListScreen({
+    super.key,
+    this.cubit,
+    this.isSelectMode = false,
+    this.currentOrderValue,
+  });
 
-  static Route<void> route() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const VoucherListScreen(),
+  static Route<VoucherEntity?> route({
+    bool isSelectMode = false,
+    double? currentOrderValue,
+    VoucherCubit? cubit,
+  }) {
+    return MaterialPageRoute<VoucherEntity?>(
+      builder: (_) => VoucherListScreen(
+        cubit: cubit,
+        isSelectMode: isSelectMode,
+        currentOrderValue: currentOrderValue,
+      ),
     );
   }
 
@@ -24,19 +39,31 @@ class VoucherListScreen extends StatelessWidget {
     if (activeCubit != null) {
       return BlocProvider<VoucherCubit>.value(
         value: activeCubit,
-        child: const _VoucherListView(),
+        child: _VoucherListView(
+          isSelectMode: isSelectMode,
+          currentOrderValue: currentOrderValue,
+        ),
       );
     }
 
     return BlocProvider<VoucherCubit>(
       create: (_) => getIt<VoucherCubit>()..fetchVouchers(),
-      child: const _VoucherListView(),
+      child: _VoucherListView(
+        isSelectMode: isSelectMode,
+        currentOrderValue: currentOrderValue,
+      ),
     );
   }
 }
 
 class _VoucherListView extends StatefulWidget {
-  const _VoucherListView();
+  final bool isSelectMode;
+  final double? currentOrderValue;
+
+  const _VoucherListView({
+    this.isSelectMode = false,
+    this.currentOrderValue,
+  });
 
   @override
   State<_VoucherListView> createState() => _VoucherListViewState();
@@ -93,9 +120,9 @@ class _VoucherListViewState extends State<_VoucherListView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Kho Voucher & Ưu Đãi',
-          style: TextStyle(
+        title: Text(
+          widget.isSelectMode ? 'Chọn Voucher' : 'Kho Voucher & Ưu Đãi',
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -205,6 +232,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
                                 hintStyle: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 border: InputBorder.none,
                                 isDense: true,
@@ -243,7 +271,8 @@ class _VoucherListViewState extends State<_VoucherListView> {
                   // 2. Bộ lọc tab/chips
                   Container(
                     color: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
                         _buildFilterChip(
@@ -264,7 +293,8 @@ class _VoucherListViewState extends State<_VoucherListView> {
                     ),
                   ),
 
-                  const Divider(height: 1, thickness: 1, color: AppColors.divider),
+                  const Divider(
+                      height: 1, thickness: 1, color: AppColors.divider),
 
                   // 3. Danh sách voucher
                   Expanded(
@@ -275,7 +305,30 @@ class _VoucherListViewState extends State<_VoucherListView> {
                             itemCount: displayedVouchers.length,
                             itemBuilder: (context, index) {
                               final voucher = displayedVouchers[index];
-                              return VoucherCard(voucher: voucher);
+                              return VoucherCard(
+                                voucher: voucher,
+                                onApply: widget.isSelectMode
+                                    ? () {
+                                        if (widget.currentOrderValue != null &&
+                                            widget.currentOrderValue! <
+                                                voucher.minOrderValue) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Đơn hàng chưa đạt giá trị tối thiểu ${voucher.formattedMinOrder}.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                              duration:
+                                                  const Duration(seconds: 2),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        Navigator.of(context).pop(voucher);
+                                      }
+                                    : null,
+                              );
                             },
                           ),
                   ),
@@ -337,7 +390,9 @@ class _VoucherListViewState extends State<_VoucherListView> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isSearching ? Icons.search_off_rounded : Icons.local_offer_outlined,
+                isSearching
+                    ? Icons.search_off_rounded
+                    : Icons.local_offer_outlined,
                 size: 60,
                 color: Colors.grey.shade400,
               ),

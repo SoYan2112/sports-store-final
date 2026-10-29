@@ -16,6 +16,8 @@ import '../../domain/usecases/create_order_usecase.dart';
 import '../bloc/checkout_bloc.dart';
 import '../bloc/checkout_event.dart';
 import '../bloc/checkout_state.dart';
+import '../../../voucher/domain/entities/voucher_entity.dart';
+import '../../../voucher/presentation/screens/voucher_list_screen.dart';
 import 'ordered-screen.dart';
 
 class CheckoutScreen extends StatelessWidget {
@@ -132,7 +134,8 @@ class _CheckoutViewState extends State<_CheckoutView> {
       },
       builder: (context, state) {
         final shippingFee = state.shippingMethod.fee;
-        final totalAmount = _subtotal + shippingFee;
+        final totalAmount = (_subtotal + shippingFee - state.discountAmount)
+            .clamp(0.0, double.infinity);
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -168,11 +171,14 @@ class _CheckoutViewState extends State<_CheckoutView> {
               const SizedBox(height: 16),
               _buildPaymentMethodSection(context, state),
               const SizedBox(height: 16),
+              _buildVoucherSection(context, state),
+              const SizedBox(height: 16),
               _buildNoteSection(),
               const SizedBox(height: 16),
               _buildPaymentSummarySection(
                 subtotal: _subtotal,
                 shippingFee: shippingFee,
+                discountAmount: state.discountAmount,
                 totalAmount: totalAmount,
               ),
             ],
@@ -822,9 +828,144 @@ class _CheckoutViewState extends State<_CheckoutView> {
     );
   }
 
+  Widget _buildVoucherSection(BuildContext context, CheckoutState state) {
+    final appliedVoucher = state.appliedVoucher;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(
+                    Icons.confirmation_number_outlined,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Voucher khuyến mãi',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              TextButton(
+                key: const Key('selectVoucherButton'),
+                onPressed: () async {
+                  final selectedVoucher =
+                      await Navigator.of(context).push<VoucherEntity?>(
+                    VoucherListScreen.route(
+                      isSelectMode: true,
+                      currentOrderValue: _subtotal,
+                    ),
+                  );
+                  if (selectedVoucher != null && context.mounted) {
+                    context.read<CheckoutBloc>().add(
+                          ApplyVoucherEvent(
+                            voucher: selectedVoucher,
+                            subtotal: _subtotal,
+                          ),
+                        );
+                  }
+                },
+                child: Text(
+                  appliedVoucher == null ? 'Chọn voucher' : 'Đổi voucher',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (appliedVoucher != null) ...[
+            const Divider(height: 16),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F8E9),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.shade300),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.green,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${appliedVoucher.code} - ${appliedVoucher.title}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Đã giảm: -${CurrencyFormatter.formatVnd(state.discountAmount)}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    key: const Key('removeVoucherButton'),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      context
+                          .read<CheckoutBloc>()
+                          .add(const RemoveVoucherEvent());
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildPaymentSummarySection({
     required double subtotal,
     required double shippingFee,
+    required double discountAmount,
     required double totalAmount,
   }) {
     return Container(
@@ -905,6 +1046,30 @@ class _CheckoutViewState extends State<_CheckoutView> {
               ),
             ],
           ),
+          if (discountAmount > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Voucher giảm giá',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.green,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  '- ${CurrencyFormatter.formatVnd(discountAmount)}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
