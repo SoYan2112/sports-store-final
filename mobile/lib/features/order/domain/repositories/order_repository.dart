@@ -14,5 +14,7 @@ abstract class OrderRepository {
   });
 
   Future<List<OrderEntity>> getOrders();
-}
 
+  /// UC-20: Hủy đơn hàng
+  Future<OrderEntity> cancelOrder(String orderId, {String? reason});
+}

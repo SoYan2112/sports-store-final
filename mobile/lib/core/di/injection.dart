@@ -52,7 +52,9 @@ import '../../features/address/presentation/cubit/address_cubit.dart';
 import '../../features/order/data/datasources/order_remote_datasource.dart';
 import '../../features/order/data/repositories/order_repository_impl.dart';
 import '../../features/order/domain/repositories/order_repository.dart';
+import '../../features/order/domain/usecases/cancel_order_usecase.dart';
 import '../../features/order/domain/usecases/create_order_usecase.dart';
+import '../../features/order/presentation/cubit/cancel_order_cubit.dart';
 import '../../features/order/presentation/bloc/checkout_bloc.dart';
 
 final getIt = GetIt.instance;
@@ -235,6 +237,14 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton<OrderRepository>(
     () => OrderRepositoryImpl(
       remoteDataSource: getIt<OrderRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<CancelOrderUseCase>(
+    () => CancelOrderUseCase(getIt<OrderRepository>()),
+  );
+  getIt.registerFactory<CancelOrderCubit>(
+    () => CancelOrderCubit(
+      cancelOrderUseCase: getIt<CancelOrderUseCase>(),
     ),
   );
   getIt.registerLazySingleton<CreateOrderUseCase>(

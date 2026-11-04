@@ -1,10 +1,140 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection.dart';
+import '../../domain/repositories/order_repository.dart';
 import 'order_detail_screen.dart';
 
-class OrderHistoryScreen extends StatelessWidget {
+class _OrderItemData {
+  final String orderId;
+  final String date;
+  String status;
+  Color statusColor;
+  final String productName;
+  final String productInfo;
+  final String total;
+  final IconData icon;
+
+  _OrderItemData({
+    required this.orderId,
+    required this.date,
+    required this.status,
+    required this.statusColor,
+    required this.productName,
+    required this.productInfo,
+    required this.total,
+    required this.icon,
+  });
+}
+
+class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
+
+  @override
+  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
+}
+
+class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+  final List<_OrderItemData> _orders = [
+    _OrderItemData(
+      orderId: 'SS000123',
+      date: '25/10/2026',
+      status: 'Chờ xác nhận',
+      statusColor: AppColors.primary,
+      productName: 'Giày Nike Air Zoom Pegasus',
+      productInfo: 'Size 42 - Đen - x1',
+      total: '2.500.000 ₫',
+      icon: Icons.directions_run_rounded,
+    ),
+    _OrderItemData(
+      orderId: 'SS000122',
+      date: '22/10/2026',
+      status: 'Đang giao',
+      statusColor: Colors.blue,
+      productName: 'Áo thể thao Adidas Training',
+      productInfo: 'Size L - Trắng - x2',
+      total: '1.200.000 ₫',
+      icon: Icons.checkroom_rounded,
+    ),
+    _OrderItemData(
+      orderId: 'SS000118',
+      date: '15/10/2026',
+      status: 'Đã giao',
+      statusColor: Colors.green,
+      productName: 'Bóng đá Puma Orbita',
+      productInfo: 'Size 5 - Trắng - x1',
+      total: '650.000 ₫',
+      icon: Icons.sports_soccer_rounded,
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  // Tải và đồng bộ đơn hàng từ local storage
+  Future<void> _loadOrders() async {
+    try {
+      final repository = getIt<OrderRepository>();
+      final localOrders = await repository.getOrders();
+      if (!mounted) return;
+
+      setState(() {
+        for (final item in _orders) {
+          final match = localOrders.where((o) => o.id == item.orderId).firstOrNull;
+          if (match != null) {
+            item.status = match.status;
+            final lower = match.status.toLowerCase();
+            if (lower.contains('hủy') || lower.contains('cancel')) {
+              item.statusColor = Colors.red;
+            } else if (lower.contains('chờ') || lower.contains('pending')) {
+              item.statusColor = AppColors.primary;
+            } else if (lower.contains('đang')) {
+              item.statusColor = Colors.blue;
+            } else {
+              item.statusColor = Colors.green;
+            }
+          }
+        }
+
+        for (final order in localOrders) {
+          final exists = _orders.any((item) => item.orderId == order.id);
+          if (!exists) {
+            final dateStr =
+                '${order.createdAt.day.toString().padLeft(2, '0')}/${order.createdAt.month.toString().padLeft(2, '0')}/${order.createdAt.year}';
+            final firstItem = order.items.isNotEmpty ? order.items.first : null;
+            final lower = order.status.toLowerCase();
+            final isCancelled = lower.contains('hủy') || lower.contains('cancel');
+            final isPending = lower.contains('chờ') || lower.contains('pending');
+            final isShipping = lower.contains('đang');
+
+            _orders.insert(
+              0,
+              _OrderItemData(
+                orderId: order.id,
+                date: dateStr,
+                status: order.status,
+                statusColor: isCancelled
+                    ? Colors.red
+                    : (isPending
+                        ? AppColors.primary
+                        : (isShipping ? Colors.blue : Colors.green)),
+                productName: firstItem?.name ?? 'Sản phẩm thể thao',
+                productInfo: firstItem != null
+                    ? 'Size ${firstItem.selectedSize} - x${firstItem.quantity}'
+                    : 'Đơn hàng thể thao',
+                total:
+                    '${order.totalAmount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')} ₫',
+                icon: Icons.directions_run_rounded,
+              ),
+            );
+          }
+        }
+      });
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +151,8 @@ class OrderHistoryScreen extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: const [
-          Text(
+        children: [
+          const Text(
             'Đơn hàng của bạn',
             style: TextStyle(
               fontSize: 22,
@@ -30,44 +160,27 @@ class OrderHistoryScreen extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'Dữ liệu mẫu - 3 đơn hàng',
-            style: TextStyle(color: AppColors.textSecondary),
+            '${_orders.length} đơn hàng gần nhất',
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
-          SizedBox(height: 20),
-          _OrderCard(
-            orderId: 'SS000123',
-            date: '25/10/2026',
-            status: 'Chờ xác nhận',
-            statusColor: AppColors.primary,
-            productName: 'Giày Nike Air Zoom Pegasus',
-            productInfo: 'Size 42 - Đen - x1',
-            total: '2.500.000 ₫',
-            icon: Icons.directions_run_rounded,
-          ),
-          SizedBox(height: 16),
-          _OrderCard(
-            orderId: 'SS000122',
-            date: '22/10/2026',
-            status: 'Đang giao',
-            statusColor: Colors.blue,
-            productName: 'Áo thể thao Adidas Training',
-            productInfo: 'Size L - Trắng - x2',
-            total: '1.200.000 ₫',
-            icon: Icons.checkroom_rounded,
-          ),
-          SizedBox(height: 16),
-          _OrderCard(
-            orderId: 'SS000118',
-            date: '15/10/2026',
-            status: 'Đã giao',
-            statusColor: Colors.green,
-            productName: 'Bóng đá Puma Orbita',
-            productInfo: 'Size 5 - Trắng - x1',
-            total: '650.000 ₫',
-            icon: Icons.sports_soccer_rounded,
-          ),
+          const SizedBox(height: 20),
+          ..._orders.map((order) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _OrderCard(
+                data: order,
+                onStatusChanged: (newStatus) {
+                  setState(() {
+                    order.status = newStatus;
+                    order.statusColor = Colors.red;
+                  });
+                  _loadOrders();
+                },
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -76,24 +189,12 @@ class OrderHistoryScreen extends StatelessWidget {
 
 class _OrderCard extends StatelessWidget {
   const _OrderCard({
-    required this.orderId,
-    required this.date,
-    required this.status,
-    required this.statusColor,
-    required this.productName,
-    required this.productInfo,
-    required this.total,
-    required this.icon,
+    required this.data,
+    this.onStatusChanged,
   });
 
-  final String orderId;
-  final String date;
-  final String status;
-  final Color statusColor;
-  final String productName;
-  final String productInfo;
-  final String total;
-  final IconData icon;
+  final _OrderItemData data;
+  final ValueChanged<String>? onStatusChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -106,21 +207,27 @@ class _OrderCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          Navigator.of(context).push(
+        onTap: () async {
+          await Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (_) => OrderDetailScreen(
-                orderId: orderId,
-                date: date,
-                status: status,
-                statusColor: statusColor,
-                productName: productName,
-                productInfo: productInfo,
-                total: total,
-                icon: icon,
+                orderId: data.orderId,
+                date: data.date,
+                status: data.status,
+                statusColor: data.statusColor,
+                productName: data.productName,
+                productInfo: data.productInfo,
+                total: data.total,
+                icon: data.icon,
+                onStatusChanged: (newStatus) {
+                  data.status = newStatus;
+                  data.statusColor = Colors.red;
+                  onStatusChanged?.call(newStatus);
+                },
               ),
             ),
           );
+          onStatusChanged?.call(data.status);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +238,7 @@ class _OrderCard extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
-                  '#$orderId',
+                  '#${data.orderId}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -143,13 +250,13 @@ class _OrderCard extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
+                    color: data.statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    status,
+                    data.status,
                     style: TextStyle(
-                      color: statusColor,
+                      color: data.statusColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
@@ -159,7 +266,7 @@ class _OrderCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ngày đặt: $date',
+              'Ngày đặt: ${data.date}',
               style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,
@@ -175,7 +282,7 @@ class _OrderCard extends StatelessWidget {
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: AppColors.primary, size: 32),
+                  child: Icon(data.icon, color: AppColors.primary, size: 32),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -183,7 +290,7 @@ class _OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        productName,
+                        data.productName,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           color: AppColors.textPrimary,
@@ -191,7 +298,7 @@ class _OrderCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        productInfo,
+                        data.productInfo,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 13,
@@ -213,7 +320,7 @@ class _OrderCard extends StatelessWidget {
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
                 Text(
-                  total,
+                  data.total,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
