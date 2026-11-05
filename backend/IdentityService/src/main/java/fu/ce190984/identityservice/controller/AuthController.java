@@ -1,6 +1,8 @@
 package fu.ce190984.identityservice.controller;
 
 import fu.ce190984.identityservice.common.ApiResponse;
+import fu.ce190984.identityservice.dto.AuthResponse;
+import fu.ce190984.identityservice.dto.LoginRequest;
 import fu.ce190984.identityservice.dto.RegisterRequest;
 import fu.ce190984.identityservice.dto.UserDTO;
 import fu.ce190984.identityservice.service.AuthService;
@@ -25,5 +27,11 @@ public class AuthController {
         UserDTO result = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Đăng ký tài khoản thành công", result));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse result = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", result));
     }
 }

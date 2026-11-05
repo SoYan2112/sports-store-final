@@ -1,6 +1,8 @@
 package fu.ce190984.identityservice.service.impl;
 
 import fu.ce190984.identityservice.common.ApiException;
+import fu.ce190984.identityservice.dto.AuthResponse;
+import fu.ce190984.identityservice.dto.LoginRequest;
 import fu.ce190984.identityservice.dto.RegisterRequest;
 import fu.ce190984.identityservice.dto.UserDTO;
 import fu.ce190984.identityservice.entity.Email;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +59,37 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = userRepository.save(user);
 
         return toUserDTO(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse login(LoginRequest request) {
+        String identifier = request.getEmail().trim();
+
+        User user = userRepository.findByEmailOrUsername(identifier)
+                .orElseThrow(() -> ApiException.unauthorized("Tài khoản hoặc mật khẩu không chính xác"));
+
+        if ("BANNED".equalsIgnoreCase(user.getStatus())) {
+            throw ApiException.badRequest("Tài khoản của bạn đã bị khóa");
+        }
+
+        String hashedInputPassword = hashPassword(request.getPassword());
+        boolean passwordMatches = hashedInputPassword.equalsIgnoreCase(user.getPassword())
+                || request.getPassword().equals(user.getPassword());
+
+        if (!passwordMatches) {
+            throw ApiException.unauthorized("Tài khoản hoặc mật khẩu không chính xác");
+        }
+
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        userRepository.save(user);
+
+        return AuthResponse.builder()
+                .accessToken(token)
+                .tokenType("Bearer")
+                .user(toUserDTO(user))
+                .build();
     }
 
     private String hashPassword(String password) {
