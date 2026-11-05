@@ -7,7 +7,7 @@ spring:
     name: OrderService
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=sports_store;encrypt=true;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost:1433;databaseName=sports_store_order;encrypt=true;trustServerCertificate=true
     username: sa
     password: 123456
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
