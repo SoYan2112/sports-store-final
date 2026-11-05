@@ -92,6 +92,42 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public void logout(String authHeader) {
+        String token = extractToken(authHeader);
+        if (token == null || token.isBlank()) {
+            throw ApiException.badRequest("Không tìm thấy token đăng nhập");
+        }
+
+        User user = userRepository.findByToken(token)
+                .orElseThrow(() -> ApiException.unauthorized("Phiên đăng nhập không hợp lệ hoặc đã hết hạn"));
+
+        user.setToken(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDTO getCurrentUser(String authHeader) {
+        String token = extractToken(authHeader);
+        if (token == null || token.isBlank()) {
+            throw ApiException.unauthorized("Chưa đăng nhập");
+        }
+
+        User user = userRepository.findByToken(token)
+                .orElseThrow(() -> ApiException.unauthorized("Phiên đăng nhập không hợp lệ hoặc đã hết hạn"));
+
+        return toUserDTO(user);
+    }
+
+    private String extractToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7).trim();
+        }
+        return authHeader;
+    }
+
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,5 +30,19 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse result = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", result));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        authService.logout(authHeader);
+        return ResponseEntity.ok(ApiResponse.success("Đăng xuất thành công", null));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserDTO>> me(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        UserDTO result = authService.getCurrentUser(authHeader);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin tài khoản thành công", result));
     }
 }

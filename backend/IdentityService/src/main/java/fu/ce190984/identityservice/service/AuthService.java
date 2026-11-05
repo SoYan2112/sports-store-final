@@ -10,4 +10,8 @@ public interface AuthService {
     UserDTO register(RegisterRequest request);
 
     AuthResponse login(LoginRequest request);
+
+    void logout(String authHeader);
+
+    UserDTO getCurrentUser(String authHeader);
 }
