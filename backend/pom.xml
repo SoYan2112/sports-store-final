@@ -13,5 +13,6 @@
 
     <modules>
         <module>IdentityService</module>
+        <module>OrderService</module>
     </modules>
 </project>
