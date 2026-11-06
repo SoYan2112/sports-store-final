@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -76,6 +78,29 @@ public class OrderServiceImpl implements OrderService {
 
         // 4. Trả về thông tin chi tiết đơn hàng sau khi cập nhật
         return mapToDetailResponse(updatedOrder);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDetailResponse> getOrderHistory(String userId, String status) {
+        if (userId == null || userId.isBlank()) {
+            throw ApiException.badRequest("Mã khách hàng (userId) không được để trống");
+        }
+
+        List<Order> orders;
+        OrderStatus orderStatus = OrderStatus.fromString(status);
+
+        if (orderStatus != null) {
+            // Lọc theo trạng thái cụ thể (PENDING, SHIPPING, DELIVERED, CANCELLED)
+            orders = orderRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId.trim(), orderStatus);
+        } else {
+            // Lấy tất cả đơn hàng của user, sắp xếp mới nhất lên đầu
+            orders = orderRepository.findByUserIdOrderByCreatedAtDesc(userId.trim());
+        }
+
+        return orders.stream()
+                .map(this::mapToDetailResponse)
+                .toList();
     }
 
     private OrderDetailResponse mapToDetailResponse(Order order) {

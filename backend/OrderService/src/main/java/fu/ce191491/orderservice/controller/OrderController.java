@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -19,6 +21,18 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<OrderDetailResponse>>> getOrderHistory(
+            @Parameter(description = "Mã người dùng sở hữu đơn (ví dụ: user-ce191491)", required = true)
+            @RequestParam("userId") String userId,
+
+            @Parameter(description = "Lọc theo trạng thái (PENDING, SHIPPING, DELIVERED, CANCELLED hoặc để trống để lấy tất cả)", required = false)
+            @RequestParam(value = "status", required = false) String status) {
+
+        List<OrderDetailResponse> history = orderService.getOrderHistory(userId, status);
+        return ResponseEntity.ok(ApiResponse.success("Lấy lịch sử đơn hàng thành công", history));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<OrderDetailResponse>> getOrderDetail(
