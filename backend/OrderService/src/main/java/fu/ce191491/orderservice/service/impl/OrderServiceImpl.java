@@ -1,6 +1,8 @@
 package fu.ce191491.orderservice.service.impl;
 
 import fu.ce191491.orderservice.common.ApiException;
+import fu.ce191491.orderservice.dto.OrderCreateRequest;
+import fu.ce191491.orderservice.dto.OrderCreateResponse;
 import fu.ce191491.orderservice.dto.OrderDetailResponse;
 import fu.ce191491.orderservice.entity.Order;
 import fu.ce191491.orderservice.entity.OrderStatus;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -101,6 +104,68 @@ public class OrderServiceImpl implements OrderService {
         return orders.stream()
                 .map(this::mapToDetailResponse)
                 .toList();
+    }
+
+    @Override
+    public OrderCreateResponse createOrder(OrderCreateRequest request) {
+        if (request == null) {
+            throw ApiException.badRequest("Dữ liệu đơn hàng không được để trống");
+        }
+        String userId = request.getUserId() == null || request.getUserId().isBlank()
+                ? "guest"
+                : request.getUserId().trim();
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw ApiException.badRequest("items không được để trống");
+        }
+        if (request.getShippingAddress() == null) {
+            throw ApiException.badRequest("shippingAddress không được để trống");
+        }
+
+        double subtotal = (request.getSubtotal() == null ? 0.0 : request.getSubtotal());
+        double shippingFee = (request.getShippingFee() == null ? 0.0 : request.getShippingFee());
+        double discountAmount = (request.getDiscountAmount() == null ? 0.0 : request.getDiscountAmount());
+        double totalAmount = (request.getTotalAmount() == null ? subtotal + shippingFee - discountAmount : request.getTotalAmount());
+
+        String orderId = request.getId() == null || request.getId().isBlank()
+                ? "SS-" + Instant.now().toEpochMilli()
+                : request.getId();
+
+        return OrderCreateResponse.builder()
+                .id(orderId)
+                .userId(userId)
+                .items(request.getItems().stream().map(item -> OrderCreateResponse.OrderItemResponse.builder()
+                        .productId(item.getProductId())
+                        .name(item.getName())
+                        .brand(item.getBrand())
+                        .price(item.getPrice() == null ? 0.0 : item.getPrice())
+                        .imageUrl(item.getImageUrl())
+                        .selectedSize(item.getSelectedSize())
+                        .selectedColor(item.getSelectedColor() == null ? 0xFF1A1A1A : item.getSelectedColor())
+                        .quantity(item.getQuantity() == null ? 1 : Math.max(1, item.getQuantity()))
+                        .build()).toList())
+                .shippingAddress(OrderCreateResponse.ShippingAddressResponse.builder()
+                        .id(request.getShippingAddress().getId())
+                        .recipientName(request.getShippingAddress().getRecipientName())
+                        .phoneNumber(request.getShippingAddress().getPhoneNumber())
+                        .province(request.getShippingAddress().getProvince())
+                        .district(request.getShippingAddress().getDistrict())
+                        .ward(request.getShippingAddress().getWard())
+                        .streetAddress(request.getShippingAddress().getStreetAddress())
+                        .label(request.getShippingAddress().getLabel())
+                        .isDefault(request.getShippingAddress().getIsDefault())
+                        .build())
+                .paymentMethod(request.getPaymentMethod() == null ? "COD" : request.getPaymentMethod())
+                .shippingMethod(request.getShippingMethod() == null ? "STANDARD" : request.getShippingMethod())
+                .subtotal(subtotal)
+                .shippingFee(shippingFee)
+                .discountAmount(discountAmount)
+                .totalAmount(totalAmount)
+                .note(request.getNote())
+                .status(request.getStatus() == null || request.getStatus().isBlank() ? "Chờ xác nhận" : request.getStatus())
+                .createdAt(request.getCreatedAt() == null || request.getCreatedAt().isBlank()
+                        ? Instant.now().toString()
+                        : request.getCreatedAt())
+                .build();
     }
 
     private OrderDetailResponse mapToDetailResponse(Order order) {
