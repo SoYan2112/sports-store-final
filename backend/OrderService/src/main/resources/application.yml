@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=sports_store_order;encrypt=true;trustServerCertificate=true
     username: sa
-    password: 123456
+    password: vanphat2005
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:

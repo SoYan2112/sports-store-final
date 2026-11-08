@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-261.23567.138">
+    <data-source name="@localhost" uuid="5205275c-667f-4c9a-b979-886289fc753d">
+      <database-info product="Microsoft SQL Server" version="16.00.1210" jdbc-version="4.3" driver-name="Microsoft JDBC Driver 13.2 for SQL Server" driver-version="13.2.1.0" dbms="MSSQL" exact-version="16.0.1210" exact-driver-version="13.2">
+        <extra-name-characters>$#@</extra-name-characters>
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>sa</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="sports_store_order">
+            <node kind="schema" qname="dbo" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+  </component>
+</project>
