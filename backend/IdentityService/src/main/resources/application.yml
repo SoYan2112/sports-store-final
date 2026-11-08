@@ -22,6 +22,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect
 
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970337336763979244226452948404D6351
+  expiration-ms: 86400000
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
