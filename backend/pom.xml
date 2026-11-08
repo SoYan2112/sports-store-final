@@ -14,5 +14,6 @@
     <modules>
         <module>IdentityService</module>
         <module>OrderService</module>
+        <module>VoucherService</module>
     </modules>
 </project>

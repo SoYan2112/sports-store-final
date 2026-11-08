@@ -2,6 +2,8 @@ package fu.ce191491.orderservice.controller;
 
 import fu.ce191491.orderservice.common.ApiResponse;
 import fu.ce191491.orderservice.dto.CancelOrderRequest;
+import fu.ce191491.orderservice.dto.OrderCreateRequest;
+import fu.ce191491.orderservice.dto.OrderCreateResponse;
 import fu.ce191491.orderservice.dto.OrderDetailResponse;
 import fu.ce191491.orderservice.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +23,13 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<OrderCreateResponse>> createOrder(
+            @Valid @RequestBody OrderCreateRequest request) {
+        OrderCreateResponse response = orderService.createOrder(request);
+        return ResponseEntity.ok(ApiResponse.success("Tạo đơn hàng thành công", response));
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<OrderDetailResponse>>> getOrderHistory(
