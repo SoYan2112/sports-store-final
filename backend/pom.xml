@@ -13,6 +13,7 @@
 
     <modules>
         <module>IdentityService</module>
+        <module>ProductService</module>
         <module>OrderService</module>
         <module>VoucherService</module>
     </modules>
