@@ -2,8 +2,10 @@ package fu.ce190435.productservice.config;
 
 import fu.ce190435.productservice.entity.Category;
 import fu.ce190435.productservice.entity.Product;
+import fu.ce190435.productservice.entity.ProductRating;
 import fu.ce190435.productservice.entity.ProductVariant;
 import fu.ce190435.productservice.repository.CategoryRepository;
+import fu.ce190435.productservice.repository.ProductRatingRepository;
 import fu.ce190435.productservice.repository.ProductRepository;
 import fu.ce190435.productservice.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class DataSeeder implements CommandLineRunner {
         private final CategoryRepository categoryRepository;
         private final ProductRepository productRepository;
         private final ProductVariantRepository productVariantRepository;
+        private final ProductRatingRepository productRatingRepository;
 
         @Override
         public void run(String... args) {
@@ -29,6 +32,9 @@ public class DataSeeder implements CommandLineRunner {
                 }
                 if (productVariantRepository.count() == 0) {
                         seedProductVariants();
+                }
+                if (productRatingRepository.count() == 0) {
+                        seedProductRatings();
                 }
         }
 
@@ -297,5 +303,53 @@ public class DataSeeder implements CommandLineRunner {
                         }
                 }
                 productVariantRepository.saveAll(variants);
+        }
+
+        private void seedProductRatings() {
+                productRepository.findById("p1").ifPresent(p1 -> {
+                        long now = System.currentTimeMillis();
+                        List<ProductRating> ratings = List.of(
+                                ProductRating.builder()
+                                        .id("rev_p1_01")
+                                        .product(p1)
+                                        .userId("user_01")
+                                        .userName("Hoàng Nhật")
+                                        .userAvatar("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100")
+                                        .rating(5)
+                                        .comment("Giày chạy rất êm chân, trợ lực đệm hạt Joyride siêu nảy, đi tập 10km không hề mỏi!")
+                                        .sizeBought("41")
+                                        .colorBought("Đen thể thao")
+                                        .imagesJson("[\"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600\"]")
+                                        .createdAt(now - 86400000L * 3)
+                                        .build(),
+                                ProductRating.builder()
+                                        .id("rev_p1_02")
+                                        .product(p1)
+                                        .userId("user_02")
+                                        .userName("San Yo")
+                                        .userAvatar("https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100")
+                                        .rating(5)
+                                        .comment("Hàng chuẩn chỉ, form giày chuẩn size, bám đường tốt trên cả mặt sàn ướt.")
+                                        .sizeBought("42")
+                                        .colorBought("Cam năng động")
+                                        .imagesJson("[]")
+                                        .createdAt(now - 86400000L * 2)
+                                        .build(),
+                                ProductRating.builder()
+                                        .id("rev_p1_03")
+                                        .product(p1)
+                                        .userId("user_03")
+                                        .userName("Minh Khang")
+                                        .userAvatar("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100")
+                                        .rating(4)
+                                        .comment("Chất lượng hoàn thiện tốt, đóng gói cẩn thận. Giao hàng nhanh 2 ngày là nhận được.")
+                                        .sizeBought("40")
+                                        .colorBought("Trắng tinh tế")
+                                        .imagesJson("[]")
+                                        .createdAt(now - 86400000L)
+                                        .build()
+                        );
+                        productRatingRepository.saveAll(ratings);
+                });
         }
 }

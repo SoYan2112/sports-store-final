@@ -25,7 +25,7 @@ public class CategoryController {
 
     @GetMapping
     @Operation(
-            summary = "Xem danh sách danh mục sản phẩm",
+            summary = "UC-16: Xem danh sách danh mục sản phẩm",
             description = "Trả về toàn bộ các danh mục ngành hàng thể thao (Giày, Áo, Quần, Phụ kiện, Dụng cụ, Đồ bảo hộ) kèm số lượng sản phẩm trong từng danh mục."
     )
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getAllCategories() {
