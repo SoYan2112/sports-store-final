@@ -9,5 +9,6 @@ public interface ShippingAddressService {
     ShippingAddressDTO getById(String authHeader, String id);
     ShippingAddressDTO create(String authHeader, ShippingAddressRequest request);
     ShippingAddressDTO update(String authHeader, String id, ShippingAddressRequest request);
+    ShippingAddressDTO setDefault(String authHeader, String id);
     void delete(String authHeader, String id);
 }

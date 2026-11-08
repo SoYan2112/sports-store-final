@@ -37,6 +37,13 @@ public class ShippingAddressController {
         return ResponseEntity.ok(ApiResponse.success("Cập nhật địa chỉ giao hàng thành công", service.update(auth, id, request)));
     }
 
+    @PatchMapping("/{id}/default")
+    public ResponseEntity<ApiResponse<ShippingAddressDTO>> setDefault(
+            @RequestHeader(value = "Authorization", required = false) String auth,
+            @PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success("Set default shipping address successfully", service.setDefault(auth, id)));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@RequestHeader(value = "Authorization", required = false) String auth, @PathVariable String id) {
         service.delete(auth, id);

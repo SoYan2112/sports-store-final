@@ -25,6 +25,9 @@ public class ShippingAddress {
     @Column(name = "created_at", nullable = false)
     private Long createdAt;
 
+    @Column(name = "is_default", nullable = false)
+    private boolean defaultAddress;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

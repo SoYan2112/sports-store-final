@@ -35,6 +35,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
         ShippingAddress address = fromRequest(request);
         address.setUser(currentUser(authHeader));
         address.setCreatedAt(System.currentTimeMillis());
+        address.setDefaultAddress(false);
         return toDto(addressRepository.save(address));
     }
 
@@ -42,6 +43,15 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
     public ShippingAddressDTO update(String authHeader, String id, ShippingAddressRequest request) {
         ShippingAddress address = findOwned(authHeader, id);
         copy(request, address);
+        return toDto(addressRepository.save(address));
+    }
+
+    @Override @Transactional
+    public ShippingAddressDTO setDefault(String authHeader, String id) {
+        ShippingAddress address = findOwned(authHeader, id);
+        addressRepository.findAllByUserId(address.getUser().getId())
+                .forEach(item -> item.setDefaultAddress(false));
+        address.setDefaultAddress(true);
         return toDto(addressRepository.save(address));
     }
 
@@ -76,6 +86,7 @@ public class ShippingAddressServiceImpl implements ShippingAddressService {
 
     private ShippingAddressDTO toDto(ShippingAddress a) {
         return ShippingAddressDTO.builder().id(a.getId()).title(a.getTitle()).street(a.getStreet())
-                .ward(a.getWard()).province(a.getProvince()).country(a.getCountry()).createdAt(a.getCreatedAt()).build();
+                .ward(a.getWard()).province(a.getProvince()).country(a.getCountry())
+                .createdAt(a.getCreatedAt()).defaultAddress(a.isDefaultAddress()).build();
     }
 }

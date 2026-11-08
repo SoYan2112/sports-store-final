@@ -13,4 +13,5 @@ public class ShippingAddressDTO {
     private String province;
     private String country;
     private Long createdAt;
+    private boolean defaultAddress;
 }
