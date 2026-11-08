@@ -10,6 +10,7 @@ import '../widgets/address_card.dart';
 import 'add_address_screen.dart';
 import 'edit_address_screen.dart';
 
+/// Sử dụng chung cho tab Profile và luồng Checkout.
 class AddressListScreen extends StatelessWidget {
   final AddressCubit? cubit;
   final bool isSelectMode;
@@ -63,10 +64,7 @@ class _AddressListView extends StatelessWidget {
   final bool isSelectMode;
   final String? selectedAddressId;
 
-  const _AddressListView({
-    required this.isSelectMode,
-    this.selectedAddressId,
-  });
+  const _AddressListView({required this.isSelectMode, this.selectedAddressId});
 
   @override
   Widget build(BuildContext context) {
@@ -208,16 +206,12 @@ class _AddressListView extends StatelessWidget {
             icon: const Icon(Icons.add_rounded, size: 22),
             label: const Text(
               'Thêm địa chỉ mới',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-              ),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             onPressed: () async {
               final cubit = context.read<AddressCubit>();
-              await Navigator.of(context).push(
-                AddAddressScreen.route(cubit: cubit),
-              );
+              await Navigator.of(context)
+                  .push(AddAddressScreen.route(cubit: cubit));
             },
           ),
         ),
@@ -284,9 +278,8 @@ class _AddressListView extends StatelessWidget {
               ),
               onPressed: () async {
                 final cubit = context.read<AddressCubit>();
-                await Navigator.of(context).push(
-                  AddAddressScreen.route(cubit: cubit),
-                );
+                await Navigator.of(context)
+                    .push(AddAddressScreen.route(cubit: cubit));
               },
             ),
           ],
