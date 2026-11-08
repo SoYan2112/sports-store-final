@@ -9,15 +9,16 @@ import fu.ce190984.identityservice.entity.Email;
 import fu.ce190984.identityservice.entity.User;
 import fu.ce190984.identityservice.repository.EmailRepository;
 import fu.ce190984.identityservice.repository.UserRepository;
+import fu.ce190984.identityservice.security.JwtTokenProvider;
 import fu.ce190984.identityservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     @Transactional
@@ -47,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .fullName(request.getFullname().trim())
                 .username(cleanEmail)
-                .password(hashPassword(request.getPassword()))
+                .password(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null)
                 .status("ACTIVE")
                 .gender(true)
@@ -73,15 +76,20 @@ public class AuthServiceImpl implements AuthService {
             throw ApiException.badRequest("Tài khoản của bạn đã bị khóa");
         }
 
-        String hashedInputPassword = hashPassword(request.getPassword());
-        boolean passwordMatches = hashedInputPassword.equalsIgnoreCase(user.getPassword())
-                || request.getPassword().equals(user.getPassword());
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!passwordMatches && isLegacyMd5(user.getPassword())) {
+            if (hashMd5(request.getPassword()).equalsIgnoreCase(user.getPassword())) {
+                passwordMatches = true;
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
+        }
 
         if (!passwordMatches) {
             throw ApiException.unauthorized("Tài khoản hoặc mật khẩu không chính xác");
         }
 
-        String token = UUID.randomUUID().toString();
+        String email = user.getEmail() != null ? user.getEmail().getAddress() : user.getUsername();
+        String token = jwtTokenProvider.generateToken(user.getId(), email);
         user.setToken(token);
         userRepository.save(user);
 
@@ -100,22 +108,24 @@ public class AuthServiceImpl implements AuthService {
             throw ApiException.badRequest("Không tìm thấy token đăng nhập");
         }
 
-        User user = userRepository.findByToken(token)
-                .orElseThrow(() -> ApiException.unauthorized("Phiên đăng nhập không hợp lệ hoặc đã hết hạn"));
+        jwtTokenProvider.blacklistToken(token);
 
-        user.setToken(null);
-        userRepository.save(user);
+        userRepository.findByToken(token).ifPresent(user -> {
+            user.setToken(null);
+            userRepository.save(user);
+        });
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDTO getCurrentUser(String authHeader) {
         String token = extractToken(authHeader);
-        if (token == null || token.isBlank()) {
-            throw ApiException.unauthorized("Chưa đăng nhập");
+        if (token == null || token.isBlank() || !jwtTokenProvider.validateToken(token)) {
+            throw ApiException.unauthorized("Chưa đăng nhập hoặc token không hợp lệ");
         }
 
-        User user = userRepository.findByToken(token)
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        User user = userRepository.findByEmailOrUsername(email)
                 .orElseThrow(() -> ApiException.unauthorized("Phiên đăng nhập không hợp lệ hoặc đã hết hạn"));
 
         return toUserDTO(user);
@@ -128,7 +138,11 @@ public class AuthServiceImpl implements AuthService {
         return authHeader;
     }
 
-    private String hashPassword(String password) {
+    private boolean isLegacyMd5(String password) {
+        return password != null && password.length() == 32 && !password.startsWith("$2");
+    }
+
+    private String hashMd5(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(password.getBytes());
