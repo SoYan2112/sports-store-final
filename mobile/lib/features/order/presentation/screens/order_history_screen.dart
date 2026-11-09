@@ -199,11 +199,17 @@ class _OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -280,7 +286,7 @@ class _OrderCard extends StatelessWidget {
                   height: 64,
                   decoration: BoxDecoration(
                     color: AppColors.background,
-                    borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(data.icon, color: AppColors.primary, size: 32),
                 ),
