@@ -9,4 +9,11 @@ abstract class ProductRepository {
   });
 
   Future<ProductEntity> getProductById(String id);
+  Future<void> addProductRating({
+    required String productId,
+    required String userId,
+    required String userName,
+    required int rating,
+    String? comment,
+  });
 }

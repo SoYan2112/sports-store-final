@@ -12,6 +12,13 @@ abstract class ProductRemoteDataSource {
   });
 
   Future<ProductModel> getProductById(String id);
+  Future<void> addProductRating({
+    required String productId,
+    required String userId,
+    required String userName,
+    required int rating,
+    String? comment,
+  });
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -95,6 +102,26 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       throw ServerException(message: e.toString());
     }
   }
+
+  @override
+  Future<void> addProductRating({
+    required String productId,
+    required String userId,
+    required String userName,
+    required int rating,
+    String? comment,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    _mockRatings.add({
+      'productId': productId,
+      'userId': userId,
+      'userName': userName,
+      'rating': rating,
+      'comment': comment ?? '',
+    });
+  }
+
+  final List<Map<String, dynamic>> _mockRatings = [];
 
   /// Mock data cho giai đoạn phát triển khi backend chưa kết nối
   List<ProductModel> _getMockProducts({
