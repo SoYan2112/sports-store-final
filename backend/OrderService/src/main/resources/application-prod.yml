@@ -15,3 +15,17 @@ spring:
       ddl-auto: update
     open-in-view: false
     show-sql: false
+
+product:
+  service:
+    url: ${PRODUCT_SERVICE_URL:http://product-service:8082}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:order-service}
+    instance-id: ${EUREKA_INSTANCE_HOSTNAME:order-service}:${spring.application.name}:${server.port}
+  client:
+    restclient:
+      enabled: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://discovery-server:8761/eureka/}

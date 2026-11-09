@@ -19,3 +19,13 @@ spring:
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970337336763979244226452948404D6351}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:identity-service}
+    instance-id: ${EUREKA_INSTANCE_HOSTNAME:identity-service}:${spring.application.name}:${server.port}
+  client:
+    restclient:
+      enabled: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://discovery-server:8761/eureka/}
