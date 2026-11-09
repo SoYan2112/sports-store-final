@@ -28,6 +28,10 @@ void main() {
   group('ProfileScreen Logout UI & Flow', () {
     testWidgets('renders user info and logout card when authenticated',
         (tester) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
       when(() => mockAuthCubit.state).thenReturn(
         const AuthAuthenticated(
           token: 'token_123',
@@ -55,6 +59,10 @@ void main() {
       expect(find.text('Kho Voucher & Ưu đãi'), findsOneWidget);
       expect(find.text('Xem mã giảm giá & freeship có sẵn'), findsOneWidget);
 
+      // Kiểm tra thẻ Đổi mật khẩu (UC-28)
+      expect(find.text('Đổi mật khẩu'), findsOneWidget);
+      expect(find.text('Cập nhật mật khẩu bảo vệ tài khoản'), findsOneWidget);
+
       // Kiểm tra thẻ Đăng xuất
       expect(find.text('Đăng xuất'), findsOneWidget);
       expect(find.byIcon(Icons.logout_rounded), findsOneWidget);
@@ -62,6 +70,10 @@ void main() {
 
     testWidgets('tapping logout opens confirmation dialog and can cancel',
         (tester) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
       when(() => mockAuthCubit.state).thenReturn(
         const AuthAuthenticated(
           token: 'token_123',
@@ -92,6 +104,10 @@ void main() {
     });
 
     testWidgets('confirming logout calls authCubit.logout()', (tester) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
       when(() => mockAuthCubit.state).thenReturn(
         const AuthAuthenticated(
           token: 'token_123',
@@ -121,4 +137,3 @@ void main() {
     });
   });
 }
-
