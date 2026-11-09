@@ -16,7 +16,7 @@ import '../../../auth/presentation/screens/login_screen.dart';
 import '../../domain/entities/product_entity.dart';
 import '../cubit/product_detail_cubit.dart';
 import '../cubit/product_detail_state.dart';
-import 'product_rating_screen.dart';
+import 'product_rating_view_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductEntity product;
@@ -130,7 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           TextButton(
                             key: const Key('reviewButton'),
                             onPressed: () => _openRating(context, product),
-                            child: const Text('Đánh giá'),
+                            child: const Text('Xem đánh giá'),
                           ),
                           const Spacer(),
                           Text(
@@ -378,20 +378,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _openRating(BuildContext context, ProductEntity product) async {
-    final auth = context.read<AuthCubit>().state;
-    if (auth is! AuthAuthenticated) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen(
-        authRepository: getIt.isRegistered<AuthRepository>() ? getIt<AuthRepository>() : AuthRepository(authService: AuthService()),
-      )));
-      if (!context.mounted || context.read<AuthCubit>().state is! AuthAuthenticated) return;
-    }
-    final user = context.read<AuthCubit>().state as AuthAuthenticated;
-    final submitted = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => ProductRatingScreen(
-      product: product, userId: user.userId, userName: user.userName,
-    )));
-    if (submitted == true && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đánh giá thành công')));
-    }
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => ProductRatingViewScreen(product: product)));
   }
 
   Future<void> _onAddToCartPressed(
