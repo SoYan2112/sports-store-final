@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/usecases/get_user_profile_usecase.dart';
 import 'profile_state.dart';
 
@@ -26,6 +27,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (e) {
       emit(ProfileError(e.toString()));
     }
+  }
+
+  void updateLoadedProfile(UserProfileEntity profile) {
+    emit(ProfileLoaded(profile: profile));
   }
 }
 

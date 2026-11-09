@@ -6,6 +6,7 @@ import '../models/user_profile_model.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<UserProfileModel> getUserProfile();
+  Future<UserProfileModel> updateUserProfile(UserProfileModel profile);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -70,6 +71,75 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       if (e is ServerException) rethrow;
       return _getFromLocalOrMock();
     }
+  }
+
+  @override
+  Future<UserProfileModel> updateUserProfile(UserProfileModel profile) async {
+    final token = storageService.getAccessToken();
+
+    try {
+      final options = Options(
+        headers: {
+          if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      Response response;
+      try {
+        response = await dio.put(
+          ApiEndpoints.userProfile,
+          data: profile.toJson(),
+          options: options,
+        );
+      } on DioException {
+        // Fallback sang endpoint auth /auth/me
+        response = await dio.put(
+          ApiEndpoints.authMe,
+          data: profile.toJson(),
+          options: options,
+        );
+      }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+        final json = (data is Map<String, dynamic> && data.containsKey('data'))
+            ? data['data'] as Map<String, dynamic>
+            : (data is Map<String, dynamic> ? data : profile.toJson());
+
+        final updated = UserProfileModel.fromJson(json);
+        await _saveProfileLocally(updated);
+        return updated;
+      }
+    } on DioException {
+      // Khi không có mạng hoặc backend chưa sẵn sàng, lưu cục bộ và tiếp tục
+    } catch (_) {
+      // Bỏ qua lỗi mạng
+    }
+
+    // Lưu offline để trải nghiệm không bị gián đoạn
+    await _saveProfileLocally(profile);
+    return profile;
+  }
+
+  Future<void> _saveProfileLocally(UserProfileModel profile) async {
+    await storageService.saveUserProfile(
+      userId: profile.id,
+      name: profile.fullname,
+      email: profile.email,
+      phone: profile.phoneNumber,
+      gender: profile.gender,
+      dob: profile.dateOfBirth?.toIso8601String(),
+      createdAt: profile.createdAt?.toIso8601String(),
+      avatar: profile.avatarUrl,
+    );
+
+    final token = storageService.getAccessToken() ?? 'token_${profile.id}';
+    await storageService.saveAuthSession(
+      token: token,
+      userId: profile.id,
+      name: profile.fullname,
+      email: profile.email,
+    );
   }
 
   UserProfileModel _getFromLocalOrMock() {

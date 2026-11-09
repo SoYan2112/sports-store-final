@@ -50,7 +50,20 @@ class AuthCubit extends Cubit<AuthState> {
     ));
   }
 
-  /// 3. Xử lý Đăng xuất
+  /// 3. Cập nhật thông tin hiển thị sau khi chỉnh sửa hồ sơ
+  void updateUserInfo({required String name, String? email}) {
+    if (state is AuthAuthenticated) {
+      final current = state as AuthAuthenticated;
+      emit(AuthAuthenticated(
+        token: current.token,
+        userId: current.userId,
+        userName: name,
+        userEmail: email ?? current.userEmail,
+      ));
+    }
+  }
+
+  /// 4. Xử lý Đăng xuất
   Future<void> logout() async {
     await storageService.clearAuthSession();
     await authRepository.logout();

@@ -5,6 +5,7 @@ import '../../../../core/di/injection.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
+import 'edit_profile_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -149,8 +150,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           _buildSecurityCard(),
           const SizedBox(height: 32),
 
-          // 4. Nút chỉnh sửa hồ sơ (dành cho UC-27)
-          _buildEditProfileButton(),
+          // 4. Nút chỉnh sửa hồ sơ (UC-27)
+          _buildEditProfileButton(profile),
           const SizedBox(height: 16),
         ],
       ),
@@ -477,11 +478,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildEditProfileButton() {
+  Widget _buildEditProfileButton(UserProfileEntity profile) {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: ElevatedButton.icon(
+        key: const Key('editProfileButton'),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -490,13 +492,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
           elevation: 2,
         ),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Tính năng chỉnh sửa hồ sơ (UC-27)'),
-              duration: Duration(seconds: 1),
-            ),
+        onPressed: () async {
+          final updated = await Navigator.of(context).push<UserProfileEntity?>(
+            EditProfileScreen.route(profile: profile),
           );
+          if (updated != null && mounted) {
+            context.read<ProfileCubit>().updateLoadedProfile(updated);
+          }
         },
         icon: const Icon(Icons.edit_outlined, size: 20),
         label: const Text(
