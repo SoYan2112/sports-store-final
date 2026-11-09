@@ -26,4 +26,19 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<ProductEntity> getProductById(String id) async {
     return await remoteDataSource.getProductById(id);
   }
+
+  @override
+  Future<void> addProductRating({
+    required String productId,
+    required String userId,
+    required String userName,
+    required int rating,
+    String? comment,
+  }) => remoteDataSource.addProductRating(
+    productId: productId,
+    userId: userId,
+    userName: userName,
+    rating: rating,
+    comment: comment,
+  );
 }
