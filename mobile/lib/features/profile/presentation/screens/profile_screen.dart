@@ -11,6 +11,7 @@ import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../voucher/presentation/screens/voucher_list_screen.dart';
 import '../../../address/presentation/screens/address_list_screen.dart';
 import '../../../order/presentation/screens/order_history_screen.dart';
+import 'user_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String title;
@@ -43,6 +44,78 @@ class ProfileScreen extends StatelessWidget {
           }
           return _buildGuestView(context);
         },
+      ),
+    );
+  }
+
+  Widget _buildUserProfileMenuCard(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () {
+          Navigator.of(context).push(UserProfileScreen.route());
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hồ sơ cá nhân',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Xem thông tin tài khoản & thành viên',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.grey,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -157,66 +230,84 @@ class ProfileScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        // 1. Thẻ thông tin tài khoản (Avatar, Tên, Email)
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
+        // 1. Thẻ thông tin tài khoản (Avatar, Tên, Email) - Bấm vào xem Profile chi tiết (UC-26)
+        Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          child: InkWell(
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 34,
-                backgroundColor: const Color(0xFFFFE8D6),
-                child: Text(
-                  state.userName.isNotEmpty
-                      ? state.userName.substring(0, 1).toUpperCase()
-                      : 'U',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFE65100),
+            onTap: () {
+              Navigator.of(context).push(UserProfileScreen.route());
+            },
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      state.userName,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 34,
+                    backgroundColor: const Color(0xFFFFE8D6),
+                    child: Text(
+                      state.userName.isNotEmpty
+                          ? state.userName.substring(0, 1).toUpperCase()
+                          : 'U',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: Color(0xFFE65100),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      state.userEmail.isNotEmpty
-                          ? state.userEmail
-                          : 'user@gmail.com',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state.userName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          state.userEmail.isNotEmpty
+                              ? state.userEmail
+                              : 'user@gmail.com',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.grey,
+                    size: 16,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
+        const SizedBox(height: 16),
+
+        // Menu Hồ sơ cá nhân (UC-26)
+        _buildUserProfileMenuCard(context),
         const SizedBox(height: 16),
 
         _buildOrderHistoryButton(context),

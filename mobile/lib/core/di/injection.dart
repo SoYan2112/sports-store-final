@@ -56,6 +56,11 @@ import '../../features/order/domain/usecases/cancel_order_usecase.dart';
 import '../../features/order/domain/usecases/create_order_usecase.dart';
 import '../../features/order/presentation/cubit/cancel_order_cubit.dart';
 import '../../features/order/presentation/bloc/checkout_bloc.dart';
+import '../../features/profile/data/datasources/profile_remote_datasource.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/get_user_profile_usecase.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -254,6 +259,27 @@ Future<void> initDependencies() async {
     () => CheckoutBloc(
       createOrderUseCase: getIt<CreateOrderUseCase>(),
       getAddressesUseCase: getIt<GetAddressesUseCase>(),
+    ),
+  );
+
+  // Features - Profile (UC-26)
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(
+      dio: getIt<Dio>(),
+      storageService: getIt<LocalStorageService>(),
+    ),
+  );
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      remoteDataSource: getIt<ProfileRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetUserProfileUseCase>(
+    () => GetUserProfileUseCase(getIt<ProfileRepository>()),
+  );
+  getIt.registerFactory<ProfileCubit>(
+    () => ProfileCubit(
+      getUserProfileUseCase: getIt<GetUserProfileUseCase>(),
     ),
   );
 }

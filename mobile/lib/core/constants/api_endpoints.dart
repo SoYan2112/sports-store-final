@@ -16,4 +16,9 @@ class ApiEndpoints {
 
   // Addresses
   static const String addresses = '/addresses';
+
+  // User Profile & Authentication
+  static const String userProfile = '/users/me';
+  static const String authMe = '/auth/me';
+  static const String changePassword = '/auth/change-password';
 }
