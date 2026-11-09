@@ -29,4 +29,8 @@ public interface ProductService {
     ProductRatingPageResponse getProductRatings(String productId, Integer star, int page, int size, String sortBy);
 
     ProductRatingDTO addProductRating(String productId, AddRatingRequest request);
+
+    ProductDTO reduceStock(String productId, int quantity, String size, Long colorCode);
+
+    ProductDTO restoreStock(String productId, int quantity, String size, Long colorCode);
 }

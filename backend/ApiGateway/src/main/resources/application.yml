@@ -1,0 +1,85 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ApiGateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: identity-auth-route
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/v1/auth/**
+            - id: identity-address-route
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/v1/shipping-addresses/**
+            - id: product-route
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/v1/products/**
+            - id: category-route
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/v1/categories/**
+            - id: order-route
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/v1/orders/**
+            - id: cart-route
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/v1/cart/**
+            - id: voucher-route
+              uri: http://localhost:8084
+              predicates:
+                - Path=/api/v1/vouchers/**
+
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: localhost:${spring.application.name}:${server.port}
+    status-page-url-path: /actuator/health
+    health-check-url-path: /actuator/health
+  client:
+    restclient:
+      enabled: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      identityService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+      productService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+      orderService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+      voucherService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0

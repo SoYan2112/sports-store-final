@@ -1,0 +1,18 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:localhost}:1433;databaseName=sports_store;encrypt=true;trustServerCertificate=true
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970337336763979244226452948404D6351
+  expiration-ms: 86400000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}

@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: ApiGateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: identity-auth-route
+              uri: ${IDENTITY_SERVICE_URL:http://identity-service:8081}
+              predicates:
+                - Path=/api/v1/auth/**
+            - id: identity-address-route
+              uri: ${IDENTITY_SERVICE_URL:http://identity-service:8081}
+              predicates:
+                - Path=/api/v1/shipping-addresses/**
+            - id: product-route
+              uri: ${PRODUCT_SERVICE_URL:http://product-service:8082}
+              predicates:
+                - Path=/api/v1/products/**
+            - id: category-route
+              uri: ${PRODUCT_SERVICE_URL:http://product-service:8082}
+              predicates:
+                - Path=/api/v1/categories/**
+            - id: order-route
+              uri: ${ORDER_SERVICE_URL:http://order-service:8083}
+              predicates:
+                - Path=/api/v1/orders/**
+            - id: cart-route
+              uri: ${ORDER_SERVICE_URL:http://order-service:8083}
+              predicates:
+                - Path=/api/v1/cart/**
+            - id: voucher-route
+              uri: ${VOUCHER_SERVICE_URL:http://voucher-service:8084}
+              predicates:
+                - Path=/api/v1/vouchers/**
+
+eureka:
+  client:
+    restclient:
+      enabled: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://discovery-server:8761/eureka/}

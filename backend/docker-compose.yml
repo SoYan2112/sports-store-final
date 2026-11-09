@@ -1,0 +1,124 @@
+version: '3.9'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sports-store-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "StrongPassword@123"
+    ports:
+      - "1433:1433"
+    networks:
+      - sports-store-net
+
+  discovery-server:
+    build:
+      context: .
+      dockerfile: DiscoveryServer/Dockerfile
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    networks:
+      - sports-store-net
+
+  config-server:
+    build:
+      context: .
+      dockerfile: ConfigServer/Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      EUREKA_URI: http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      EUREKA_URI: http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: IdentityService/Dockerfile
+    container_name: identity-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - sqlserver
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ProductService/Dockerfile
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - sqlserver
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  order-service:
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - sqlserver
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  voucher-service:
+    build:
+      context: .
+      dockerfile: VoucherService/Dockerfile
+    container_name: voucher-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - sqlserver
+      - discovery-server
+    networks:
+      - sports-store-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sports-store-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api-gateway
+      - discovery-server
+    networks:
+      - sports-store-net
+
+networks:
+  sports-store-net:
+    driver: bridge
