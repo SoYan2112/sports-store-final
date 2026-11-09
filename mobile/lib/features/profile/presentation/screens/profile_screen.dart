@@ -125,23 +125,60 @@ class ProfileScreen extends StatelessWidget {
       color: Colors.white,
       borderRadius: BorderRadius.circular(20),
       clipBehavior: Clip.antiAlias,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        leading: const Icon(
-          Icons.receipt_long_outlined,
-          color: AppColors.primary,
-        ),
-        title: const Text(
-          'Lịch sử đơn hàng',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        subtitle: const Text('Xem danh sách đơn hàng'),
-        trailing: const Icon(Icons.chevron_right_rounded),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const OrderHistoryScreen()),
           );
         },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.receipt_long_outlined,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Lịch sử đơn hàng',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text('Xem danh sách đơn hàng'),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded),
+            ],
+          ),
+        ),
       ),
     );
   }
