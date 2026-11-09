@@ -144,11 +144,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           _buildDetailsCard(profile),
           const SizedBox(height: 24),
 
-          // 3. Thẻ Bảo mật tài khoản
-          _buildSectionHeader('Bảo mật tài khoản', Icons.security_outlined),
+          
           const SizedBox(height: 10),
-          _buildSecurityCard(),
-          const SizedBox(height: 32),
+          // _buildSecurityCard(),
+          // const SizedBox(height: 32),
 
           // 4. Nút chỉnh sửa hồ sơ (UC-27)
           _buildEditProfileButton(profile),
@@ -401,83 +400,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildSecurityCard() {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Tính năng đổi mật khẩu (UC-28)'),
-              duration: Duration(seconds: 1),
-            ),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.lock_reset_rounded,
-                  color: AppColors.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Đổi mật khẩu',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Cập nhật mật khẩu định kỳ để bảo vệ tài khoản',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.grey,
-                size: 16,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
+  
   Widget _buildEditProfileButton(UserProfileEntity profile) {
     return SizedBox(
       width: double.infinity,
