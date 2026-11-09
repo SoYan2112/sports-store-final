@@ -4,6 +4,8 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../datasources/profile_remote_datasource.dart';
 
+import '../models/user_profile_model.dart';
+
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource remoteDataSource;
 
@@ -18,6 +20,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
       throw ServerFailure(e.message);
     } catch (e) {
       throw ServerFailure('Không thể tải thông tin cá nhân: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<UserProfileEntity> updateUserProfile(UserProfileEntity profile) async {
+    try {
+      final model = UserProfileModel.fromEntity(profile);
+      final updated = await remoteDataSource.updateUserProfile(model);
+      return updated;
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } catch (e) {
+      throw ServerFailure('Không thể cập nhật hồ sơ: ${e.toString()}');
     }
   }
 }

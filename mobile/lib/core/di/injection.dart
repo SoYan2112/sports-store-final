@@ -60,7 +60,9 @@ import '../../features/profile/data/datasources/profile_remote_datasource.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_user_profile_usecase.dart';
+import '../../features/profile/domain/usecases/update_user_profile_usecase.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/profile/presentation/cubit/edit_profile_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -280,6 +282,16 @@ Future<void> initDependencies() async {
   getIt.registerFactory<ProfileCubit>(
     () => ProfileCubit(
       getUserProfileUseCase: getIt<GetUserProfileUseCase>(),
+    ),
+  );
+
+  // Features - Edit Profile (UC-27)
+  getIt.registerLazySingleton<UpdateUserProfileUseCase>(
+    () => UpdateUserProfileUseCase(getIt<ProfileRepository>()),
+  );
+  getIt.registerFactory<EditProfileCubit>(
+    () => EditProfileCubit(
+      updateUserProfileUseCase: getIt<UpdateUserProfileUseCase>(),
     ),
   );
 }

@@ -7,6 +7,7 @@ class LocalStorageService {
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserPhone = 'user_phone';
   static const String _keyUserGender = 'user_gender';
+  static const String _keyUserDob = 'user_dob';
   static const String _keyUserCreatedAt = 'user_created_at';
   static const String _keyUserAvatar = 'user_avatar';
 
@@ -57,6 +58,7 @@ class LocalStorageService {
       'email': _prefs.getString(_keyUserEmail) ?? '',
       'phone': _prefs.getString(_keyUserPhone) ?? '',
       'gender': _prefs.getString(_keyUserGender) ?? 'Nam',
+      'dob': _prefs.getString(_keyUserDob) ?? '',
       'created_at': _prefs.getString(_keyUserCreatedAt) ?? '',
       'avatar': _prefs.getString(_keyUserAvatar) ?? '',
     };
@@ -69,6 +71,7 @@ class LocalStorageService {
     required String email,
     String? phone,
     String? gender,
+    String? dob,
     String? createdAt,
     String? avatar,
   }) async {
@@ -77,6 +80,7 @@ class LocalStorageService {
     final s3 = await _prefs.setString(_keyUserEmail, email);
     if (phone != null) await _prefs.setString(_keyUserPhone, phone);
     if (gender != null) await _prefs.setString(_keyUserGender, gender);
+    if (dob != null) await _prefs.setString(_keyUserDob, dob);
     if (createdAt != null) await _prefs.setString(_keyUserCreatedAt, createdAt);
     if (avatar != null) await _prefs.setString(_keyUserAvatar, avatar);
     return s1 && s2 && s3;
@@ -90,6 +94,7 @@ class LocalStorageService {
     await _prefs.remove(_keyUserEmail);
     await _prefs.remove(_keyUserPhone);
     await _prefs.remove(_keyUserGender);
+    await _prefs.remove(_keyUserDob);
     await _prefs.remove(_keyUserCreatedAt);
     await _prefs.remove(_keyUserAvatar);
   }
