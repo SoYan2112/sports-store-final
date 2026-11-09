@@ -12,6 +12,9 @@
     <description>Sports Store Backend Multi-Module Microservices</description>
 
     <modules>
+        <module>DiscoveryServer</module>
+        <module>ConfigServer</module>
+        <module>ApiGateway</module>
         <module>IdentityService</module>
         <module>ProductService</module>
         <module>OrderService</module>

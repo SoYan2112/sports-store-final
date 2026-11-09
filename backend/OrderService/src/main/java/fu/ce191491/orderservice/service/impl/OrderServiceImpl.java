@@ -10,18 +10,26 @@ import fu.ce191491.orderservice.entity.OrderStatus;
 import fu.ce191491.orderservice.repository.OrderRepository;
 import fu.ce191491.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final RestClient restClient = RestClient.create();
+
+    @Value("${product.service.url:http://localhost:8082}")
+    private String productServiceUrl;
 
     @Override
     @Transactional(readOnly = true)
@@ -80,6 +88,11 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(System.currentTimeMillis());
 
         Order updatedOrder = orderRepository.save(order);
+
+        // Inter-service call: Hoàn lại tồn kho bên ProductService khi hủy đơn
+        for (OrderItem item : updatedOrder.getItems()) {
+            syncProductStock(item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), true);
+        }
 
         // 4. Trả về thông tin chi tiết đơn hàng sau khi cập nhật
         return mapToDetailResponse(updatedOrder);
@@ -192,6 +205,11 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        // Inter-service call: Gọi sang ProductService để trừ tồn kho khi tạo đơn hàng
+        for (OrderItem item : savedOrder.getItems()) {
+            syncProductStock(item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), false);
+        }
+
         return OrderCreateResponse.builder()
                 .id(savedOrder.getId())
                 .userId(savedOrder.getUserId())
@@ -277,5 +295,35 @@ public class OrderServiceImpl implements OrderService {
                         .itemTotal(item.getItemTotal())
                         .build()).toList())
                 .build();
+    }
+
+    private void syncProductStock(String productId, Integer quantity, String size, Long colorCode, boolean restore) {
+        if (productId == null || productId.isBlank()) {
+            return;
+        }
+        int qty = quantity != null && quantity > 0 ? quantity : 1;
+        String action = restore ? "restore" : "reduce";
+        try {
+            StringBuilder uri = new StringBuilder(productServiceUrl)
+                    .append("/api/v1/products/")
+                    .append(productId.trim())
+                    .append("/stock/")
+                    .append(action)
+                    .append("?quantity=")
+                    .append(qty);
+            if (size != null && !size.isBlank()) {
+                uri.append("&size=").append(size.trim());
+            }
+            if (colorCode != null) {
+                uri.append("&colorCode=").append(colorCode);
+            }
+            restClient.put()
+                    .uri(uri.toString())
+                    .retrieve()
+                    .toBodilessEntity();
+            log.info("Inter-service stock {} succeeded for productId={}, qty={}", action, productId, qty);
+        } catch (Exception ex) {
+            log.warn("Inter-service stock {} skipped for productId={}: {}", action, productId, ex.getMessage());
+        }
     }
 }

@@ -697,4 +697,67 @@ public class ProductServiceImpl implements ProductService {
                 .stock(product.getStock())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public ProductDTO reduceStock(String productId, int quantity, String size, Long colorCode) {
+        if (productId == null || productId.isBlank()) {
+            throw ApiException.badRequest("Mã sản phẩm không được để trống");
+        }
+        int qty = Math.max(1, quantity);
+        Product product = productRepository.findById(productId.trim())
+                .orElseThrow(() -> ApiException.notFound("Không tìm thấy sản phẩm với mã: " + productId));
+
+        int currentStock = product.getStock() != null ? product.getStock() : 0;
+        if (currentStock < qty) {
+            throw ApiException.badRequest("Sản phẩm '" + product.getName() + "' không đủ tồn kho (Còn lại: " + currentStock + ")");
+        }
+        product.setStock(currentStock - qty);
+        Product savedProduct = productRepository.save(product);
+
+        if (size != null && !size.isBlank()) {
+            List<ProductVariant> variants = productVariantRepository.findByProduct_Id(savedProduct.getId());
+            for (ProductVariant v : variants) {
+                boolean sizeMatch = size.trim().equalsIgnoreCase(v.getSize());
+                boolean colorMatch = colorCode == null || colorCode.equals(v.getColorCode());
+                if (sizeMatch && colorMatch) {
+                    int vStock = v.getStock() != null ? v.getStock() : 0;
+                    v.setStock(Math.max(0, vStock - qty));
+                    productVariantRepository.save(v);
+                    break;
+                }
+            }
+        }
+        return toProductDTO(savedProduct);
+    }
+
+    @Override
+    @Transactional
+    public ProductDTO restoreStock(String productId, int quantity, String size, Long colorCode) {
+        if (productId == null || productId.isBlank()) {
+            throw ApiException.badRequest("Mã sản phẩm không được để trống");
+        }
+        int qty = Math.max(1, quantity);
+        Product product = productRepository.findById(productId.trim())
+                .orElseThrow(() -> ApiException.notFound("Không tìm thấy sản phẩm với mã: " + productId));
+
+        int currentStock = product.getStock() != null ? product.getStock() : 0;
+        product.setStock(currentStock + qty);
+        Product savedProduct = productRepository.save(product);
+
+        if (size != null && !size.isBlank()) {
+            List<ProductVariant> variants = productVariantRepository.findByProduct_Id(savedProduct.getId());
+            for (ProductVariant v : variants) {
+                boolean sizeMatch = size.trim().equalsIgnoreCase(v.getSize());
+                boolean colorMatch = colorCode == null || colorCode.equals(v.getColorCode());
+                if (sizeMatch && colorMatch) {
+                    int vStock = v.getStock() != null ? v.getStock() : 0;
+                    v.setStock(vStock + qty);
+                    productVariantRepository.save(v);
+                    break;
+                }
+            }
+        }
+        return toProductDTO(savedProduct);
+    }
 }

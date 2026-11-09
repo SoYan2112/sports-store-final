@@ -1,0 +1,17 @@
+server:
+  port: ${PORT:8084}
+  address: 0.0.0.0
+
+spring:
+  application:
+    name: VoucherService
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:sqlserver}:1433;databaseName=sports_store_voucher;encrypt=true;trustServerCertificate=true
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false

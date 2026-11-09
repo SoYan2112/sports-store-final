@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -239,5 +240,41 @@ public class ProductController {
         ProductRatingDTO rating = productService.addProductRating(id, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Đánh giá sản phẩm thành công", rating));
+    }
+
+    @PutMapping("/{id}/stock/reduce")
+    @Operation(
+            summary = "Inter-Service API: Trừ tồn kho sản phẩm khi tạo đơn hàng",
+            description = "API nội bộ cho OrderService gọi sang khi khách hàng đặt hàng thành công để kiểm tra và trừ số lượng tồn kho (stock) của sản phẩm và biến thể Size/Màu."
+    )
+    public ResponseEntity<ApiResponse<ProductDTO>> reduceStock(
+            @Parameter(description = "Mã sản phẩm (VD: p1, p2)", example = "p1")
+            @PathVariable String id,
+            @Parameter(description = "Số lượng cần trừ", example = "1")
+            @RequestParam(defaultValue = "1") int quantity,
+            @Parameter(description = "Kích cỡ đã chọn (VD: 41)", example = "41")
+            @RequestParam(required = false) String size,
+            @Parameter(description = "Mã màu đã chọn", example = "4279900698")
+            @RequestParam(required = false) Long colorCode) {
+        ProductDTO updated = productService.reduceStock(id, quantity, size, colorCode);
+        return ResponseEntity.ok(ApiResponse.success("Trừ tồn kho sản phẩm thành công", updated));
+    }
+
+    @PutMapping("/{id}/stock/restore")
+    @Operation(
+            summary = "Inter-Service API: Hoàn lại tồn kho sản phẩm khi hủy đơn hàng",
+            description = "API nội bộ cho OrderService gọi sang khi khách hàng hủy đơn hàng để cộng trả lại số lượng tồn kho (stock) của sản phẩm và biến thể Size/Màu."
+    )
+    public ResponseEntity<ApiResponse<ProductDTO>> restoreStock(
+            @Parameter(description = "Mã sản phẩm (VD: p1, p2)", example = "p1")
+            @PathVariable String id,
+            @Parameter(description = "Số lượng cần hoàn lại", example = "1")
+            @RequestParam(defaultValue = "1") int quantity,
+            @Parameter(description = "Kích cỡ đã chọn (VD: 41)", example = "41")
+            @RequestParam(required = false) String size,
+            @Parameter(description = "Mã màu đã chọn", example = "4279900698")
+            @RequestParam(required = false) Long colorCode) {
+        ProductDTO updated = productService.restoreStock(id, quantity, size, colorCode);
+        return ResponseEntity.ok(ApiResponse.success("Hoàn lại tồn kho sản phẩm thành công", updated));
     }
 }

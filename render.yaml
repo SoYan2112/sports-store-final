@@ -1,0 +1,120 @@
+services:
+  - type: web
+    name: sports-store-discovery-server
+    runtime: docker
+    rootDir: backend/DiscoveryServer
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8761
+
+  - type: web
+    name: sports-store-config-server
+    runtime: docker
+    rootDir: backend/ConfigServer
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8888
+      - key: EUREKA_URI
+        value: http://sports-store-discovery-server:8761/eureka/
+
+  - type: web
+    name: sports-store-api-gateway
+    runtime: docker
+    rootDir: backend/ApiGateway
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080
+      - key: EUREKA_URI
+        value: http://sports-store-discovery-server:8761/eureka/
+      - key: IDENTITY_SERVICE_URL
+        value: http://sports-store-identity-service:8081
+      - key: PRODUCT_SERVICE_URL
+        value: http://sports-store-product-service:8082
+      - key: ORDER_SERVICE_URL
+        value: http://sports-store-order-service:8083
+      - key: VOUCHER_SERVICE_URL
+        value: http://sports-store-voucher-service:8084
+
+  - type: web
+    name: sports-store-identity-service
+    runtime: docker
+    rootDir: backend/IdentityService
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8081
+      - key: DB_HOST
+        sync: false
+      - key: DB_USERNAME
+        value: sa
+      - key: DB_PASSWORD
+        sync: false
+
+  - type: web
+    name: sports-store-product-service
+    runtime: docker
+    rootDir: backend/ProductService
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8082
+      - key: DB_HOST
+        sync: false
+      - key: DB_USERNAME
+        value: sa
+      - key: DB_PASSWORD
+        sync: false
+
+  - type: web
+    name: sports-store-order-service
+    runtime: docker
+    rootDir: backend/OrderService
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8083
+      - key: DB_HOST
+        sync: false
+      - key: DB_USERNAME
+        value: sa
+      - key: DB_PASSWORD
+        sync: false
+
+  - type: web
+    name: sports-store-voucher-service
+    runtime: docker
+    rootDir: backend/VoucherService
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8084
+      - key: DB_HOST
+        sync: false
+      - key: DB_USERNAME
+        value: sa
+      - key: DB_PASSWORD
+        sync: false
