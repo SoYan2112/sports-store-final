@@ -17,11 +17,7 @@ class ProductListScreen extends StatefulWidget {
   final String? categoryId;
   final String? categoryName;
 
-  const ProductListScreen({
-    super.key,
-    this.categoryId,
-    this.categoryName,
-  });
+  const ProductListScreen({super.key, this.categoryId, this.categoryName});
 
   @override
   State<ProductListScreen> createState() => _ProductListScreenState();
@@ -42,7 +38,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void initState() {
     super.initState();
     // Kích hoạt tải danh sách sản phẩm lần đầu (kèm lọc theo danh mục nếu có)
-    context.read<ProductBloc>().add(FetchProductsEvent(categoryId: widget.categoryId));
+    context.read<ProductBloc>().add(
+      FetchProductsEvent(categoryId: widget.categoryId),
+    );
 
     // Thiết lập Infinite Scroll: kích hoạt FetchMoreProductsEvent khi cuộn gần cuối danh sách
     _scrollController.addListener(_onScroll);
@@ -111,7 +109,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   borderRadius: BorderRadius.circular(14),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.04),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.04,
+                                      ),
                                       blurRadius: 8,
                                     ),
                                   ],
@@ -142,47 +142,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Row(
-                        children: [
-                          // Nút thông báo
-                          Stack(
-                            children: [
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(14),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.04),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.notifications_none_rounded,
-                                  size: 24,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                              Positioned(
-                                top: 10,
-                                right: 12,
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+
                     ],
                   ),
                 ),
@@ -253,7 +213,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 8,
                                     offset: const Offset(0, 3),
                                   ),
@@ -313,12 +275,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           itemBuilder: (context, index) {
                             final isSelected = index == 0
                                 ? filterState.selectedBrands.isEmpty
-                                : filterState.selectedBrands.contains(_brands[index]);
+                                : filterState.selectedBrands.contains(
+                                    _brands[index],
+                                  );
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: GestureDetector(
                                 onTap: () {
-                                  final brand = index == 0 ? null : _brands[index];
+                                  final brand = index == 0
+                                      ? null
+                                      : _brands[index];
                                   context.read<FilterCubit>().updateFilter(
                                     brands: brand == null ? [] : [brand],
                                     categories: filterState.selectedCategories,
@@ -343,7 +309,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                             ? AppColors.primary.withValues(
                                                 alpha: 0.25,
                                               )
-                                            : Colors.black.withValues(alpha: 0.02),
+                                            : Colors.black.withValues(
+                                                alpha: 0.02,
+                                              ),
                                         blurRadius: 8,
                                         offset: const Offset(0, 3),
                                       ),
@@ -374,51 +342,20 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 },
               ),
 
-              // 4. Section Title: "Sản phẩm nổi bật"
+              // 4. Section Title: "Danh sách sản phẩm"
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 6,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Sản phẩm phổ biến',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Row(
-                          children: [
-                            Text(
-                              'Xem tất cả',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 14,
-                              color: AppColors.primary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  child: const Text(
+                    'Danh sách sản phẩm',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ),
@@ -511,16 +448,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   if (!filterState.isDefault) ...[
                                     const SizedBox(height: 16),
                                     ElevatedButton.icon(
-                                      key: const Key('product_reset_filter_button'),
+                                      key: const Key(
+                                        'product_reset_filter_button',
+                                      ),
                                       onPressed: () =>
                                           context.read<FilterCubit>().reset(),
-                                      icon: const Icon(Icons.refresh_rounded, size: 18),
+                                      icon: const Icon(
+                                        Icons.refresh_rounded,
+                                        size: 18,
+                                      ),
                                       label: const Text('Đặt lại bộ lọc'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppColors.primary,
                                         foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -544,14 +488,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   crossAxisSpacing: 14,
                                   mainAxisSpacing: 16,
                                 ),
-                            delegate: SliverChildBuilderDelegate((context, index) {
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
                               final product = filteredProducts[index];
                               return ProductCard(
                                 product: product,
                                 onTap: () {
-                                  Navigator.of(context).push(
-                                    ProductDetailScreen.route(product),
-                                  );
+                                  Navigator.of(context)
+                                      .push(ProductDetailScreen.route(product));
                                 },
                               );
                             }, childCount: filteredProducts.length),

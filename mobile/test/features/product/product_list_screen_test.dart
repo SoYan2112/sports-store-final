@@ -86,7 +86,7 @@ void main() {
     ));
     await tester.pump();
     expect(find.text('Giày thể thao'), findsOneWidget);
-    expect(find.text('Sản phẩm phổ biến'), findsOneWidget);
+    expect(find.text('Danh sách sản phẩm'), findsOneWidget);
     expect(find.byType(ProductListScreen), findsOneWidget);
   });
 }
