@@ -1,4 +1,61 @@
+import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../database/app_database.dart';
+import '../network/dio_client.dart';
+import '../storage/local_storage_service.dart';
+
+// Features - Auth
+import '../../features/auth/data/datasources/auth_service.dart';
+import '../../features/auth/data/repositories/auth_repository.dart';
+import '../../features/auth/domain/repositories/auth_repository_interface.dart';
+import '../../features/auth/domain/usecases/register_usecase.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/auth/presentation/cubit/register_cubit.dart';
+
+// Features - Category
+import '../../features/category/data/datasources/category_local_datasource.dart';
+import '../../features/category/data/datasources/category_remote_datasource.dart';
+import '../../features/category/data/repositories/category_repository_impl.dart';
+import '../../features/category/domain/repositories/category_repository.dart';
+import '../../features/category/domain/usecases/get_categories_usecase.dart';
+import '../../features/category/presentation/cubit/category_cubit.dart';
+
+// Features - Product
+import '../../features/product/data/datasources/product_local_datasource.dart';
+import '../../features/product/data/datasources/product_remote_datasource.dart';
+import '../../features/product/data/repositories/product_repository_impl.dart';
+import '../../features/product/domain/repositories/product_repository.dart';
+import '../../features/product/domain/usecases/get_product_detail_usecase.dart';
+import '../../features/product/domain/usecases/get_products_usecase.dart';
+import '../../features/product/presentation/bloc/product_bloc.dart';
+import '../../features/product/presentation/cubit/filter_cubit.dart';
+import '../../features/product/presentation/cubit/product_detail_cubit.dart';
+import '../../features/product/presentation/cubit/search_cubit.dart';
+
+// Features - Voucher
+import '../../features/voucher/data/datasources/voucher_local_datasource.dart';
+import '../../features/voucher/data/datasources/voucher_remote_datasource.dart';
+import '../../features/voucher/data/repositories/voucher_repository_impl.dart';
+import '../../features/voucher/domain/repositories/voucher_repository.dart';
+import '../../features/voucher/domain/usecases/get_vouchers_usecase.dart';
+import '../../features/voucher/presentation/cubit/voucher_cubit.dart';
+
+// Features - Address
+import '../../features/address/data/datasources/address_local_datasource.dart';
+import '../../features/address/data/datasources/address_remote_datasource.dart';
+import '../../features/address/data/repositories/address_repository_impl.dart';
+import '../../features/address/domain/repositories/address_repository.dart';
+import '../../features/address/domain/usecases/add_address_usecase.dart';
+import '../../features/address/domain/usecases/delete_address_usecase.dart';
+import '../../features/address/domain/usecases/get_addresses_usecase.dart';
+import '../../features/address/domain/usecases/update_address_usecase.dart';
+import '../../features/address/presentation/cubit/address_cubit.dart';
+
+// Features - Cart
 import '../../features/cart/data/datasources/cart_local_datasource.dart';
+import '../../features/cart/data/datasources/cart_sqlite_datasource.dart';
 import '../../features/cart/data/repositories/cart_repository_impl.dart';
 import '../../features/cart/domain/repositories/cart_repository.dart';
 import '../../features/cart/domain/usecases/add_to_cart_usecase.dart';
@@ -8,77 +65,46 @@ import '../../features/cart/domain/usecases/remove_from_cart_usecase.dart';
 import '../../features/cart/domain/usecases/update_cart_quantity_usecase.dart';
 import '../../features/cart/presentation/bloc/cart_bloc.dart';
 
-import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
-
-import '../network/dio_client.dart';
-import '../../features/auth/data/datasources/auth_service.dart';
-import '../../features/auth/data/repositories/auth_repository.dart';
-import '../../features/auth/domain/repositories/auth_repository_interface.dart';
-import '../../features/auth/domain/usecases/register_usecase.dart';
-import '../../features/auth/presentation/cubit/register_cubit.dart';
-import '../../features/product/data/datasources/product_remote_datasource.dart';
-import '../../features/product/data/repositories/product_repository_impl.dart';
-import '../../features/product/domain/repositories/product_repository.dart';
-import '../../features/product/domain/usecases/get_product_detail_usecase.dart';
-import '../../features/product/domain/usecases/get_products_usecase.dart';
-import '../../features/product/presentation/bloc/product_bloc.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../storage/local_storage_service.dart';
-import '../../features/auth/presentation/cubit/auth_cubit.dart';
-import '../../features/category/data/datasources/category_remote_datasource.dart';
-import '../../features/category/data/repositories/category_repository_impl.dart';
-import '../../features/category/domain/repositories/category_repository.dart';
-import '../../features/category/domain/usecases/get_categories_usecase.dart';
-import '../../features/category/presentation/cubit/category_cubit.dart';
-import '../../features/product/presentation/cubit/product_detail_cubit.dart';
-import '../../features/product/presentation/cubit/search_cubit.dart';
-import '../../features/product/presentation/cubit/filter_cubit.dart';
-import '../../features/voucher/data/datasources/voucher_remote_datasource.dart';
-import '../../features/voucher/data/repositories/voucher_repository_impl.dart';
-import '../../features/voucher/domain/repositories/voucher_repository.dart';
-import '../../features/voucher/domain/usecases/get_vouchers_usecase.dart';
-import '../../features/voucher/presentation/cubit/voucher_cubit.dart';
-import '../../features/address/data/datasources/address_remote_datasource.dart';
-import '../../features/address/data/repositories/address_repository_impl.dart';
-import '../../features/address/domain/repositories/address_repository.dart';
-import '../../features/address/domain/usecases/add_address_usecase.dart';
-import '../../features/address/domain/usecases/delete_address_usecase.dart';
-import '../../features/address/domain/usecases/get_addresses_usecase.dart';
-import '../../features/address/domain/usecases/update_address_usecase.dart';
-import '../../features/address/presentation/cubit/address_cubit.dart';
+// Features - Order
+import '../../features/order/data/datasources/order_local_datasource.dart';
 import '../../features/order/data/datasources/order_remote_datasource.dart';
 import '../../features/order/data/repositories/order_repository_impl.dart';
 import '../../features/order/domain/repositories/order_repository.dart';
 import '../../features/order/domain/usecases/cancel_order_usecase.dart';
 import '../../features/order/domain/usecases/create_order_usecase.dart';
-import '../../features/order/presentation/cubit/cancel_order_cubit.dart';
 import '../../features/order/presentation/bloc/checkout_bloc.dart';
+import '../../features/order/presentation/cubit/cancel_order_cubit.dart';
+
+// Features - Profile
+import '../../features/profile/data/datasources/profile_local_datasource.dart';
 import '../../features/profile/data/datasources/profile_remote_datasource.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/get_user_profile_usecase.dart';
 import '../../features/profile/domain/usecases/update_user_profile_usecase.dart';
-import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/profile/presentation/cubit/edit_profile_cubit.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
-  // Storage
+  // 1. Core Database (SQLite)
+  final appDatabase = AppDatabase.instance;
+  await appDatabase.database;
+  getIt.registerLazySingleton<AppDatabase>(() => appDatabase);
+
+  // 2. Storage (SharedPreferences cho Session/Token)
   final sharedPreferences = await SharedPreferences.getInstance();
   getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   getIt.registerLazySingleton<LocalStorageService>(
     () => LocalStorageService(getIt<SharedPreferences>()),
   );
 
-  // Network
+  // 3. Network (Dio - giữ nguyên để không ảnh hưởng tests hoặc phụ thuộc cũ)
   getIt.registerLazySingleton<DioClient>(() => DioClient());
   getIt.registerLazySingleton<Dio>(() => getIt<DioClient>().dio);
 
-  // Features - Auth
+  // 4. Features - Auth (SQLite Bảng users)
   getIt.registerLazySingleton<AuthService>(() => AuthService());
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepository(authService: getIt<AuthService>()),
@@ -99,9 +125,9 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // Features - Category Data Source & Repository
+  // 5. Features - Category (SQLite Bảng categories)
   getIt.registerLazySingleton<CategoryRemoteDataSource>(
-    () => CategoryRemoteDataSourceImpl(dio: getIt<Dio>()),
+    () => CategoryLocalDataSourceImpl(appDatabase: getIt<AppDatabase>()),
   );
   getIt.registerLazySingleton<CategoryRepository>(
     () => CategoryRepositoryImpl(
@@ -115,27 +141,21 @@ Future<void> initDependencies() async {
     () => CategoryCubit(getCategoriesUseCase: getIt<GetCategoriesUseCase>()),
   );
 
-  // Features - Product Data Source
+  // 6. Features - Product (SQLite Bảng products & product_ratings)
   getIt.registerLazySingleton<ProductRemoteDataSource>(
-    () => ProductRemoteDataSourceImpl(dio: getIt<Dio>()),
+    () => ProductLocalDataSourceImpl(appDatabase: getIt<AppDatabase>()),
   );
-
-  // Features - Product Repository
   getIt.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(
       remoteDataSource: getIt<ProductRemoteDataSource>(),
     ),
   );
-
-  // Features - Product Use Cases
   getIt.registerLazySingleton<GetProductsUseCase>(
     () => GetProductsUseCase(getIt<ProductRepository>()),
   );
   getIt.registerLazySingleton<GetProductDetailUseCase>(
     () => GetProductDetailUseCase(getIt<ProductRepository>()),
   );
-
-  // Features - Product Bloc & Cubit
   getIt.registerFactory<ProductBloc>(
     () => ProductBloc(getProductsUseCase: getIt<GetProductsUseCase>()),
   );
@@ -149,9 +169,9 @@ Future<void> initDependencies() async {
   );
   getIt.registerLazySingleton<FilterCubit>(() => FilterCubit());
 
-  // Features - Voucher
+  // 7. Features - Voucher (SQLite Bảng vouchers)
   getIt.registerLazySingleton<VoucherRemoteDataSource>(
-    () => VoucherRemoteDataSourceImpl(dio: getIt<Dio>()),
+    () => VoucherLocalDataSourceImpl(appDatabase: getIt<AppDatabase>()),
   );
   getIt.registerLazySingleton<VoucherRepository>(
     () => VoucherRepositoryImpl(
@@ -165,11 +185,11 @@ Future<void> initDependencies() async {
     () => VoucherCubit(getVouchersUseCase: getIt<GetVouchersUseCase>()),
   );
 
-  // Features - Address
+  // 8. Features - Address (SQLite Bảng shipping_addresses)
   getIt.registerLazySingleton<AddressRemoteDataSource>(
-    () => AddressRemoteDataSourceImpl(
-      dio: getIt<Dio>(),
-      sharedPreferences: getIt<SharedPreferences>(),
+    () => AddressLocalDataSourceImpl(
+      appDatabase: getIt<AppDatabase>(),
+      storageService: getIt<LocalStorageService>(),
     ),
   );
   getIt.registerLazySingleton<AddressRepository>(
@@ -198,10 +218,10 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // Features - Cart
+  // 9. Features - Cart (SQLite Bảng cart_items)
   getIt.registerLazySingleton<CartLocalDataSource>(
-    () => CartLocalDataSourceImpl(
-      sharedPreferences: getIt<SharedPreferences>(),
+    () => CartSqliteDataSourceImpl(
+      appDatabase: getIt<AppDatabase>(),
       storageService: getIt<LocalStorageService>(),
     ),
   );
@@ -233,11 +253,10 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // Features - Order & Checkout
+  // 10. Features - Order & Checkout (SQLite Bảng orders & order_items)
   getIt.registerLazySingleton<OrderRemoteDataSource>(
-    () => OrderRemoteDataSourceImpl(
-      dio: getIt<Dio>(),
-      sharedPreferences: getIt<SharedPreferences>(),
+    () => OrderLocalDataSourceImpl(
+      appDatabase: getIt<AppDatabase>(),
       storageService: getIt<LocalStorageService>(),
     ),
   );
@@ -264,12 +283,15 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // Features - Profile (UC-26)
+  // 11. Features - Profile & Password (SQLite Bảng users)
   getIt.registerLazySingleton<ProfileRemoteDataSource>(
-    () => ProfileRemoteDataSourceImpl(
-      dio: getIt<Dio>(),
+    () => ProfileLocalDataSourceImpl(
+      appDatabase: getIt<AppDatabase>(),
       storageService: getIt<LocalStorageService>(),
     ),
+  );
+  getIt.registerLazySingleton<ProfileLocalDataSource>(
+    () => getIt<ProfileRemoteDataSource>() as ProfileLocalDataSource,
   );
   getIt.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(
@@ -284,8 +306,6 @@ Future<void> initDependencies() async {
       getUserProfileUseCase: getIt<GetUserProfileUseCase>(),
     ),
   );
-
-  // Features - Edit Profile (UC-27)
   getIt.registerLazySingleton<UpdateUserProfileUseCase>(
     () => UpdateUserProfileUseCase(getIt<ProfileRepository>()),
   );

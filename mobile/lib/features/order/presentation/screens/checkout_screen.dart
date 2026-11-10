@@ -421,7 +421,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                       child: Image.network(
                         item.imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
+                        errorBuilder: (context, error, stackTrace) => const Icon(
                           Icons.directions_run_rounded,
                           color: AppColors.primary,
                           size: 30,

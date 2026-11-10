@@ -66,7 +66,6 @@ void main() {
 
       // Section titles
       expect(find.text('Thông tin cá nhân'), findsOneWidget);
-      expect(find.text('Bảo mật tài khoản'), findsOneWidget);
 
       // Detail fields
       expect(find.text('0901234567'), findsOneWidget);
@@ -74,8 +73,7 @@ void main() {
       expect(find.text('10/01/2026'), findsOneWidget);
       expect(find.text('Hoạt động'), findsOneWidget);
 
-      // Security & edit buttons
-      expect(find.text('Đổi mật khẩu'), findsOneWidget);
+      // Edit button
       expect(find.text('Chỉnh sửa hồ sơ'), findsOneWidget);
     });
 

@@ -51,13 +51,17 @@ void main() {
       expect(find.text('Nguyễn Văn A'), findsOneWidget);
       expect(find.text('a@gmail.com'), findsOneWidget);
 
-      // Kiểm tra thẻ Hồ sơ cá nhân (UC-26)
-      expect(find.text('Hồ sơ cá nhân'), findsOneWidget);
-      expect(find.text('Xem thông tin tài khoản & thành viên'), findsOneWidget);
+      // Kiểm tra thẻ Lịch sử đơn hàng
+      expect(find.text('Lịch sử đơn hàng'), findsOneWidget);
+      expect(find.text('Xem danh sách đơn hàng'), findsOneWidget);
 
       // Kiểm tra thẻ Kho Voucher & Ưu đãi
       expect(find.text('Kho Voucher & Ưu đãi'), findsOneWidget);
       expect(find.text('Xem mã giảm giá & freeship có sẵn'), findsOneWidget);
+
+      // Kiểm tra thẻ Địa chỉ
+      expect(find.text('Địa chỉ'), findsOneWidget);
+      expect(find.text('Quản lý địa chỉ nhận đồ thể thao'), findsOneWidget);
 
       // Kiểm tra thẻ Đổi mật khẩu (UC-28)
       expect(find.text('Đổi mật khẩu'), findsOneWidget);

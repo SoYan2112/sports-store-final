@@ -1,0 +1,18 @@
+# IDE & Editor
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Build and package
+target/
+*.class
+*.jar
+*.war
+
+# Database backup binaries
+database/*.bak
+
+# Logs & Temp
+*.log
+staging*/
