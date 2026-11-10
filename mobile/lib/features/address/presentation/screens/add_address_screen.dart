@@ -7,11 +7,29 @@ import '../cubit/address_cubit.dart';
 import '../cubit/address_state.dart';
 import '../widgets/vietnam_address_picker_bottom_sheet.dart';
 
+/// ============================================================================
+/// MÀN HÌNH THÊM ĐỊA CHỈ GIAO HÀNG MỚI (ADD ADDRESS SCREEN - UC-29)
+/// ============================================================================
+/// Màn hình này chịu trách nhiệm:
+/// 1. Cung cấp form nhập thông tin người nhận hàng:
+///    - Họ và tên người nhận, Số điện thoại liên hệ.
+///    - Bộ chọn địa giới hành chính Việt Nam 3 cấp: Tỉnh/Thành phố -> Quận/Huyện -> Phường/Xã.
+///    - Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà).
+///    - Phân loại địa chỉ: Nhà riêng / Văn phòng.
+///    - Tùy chọn đặt làm địa chỉ mặc định.
+/// 2. Xác thực (validation) dữ liệu:
+///    - Tên người nhận >= 2 ký tự.
+///    - SĐT chuẩn 10 số nhà mạng VN (+84, 03x, 05x, 07x, 08x, 09x).
+///    - Bắt buộc chọn đầy đủ 3 cấp hành chính.
+///    - Địa chỉ chi tiết >= 5 ký tự.
+/// 3. Gửi thông tin qua [AddressCubit.addAddress], lưu vào SQLite / API và đóng màn hình.
 class AddAddressScreen extends StatefulWidget {
   final AddressCubit? cubit;
 
   const AddAddressScreen({super.key, this.cubit});
 
+  /// Phương thức static tạo Route điều hướng đến AddAddressScreen.
+  /// Hỗ trợ tái sử dụng [AddressCubit] từ màn hình gọi nếu có.
   static Route<AddressEntity?> route({AddressCubit? cubit}) {
     return MaterialPageRoute<AddressEntity?>(
       builder: (_) {
@@ -31,17 +49,23 @@ class AddAddressScreen extends StatefulWidget {
 }
 
 class _AddAddressScreenState extends State<AddAddressScreen> {
+  /// Controller quản lý các trường nhập văn bản
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _streetController = TextEditingController();
 
+  /// Biến lưu địa giới hành chính 3 cấp Việt Nam
   String? _selectedProvince;
   String? _selectedDistrict;
   String? _selectedWard;
 
+  /// Nhãn địa chỉ (mặc định: Nhà riêng)
   AddressLabel _selectedLabel = AddressLabel.home;
+
+  /// Trạng thái đặt làm địa chỉ mặc định
   bool _isDefault = false;
 
+  /// Chuỗi thông báo lỗi validation cho từng trường
   String? _nameError;
   String? _phoneError;
   String? _areaError;
@@ -49,12 +73,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   @override
   void dispose() {
+    // Hủy các controller khi màn hình đóng để tránh rò rỉ bộ nhớ
     _nameController.dispose();
     _phoneController.dispose();
     _streetController.dispose();
     super.dispose();
   }
 
+  /// Kiểm tra tính hợp lệ của dữ liệu trước khi lưu
   bool _validateInputs() {
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
@@ -65,14 +91,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     String? areaErr;
     String? streetErr;
 
-    // 1. Họ và tên
+    // 1. Kiểm tra Họ và tên người nhận (không để trống, ít nhất 2 ký tự)
     if (name.isEmpty) {
       nameErr = 'Vui lòng nhập họ và tên người nhận';
     } else if (name.length < 2) {
       nameErr = 'Họ và tên phải có ít nhất 2 ký tự';
     }
 
-    // 2. Số điện thoại chuẩn Việt Nam (+84 hoặc 03x, 05x, 07x, 08x, 09x - 10 chữ số)
+    // 2. Kiểm tra Số điện thoại chuẩn Việt Nam (+84 hoặc 03x, 05x, 07x, 08x, 09x - 10 chữ số)
     final phoneRegex = RegExp(
       r'^(?:(?:\+84)|0)(3[2-9]|5[25689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$',
     );
@@ -83,14 +109,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       phoneErr = 'Số điện thoại không hợp lệ (ví dụ: 0901234567)';
     }
 
-    // 3. Khu vực 3 cấp
+    // 3. Kiểm tra Khu vực 3 cấp (Bắt buộc chọn đủ Tỉnh, Huyện, Xã)
     if (_selectedProvince == null ||
         _selectedDistrict == null ||
         _selectedWard == null) {
       areaErr = 'Vui lòng chọn Tỉnh/Thành phố, Quận/Huyện, Phường/Xã';
     }
 
-    // 4. Địa chỉ cụ thể
+    // 4. Kiểm tra Địa chỉ cụ thể (tối thiểu 5 ký tự)
     if (street.isEmpty) {
       streetErr = 'Vui lòng nhập số nhà, tên đường cụ thể';
     } else if (street.length < 5) {
@@ -110,6 +136,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         streetErr == null;
   }
 
+  /// Mở BottomSheet chọn địa giới hành chính 3 cấp Việt Nam
   Future<void> _openAreaPicker() async {
     final result = await VietnamAddressPickerBottomSheet.show(
       context,
@@ -128,6 +155,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     }
   }
 
+  /// Xử lý gửi form thêm địa chỉ
   void _submit() {
     if (!_validateInputs()) return;
 
@@ -147,6 +175,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AddressCubit, AddressState>(
       listener: (context, state) {
+        // TRƯỜNG HỢP 1: Thêm thành công
         if (state is AddressAddSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -155,8 +184,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               behavior: SnackBarBehavior.floating,
             ),
           );
+          // Trả địa chỉ mới về màn hình trước
           Navigator.of(context).pop(state.newAddress);
-        } else if (state is AddressError) {
+        } 
+        // TRƯỜNG HỢP 2: Thất bại
+        else if (state is AddressError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -218,6 +250,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           ),
                           child: Column(
                             children: [
+                              // Họ và tên người nhận
                               _buildTextField(
                                 keyName: 'recipientNameField',
                                 controller: _nameController,
@@ -228,6 +261,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                 textCapitalization: TextCapitalization.words,
                               ),
                               const Divider(height: 24, color: AppColors.divider),
+                              // Số điện thoại người nhận
                               _buildTextField(
                                 keyName: 'phoneNumberField',
                                 controller: _phoneController,
@@ -242,7 +276,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // PHẦN 2: ĐỊA CHỈ
+                        // PHẦN 2: ĐỊA CHỈ NHẬN HÀNG
                         _buildSectionHeader('Địa chỉ nhận hàng'),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -262,6 +296,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                               // Bộ chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã
                               _buildAreaSelector(),
                               const Divider(height: 24, color: AppColors.divider),
+                              // Tên đường, tòa nhà, số nhà
                               _buildTextField(
                                 keyName: 'streetAddressField',
                                 controller: _streetController,
@@ -277,7 +312,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // PHẦN 3: CÀI ĐẶT
+                        // PHẦN 3: CÀI ĐẶT (Loại địa chỉ & Mặc định)
                         _buildSectionHeader('Cài đặt'),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -304,6 +339,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
+                              // Chọn Nhà riêng hoặc Văn phòng
                               Row(
                                 children: [
                                   _buildTypeChip(
@@ -333,7 +369,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                               ),
                               const Divider(height: 24, color: AppColors.divider),
 
-                              // Switch mặc định
+                              // Switch: Đặt làm địa chỉ mặc định
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -382,7 +418,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   ),
                 ),
 
-                // NÚT LƯU ĐỊA CHỈ
+                // NÚT HOÀN THÀNH LƯU ĐỊA CHỈ
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -440,6 +476,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
+  /// Tiêu đề phân mục
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
@@ -455,6 +492,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
+  /// Khung nhập text tùy biến
   Widget _buildTextField({
     required String keyName,
     required TextEditingController controller,
@@ -519,6 +557,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
+  /// Khung lựa chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã
   Widget _buildAreaSelector() {
     final hasSelected = _selectedProvince != null &&
         _selectedDistrict != null &&
@@ -601,6 +640,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
+  /// Chip lựa chọn loại địa chỉ (Nhà riêng / Văn phòng)
   Widget _buildTypeChip({
     required String label,
     required IconData icon,

@@ -7,6 +7,16 @@ import '../cubit/address_cubit.dart';
 import '../cubit/address_state.dart';
 import '../widgets/vietnam_address_picker_bottom_sheet.dart';
 
+/// ============================================================================
+/// MÀN HÌNH CHỈNH SỬA / XÓA ĐỊA CHỈ GIAO HÀNG (EDIT ADDRESS SCREEN - UC-30, UC-31)
+/// ============================================================================
+/// Màn hình này chịu trách nhiệm:
+/// 1. Nhận thông tin địa chỉ hiện tại (`address`), điền trước vào các ô nhập.
+/// 2. Cho phép sửa: Họ tên, Số điện thoại, Địa giới hành chính 3 cấp, Số nhà/đường,
+///    Loại địa chỉ (Nhà riêng/Văn phòng), và Trạng thái mặc định.
+/// 3. Xác thực (validation) dữ liệu trước khi gửi cập nhật.
+/// 4. Hỗ trợ thao tác Xóa địa chỉ kèm hộp thoại xác nhận (AlertDialog) tránh xóa nhầm.
+/// 5. Đồng bộ kết quả qua [AddressCubit.updateAddress] hoặc [AddressCubit.deleteAddress].
 class EditAddressScreen extends StatefulWidget {
   final AddressEntity address;
   final AddressCubit? cubit;
@@ -17,6 +27,8 @@ class EditAddressScreen extends StatefulWidget {
     this.cubit,
   });
 
+  /// Phương thức static tạo Route điều hướng đến EditAddressScreen.
+  /// Hỗ trợ tái sử dụng [AddressCubit] từ màn hình gọi nếu có.
   static Route<AddressEntity?> route({
     required AddressEntity address,
     AddressCubit? cubit,
@@ -39,17 +51,21 @@ class EditAddressScreen extends StatefulWidget {
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
+  /// Controller quản lý text của từng ô nhập
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
   late final TextEditingController _streetController;
 
+  /// Biến lưu địa giới hành chính 3 cấp
   String? _selectedProvince;
   String? _selectedDistrict;
   String? _selectedWard;
 
+  /// Nhãn địa chỉ và trạng thái mặc định
   late AddressLabel _selectedLabel;
   late bool _isDefault;
 
+  /// Biến lưu thông báo lỗi validation
   String? _nameError;
   String? _phoneError;
   String? _areaError;
@@ -58,6 +74,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   void initState() {
     super.initState();
+    // Đổ dữ liệu có sẵn từ widget.address vào form
     _nameController = TextEditingController(text: widget.address.recipientName);
     _phoneController = TextEditingController(text: widget.address.phoneNumber);
     _streetController = TextEditingController(text: widget.address.streetAddress);
@@ -70,12 +87,14 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
 
   @override
   void dispose() {
+    // Giải phóng bộ nhớ của các controller
     _nameController.dispose();
     _phoneController.dispose();
     _streetController.dispose();
     super.dispose();
   }
 
+  /// Kiểm tra tính hợp lệ của dữ liệu trước khi cập nhật
   bool _validateInputs() {
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
@@ -86,7 +105,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     String? areaErr;
     String? streetErr;
 
-    // 1. Họ và tên
+    // 1. Họ và tên người nhận
     if (name.isEmpty) {
       nameErr = 'Vui lòng nhập họ và tên người nhận';
     } else if (name.length < 2) {
@@ -131,6 +150,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         streetErr == null;
   }
 
+  /// Mở BottomSheet chọn địa giới hành chính 3 cấp Việt Nam
   Future<void> _openAreaPicker() async {
     final result = await VietnamAddressPickerBottomSheet.show(
       context,
@@ -149,6 +169,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     }
   }
 
+  /// Hộp thoại xác nhận trước khi xóa địa chỉ (UC-31)
   Future<void> _confirmDelete() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -195,11 +216,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       ),
     );
 
+    // Nếu người dùng xác nhận Xóa -> Gọi deleteAddress qua AddressCubit
     if (confirm == true && mounted) {
       context.read<AddressCubit>().deleteAddress(widget.address.id);
     }
   }
 
+  /// Xử lý cập nhật thông tin địa chỉ
   void _submit() {
     if (!_validateInputs()) return;
 
@@ -220,6 +243,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AddressCubit, AddressState>(
       listener: (context, state) {
+        // TRƯỜNG HỢP 1: Cập nhật thành công
         if (state is AddressUpdateSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -229,7 +253,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             ),
           );
           Navigator.of(context).pop(state.updatedAddress);
-        } else if (state is AddressDeleteSuccess) {
+        } 
+        // TRƯỜNG HỢP 2: Xóa thành công
+        else if (state is AddressDeleteSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Đã xóa địa chỉ giao hàng thành công!'),
@@ -238,7 +264,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             ),
           );
           Navigator.of(context).pop();
-        } else if (state is AddressError) {
+        } 
+        // TRƯỜNG HỢP 3: Lỗi
+        else if (state is AddressError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -275,6 +303,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
+              // Nút icon thùng rác trên thanh AppBar
               IconButton(
                 key: const Key('appBarDeleteButton'),
                 icon: isDeleting
@@ -322,6 +351,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           ),
                           child: Column(
                             children: [
+                              // Họ và tên người nhận
                               _buildTextField(
                                 keyName: 'editRecipientNameField',
                                 controller: _nameController,
@@ -332,6 +362,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                                 textCapitalization: TextCapitalization.words,
                               ),
                               const Divider(height: 24, color: AppColors.divider),
+                              // Số điện thoại người nhận
                               _buildTextField(
                                 keyName: 'editPhoneNumberField',
                                 controller: _phoneController,
@@ -346,7 +377,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // PHẦN 2: ĐỊA CHỈ
+                        // PHẦN 2: ĐỊA CHỈ NHẬN HÀNG
                         _buildSectionHeader('Địa chỉ nhận hàng'),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -366,6 +397,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                               // Bộ chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã
                               _buildAreaSelector(),
                               const Divider(height: 24, color: AppColors.divider),
+                              // Tên đường, tòa nhà, số nhà
                               _buildTextField(
                                 keyName: 'editStreetAddressField',
                                 controller: _streetController,
@@ -408,6 +440,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
+                              // Chọn Nhà riêng hoặc Văn phòng
                               Row(
                                 children: [
                                   _buildTypeChip(
@@ -437,7 +470,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                               ),
                               const Divider(height: 24, color: AppColors.divider),
 
-                              // Switch mặc định
+                              // Switch đặt làm mặc định
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -483,7 +516,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // NÚT XÓA ĐỊA CHỈ (SHOPEE STYLE)
+                        // NÚT XÓA ĐỊA CHỈ NỔI BẬT VIỀN ĐỎ
                         SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -498,15 +531,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              backgroundColor:
-                                  const Color(0xFFE53935).withValues(alpha: 0.04),
                             ),
                             icon: const Icon(Icons.delete_outline_rounded, size: 20),
                             label: const Text(
                               'Xóa địa chỉ này',
                               style: TextStyle(
-                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
+                                fontSize: 14,
                               ),
                             ),
                             onPressed:

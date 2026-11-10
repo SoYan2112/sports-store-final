@@ -1,18 +1,22 @@
 import '../entities/address_entity.dart';
 
+/// ============================================================================
+/// ADDRESS REPOSITORY INTERFACE (DOMAIN LAYER)
+/// ============================================================================
+/// Hợp đồng trừu tượng định nghĩa các hành động với sổ địa chỉ.
 abstract class AddressRepository {
-  /// Lấy danh sách địa chỉ giao hàng của người dùng
+  /// Lấy toàn bộ danh sách địa chỉ giao hàng của người dùng
   Future<List<AddressEntity>> getAddresses();
 
-  /// Thêm địa chỉ giao hàng mới (UC-10)
+  /// Thêm một địa chỉ nhận hàng mới
   Future<AddressEntity> addAddress(AddressEntity address);
 
-  /// Cập nhật địa chỉ giao hàng (UC-18)
+  /// Cập nhật thông tin một địa chỉ đã có
   Future<AddressEntity> updateAddress(AddressEntity address);
 
-  /// Xóa địa chỉ giao hàng (UC-19)
+  /// Xóa địa chỉ theo mã định danh (id)
   Future<void> deleteAddress(String addressId);
 
-  /// Đặt làm địa chỉ mặc định
+  /// Đặt một địa chỉ làm địa chỉ mặc định
   Future<void> setDefaultAddress(String addressId);
 }

@@ -1,5 +1,12 @@
 import '../../domain/entities/user_profile_entity.dart';
 
+/// ============================================================================
+/// USER PROFILE MODEL - MÔ HÌNH DỮ LIỆU HỒ SƠ (DATA LAYER)
+/// ============================================================================
+/// Kế thừa từ [UserProfileEntity] và bổ sung các hàm phân tích JSON / ánh xạ database:
+/// - [fromJson]: Phân tích Map trả về từ SQLite hoặc API Backend thành Model.
+/// - [toJson]: Đóng gói Model thành Map JSON để gửi qua HTTP PUT/POST hoặc lưu trữ.
+/// - [fromEntity]: Chuyển đổi từ Domain Entity sang Data Model.
 class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
     required super.id,
@@ -13,11 +20,13 @@ class UserProfileModel extends UserProfileEntity {
     super.status = 'ACTIVE',
   });
 
+  /// Factory chuyển đổi dữ liệu từ Map (JSON hoặc SQLite row) sang [UserProfileModel]
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
-    // Xử lý id dạng int hoặc string
+    // 1. Xử lý id (linh hoạt hỗ trợ cả id dạng int hoặc string và các biến thể key)
     final rawId = json['id'] ?? json['userId'] ?? json['user_id'] ?? '';
     final id = rawId.toString();
 
+    // 2. Xử lý họ và tên (hỗ trợ nhiều định dạng key từ các API khác nhau)
     final fullname = (json['fullname'] ??
             json['fullName'] ??
             json['full_name'] ??
@@ -27,13 +36,14 @@ class UserProfileModel extends UserProfileEntity {
 
     final email = (json['email'] ?? '').toString();
 
+    // 3. Xử lý số điện thoại
     final phoneNumber = (json['phoneNumber'] ??
             json['phone_number'] ??
             json['phone'] ??
             '')
         .toString();
 
-    // Xử lý gender: có thể là boolean (true = Nam, false = Nữ) hoặc String
+    // 4. Xử lý giới tính: hỗ trợ boolean (true = Nam, false = Nữ) hoặc String
     String genderStr = 'Nam';
     if (json['gender'] is bool) {
       genderStr = (json['gender'] as bool) ? 'Nam' : 'Nữ';
@@ -41,7 +51,7 @@ class UserProfileModel extends UserProfileEntity {
       genderStr = json['gender'].toString();
     }
 
-    // Xử lý createdAt: epoch milliseconds (int) hoặc ISO String
+    // 5. Xử lý ngày tạo tài khoản: epoch milliseconds (int) hoặc ISO 8601 String
     DateTime? createdAt;
     final rawCreatedAt = json['createdAt'] ?? json['created_at'];
     if (rawCreatedAt is int) {
@@ -50,7 +60,7 @@ class UserProfileModel extends UserProfileEntity {
       createdAt = DateTime.tryParse(rawCreatedAt);
     }
 
-    // Xử lý dateOfBirth
+    // 6. Xử lý ngày sinh: epoch milliseconds (int) hoặc ISO 8601 String
     DateTime? dob;
     final rawDob = json['dateOfBirth'] ?? json['date_of_birth'] ?? json['dob'];
     if (rawDob is int) {
@@ -75,6 +85,7 @@ class UserProfileModel extends UserProfileEntity {
     );
   }
 
+  /// Chuyển đổi sang Map JSON để lưu SQLite hoặc gửi HTTP Request lên server
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -89,6 +100,7 @@ class UserProfileModel extends UserProfileEntity {
     };
   }
 
+  /// Tạo Data Model từ Domain Entity
   factory UserProfileModel.fromEntity(UserProfileEntity entity) {
     return UserProfileModel(
       id: entity.id,
@@ -103,4 +115,3 @@ class UserProfileModel extends UserProfileEntity {
     );
   }
 }
-

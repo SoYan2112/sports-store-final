@@ -1,9 +1,14 @@
 import '../../../../core/database/app_database.dart';
 import '../../domain/entities/user.dart';
 
+/// ============================================================================
+/// AUTH SERVICE - DỊCH VỤ XÁC THỰC & ĐĂNG KÝ (DATA LAYER - SQLITE)
+/// ============================================================================
+/// Tương tác trực tiếp với bảng 'users' trong cơ sở dữ liệu SQLite cục bộ [AppDatabase].
 class AuthService {
   final AppDatabase _db = AppDatabase.instance;
 
+  /// 1. Xác thực đăng nhập qua Email & Mật khẩu
   Future<User?> authenticate({
     required String email,
     required String password,
@@ -30,6 +35,7 @@ class AuthService {
     );
   }
 
+  /// 2. Đăng ký tài khoản người dùng mới (UC-02)
   Future<User> register({
     required String fullname,
     required String email,
@@ -40,7 +46,7 @@ class AuthService {
     final cleanEmail = email.trim().toLowerCase();
     final cleanPhone = phoneNumber.trim();
 
-    // 1. Kiểm tra trùng Email
+    // Bước 1: Kiểm tra tính duy nhất của Email trong bảng users
     final emailCheck = await db.query(
       'users',
       where: 'LOWER(email) = ?',
@@ -50,7 +56,7 @@ class AuthService {
       throw Exception('Email này đã được sử dụng');
     }
 
-    // 2. Kiểm tra trùng Số điện thoại
+    // Bước 2: Kiểm tra tính duy nhất của Số điện thoại trong bảng users
     final phoneCheck = await db.query(
       'users',
       where: 'phone_number = ?',
@@ -60,13 +66,13 @@ class AuthService {
       throw Exception('Số điện thoại này đã được sử dụng');
     }
 
-    // 3. Tạo ID mới
+    // Bước 3: Tạo ID tăng dần cho người dùng mới
     final countResult = await db.rawQuery('SELECT COUNT(*) as count FROM users');
     final count = (countResult.first['count'] as num?)?.toInt() ?? 0;
     final newId = count + 1;
     final now = DateTime.now();
 
-    // 4. Lưu vào SQLite
+    // Bước 4: Lưu bản ghi người dùng mới vào SQLite bảng 'users'
     await db.insert('users', {
       'id': newId.toString(),
       'fullname': fullname.trim(),
@@ -78,6 +84,7 @@ class AuthService {
       'status': 'ACTIVE',
     });
 
+    // Trả về thực thể User hoàn chỉnh
     return User(
       id: newId,
       fullname: fullname.trim(),

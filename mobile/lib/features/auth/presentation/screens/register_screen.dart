@@ -8,11 +8,29 @@ import '../../domain/entities/user.dart';
 import '../cubit/register_cubit.dart';
 import '../cubit/register_state.dart';
 
+/// ============================================================================
+/// MÀN HÌNH ĐĂNG KÝ TÀI KHOẢN (REGISTER SCREEN - UC-02)
+/// ============================================================================
+/// Màn hình này chịu trách nhiệm:
+/// 1. Cung cấp giao diện form đăng ký tài khoản phong cách thể thao Adidas:
+///    - Họ và tên, Email, Số điện thoại Việt Nam, Mật khẩu, Xác nhận mật khẩu.
+///    - Checkbox đồng ý Điều khoản dịch vụ & Chính sách bảo mật.
+/// 2. Thực hiện xác thực (validation) dữ liệu cục bộ thời gian thực:
+///    - Họ tên tối thiểu 2 ký tự.
+///    - Email đúng định dạng regex.
+///    - Số điện thoại đúng 10 số của các nhà mạng Việt Nam (+84, 03x, 05x, 07x, 08x, 09x).
+///    - Mật khẩu tối thiểu 6 ký tự và khớp với mật khẩu xác nhận.
+///    - Bắt buộc tích chọn đồng ý điều khoản.
+/// 3. Kết nối với [RegisterCubit] gửi yêu cầu tạo tài khoản xuống SQLite database.
+/// 4. Xử lý phản hồi: thông báo SnackBar thành công/thất bại, điều hướng hợp lý.
 class RegisterScreen extends StatefulWidget {
+  /// Callback tùy chọn được gọi khi đăng ký tài khoản thành công
   final void Function(User user)? onRegisterSuccess;
 
   const RegisterScreen({super.key, this.onRegisterSuccess});
 
+  /// Phương thức static tạo Route điều hướng đến RegisterScreen.
+  /// Tự động tiêm [RegisterCubit] thông qua GetIt dependency injection.
   static Route<void> route({void Function(User user)? onRegisterSuccess}) {
     return MaterialPageRoute<void>(
       builder: (_) => BlocProvider(
@@ -27,17 +45,24 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  /// Khóa định danh quản lý Form
   final _formKey = GlobalKey<FormState>();
+
+  /// Bộ điều khiển text cho từng trường nhập liệu
   final _fullnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  /// Trạng thái ẩn/hiện mật khẩu
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  /// Trạng thái đồng ý điều khoản dịch vụ (mặc định tích chọn)
   bool _agreeTerms = true;
 
+  /// Biến lưu thông báo lỗi validation cho từng trường
   String? _fullnameError;
   String? _emailError;
   String? _phoneError;
@@ -47,6 +72,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    // Giải phóng bộ nhớ của các TextEditingController khi màn hình đóng
     _fullnameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -55,6 +81,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  /// Hàm kiểm tra tính hợp lệ của tất cả các trường dữ liệu trước khi gửi:
+  /// Trả về `true` nếu tất cả hợp lệ, ngược lại trả về `false` và hiển thị lỗi.
   bool _validateInputs() {
     final fullname = _fullnameController.text.trim();
     final email = _emailController.text.trim();
@@ -69,14 +97,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String? confirmErr;
     String? termsErr;
 
-    // 1. Họ và tên
+    // 1. Kiểm tra Họ và tên (không rỗng, ít nhất 2 ký tự)
     if (fullname.isEmpty) {
       nameErr = 'Vui lòng nhập họ và tên';
     } else if (fullname.length < 2) {
       nameErr = 'Họ và tên phải có ít nhất 2 ký tự';
     }
 
-    // 2. Email
+    // 2. Kiểm tra Địa chỉ Email (chuẩn RFC regex)
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (email.isEmpty) {
       emailErr = 'Vui lòng nhập địa chỉ email';
@@ -84,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       emailErr = 'Email không hợp lệ (ví dụ: user@example.com)';
     }
 
-    // 3. Số điện thoại chuẩn Việt Nam (+84 hoặc 03x, 05x, 07x, 08x, 09x - 10 chữ số)
+    // 3. Kiểm tra Số điện thoại chuẩn Việt Nam (+84 hoặc 03x, 05x, 07x, 08x, 09x - 10 chữ số)
     final phoneRegex = RegExp(r'^(?:(?:\+84)|0)(3[2-9]|5[25689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$');
     final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
     if (phone.isEmpty) {
@@ -93,25 +121,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phoneErr = 'Số điện thoại không hợp lệ.';
     }
 
-    // 4. Mật khẩu >= 6 ký tự
+    // 4. Kiểm tra Mật khẩu (tối thiểu 6 ký tự)
     if (password.isEmpty) {
       passErr = 'Vui lòng nhập mật khẩu';
     } else if (password.length < 6) {
       passErr = 'Mật khẩu phải chứa ít nhất 6 ký tự';
     }
 
-    // 5. Xác nhận mật khẩu
+    // 5. Kiểm tra Xác nhận mật khẩu (phải trùng khớp mật khẩu ở trên)
     if (confirmPassword.isEmpty) {
       confirmErr = 'Vui lòng xác nhận lại mật khẩu';
     } else if (confirmPassword != password) {
       confirmErr = 'Mật khẩu xác nhận không trùng khớp';
     }
 
-    // 6. Điều khoản
+    // 6. Kiểm tra Đồng ý điều khoản
     if (!_agreeTerms) {
       termsErr = 'Bạn cần đồng ý với Điều khoản dịch vụ để tiếp tục';
     }
 
+    // Cập nhật state lỗi lên giao diện
     setState(() {
       _fullnameError = nameErr;
       _emailError = emailErr;
@@ -129,6 +158,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         termsErr == null;
   }
 
+  /// Hàm gửi form đăng ký:
+  /// - Kiểm tra validate trước.
+  /// - Gọi [RegisterCubit.register] để ghi thông tin vào database.
   void _submit() {
     if (!_validateInputs()) {
       return;
@@ -144,8 +176,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // BlocConsumer kết hợp lắng nghe trạng thái (listener) và tái tạo UI (builder)
     return BlocConsumer<RegisterCubit, RegisterState>(
       listener: (context, state) {
+        // TRƯỜNG HỢP 1: Đăng ký thành công
         if (state is RegisterSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -169,7 +203,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             );
           }
-        } else if (state is RegisterFailure) {
+        } 
+        // TRƯỜNG HỢP 2: Đăng ký thất bại (ví dụ: trùng email hoặc trùng SĐT)
+        else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Đăng ký thất bại: ${state.errorMessage}'),
@@ -189,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(), // Quay về LoginScreen
             ),
           ),
           body: SafeArea(
@@ -203,7 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Logo / Icon thể thao
+                        // Logo / Icon thể thao nhận diện thương hiệu
                         Center(
                           child: Container(
                             width: 64,
@@ -221,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Title phong cách Adidas
+                        // Tiêu đề phong cách thể thao tối giản
                         const Text(
                           'TẠO TÀI KHOẢN',
                           textAlign: TextAlign.center,
@@ -243,7 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 28),
 
-                        // Field 1: Họ và tên
+                        // Trường 1: Họ và tên
                         _buildInputField(
                           keyName: 'fullnameField',
                           controller: _fullnameController,
@@ -256,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Field 2: Email
+                        // Trường 2: Địa chỉ Email
                         _buildInputField(
                           keyName: 'emailField',
                           controller: _emailController,
@@ -269,7 +305,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Field 3: Số điện thoại
+                        // Trường 3: Số điện thoại
                         _buildInputField(
                           keyName: 'phoneField',
                           controller: _phoneController,
@@ -282,7 +318,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Field 4: Mật khẩu
+                        // Trường 4: Mật khẩu (Có nút ẩn/hiện)
                         _buildInputField(
                           keyName: 'passwordField',
                           controller: _passwordController,
@@ -307,7 +343,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Field 5: Xác nhận mật khẩu
+                        // Trường 5: Xác nhận mật khẩu (Có nút ẩn/hiện)
                         _buildInputField(
                           keyName: 'confirmPasswordField',
                           controller: _confirmPasswordController,
@@ -335,7 +371,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // Checkbox: Điều khoản
+                        // Checkbox: Đồng ý Điều khoản dịch vụ & Chính sách bảo mật
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -399,6 +435,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                         ),
+                        // Báo lỗi nếu chưa tick chọn điều khoản
                         if (_termsError != null) ...[
                           const SizedBox(height: 6),
                           Padding(
@@ -414,7 +451,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                         const SizedBox(height: 26),
 
-                        // Nút Đăng ký (Adidas style CTA)
+                        // Nút Đăng ký (Adidas style CTA Button)
                         ElevatedButton(
                           key: const Key('registerButton'),
                           style: ElevatedButton.styleFrom(
@@ -446,7 +483,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 22),
 
-                        // Link chuyển sang Đăng nhập
+                        // Liên kết chuyển sang màn hình Đăng nhập
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -485,6 +522,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  /// Widget tùy biến khung nhập văn bản TextField kèm nhãn, icon và hiển thị thông báo lỗi
   Widget _buildInputField({
     required String keyName,
     required TextEditingController controller,
@@ -501,6 +539,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Nhãn trường nhập liệu
         Text(
           label,
           style: const TextStyle(
@@ -510,6 +549,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         const SizedBox(height: 6),
+        // TextField
         TextField(
           key: Key(keyName),
           controller: controller,
@@ -547,6 +587,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
+        // Thông báo lỗi dạng Text đỏ kèm icon cảnh báo
         if (errorText != null) ...[
           const SizedBox(height: 5),
           Padding(

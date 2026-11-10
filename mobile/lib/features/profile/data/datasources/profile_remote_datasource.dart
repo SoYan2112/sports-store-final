@@ -4,11 +4,16 @@ import '../../../../core/errors/exceptions.dart';
 import '../../../../core/storage/local_storage_service.dart';
 import '../models/user_profile_model.dart';
 
+/// ============================================================================
+/// PROFILE REMOTE DATA SOURCE (API & MẠNG DIO)
+/// ============================================================================
+/// Giao diện gọi API mạng liên quan đến hồ sơ người dùng.
 abstract class ProfileRemoteDataSource {
   Future<UserProfileModel> getUserProfile();
   Future<UserProfileModel> updateUserProfile(UserProfileModel profile);
 }
 
+/// Triển khai gọi API hồ sơ qua Dio kèm cơ chế Fallback Offline mượt mà
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   final Dio dio;
   final LocalStorageService storageService;
@@ -18,23 +23,24 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     required this.storageService,
   });
 
+  /// 1. LẤY HỒ SƠ NGƯỜI DÙNG QUA API (GET /users/me HOẶC /auth/me)
   @override
   Future<UserProfileModel> getUserProfile() async {
     final token = storageService.getAccessToken();
 
     try {
+      // Đính kèm Header Bearer Token xác thực
       final options = Options(
         headers: {
           if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
         },
       );
 
-      // Thử gọi endpoint profile (/users/me hoặc /auth/me)
+      // Thử gọi endpoint profile chính (/users/me), nếu không có thì fallback sang (/auth/me)
       Response response;
       try {
         response = await dio.get(ApiEndpoints.userProfile, options: options);
       } on DioException {
-        // Fallback sang endpoint auth /auth/me
         response = await dio.get(ApiEndpoints.authMe, options: options);
       }
 
@@ -46,7 +52,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
         final profile = UserProfileModel.fromJson(json);
 
-        // Lưu thông tin chi tiết vào local storage
+        // Lưu thông tin chi tiết vào local storage SharedPreferences
         await storageService.saveUserProfile(
           userId: profile.id,
           name: profile.fullname,
@@ -65,7 +71,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         );
       }
     } on DioException {
-      // Khi offline hoặc backend chưa bật, lấy dữ liệu từ cache / mock
+      // Khi offline hoặc backend chưa bật, tự động lấy dữ liệu từ cache SharedPreferences
       return _getFromLocalOrMock();
     } catch (e) {
       if (e is ServerException) rethrow;
@@ -73,6 +79,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     }
   }
 
+  /// 2. CẬP NHẬT HỒ SƠ QUA API (PUT /users/me HOẶC /auth/me)
   @override
   Future<UserProfileModel> updateUserProfile(UserProfileModel profile) async {
     final token = storageService.getAccessToken();
@@ -116,11 +123,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       // Bỏ qua lỗi mạng
     }
 
-    // Lưu offline để trải nghiệm không bị gián đoạn
+    // Lưu offline để trải nghiệm người dùng không bị gián đoạn
     await _saveProfileLocally(profile);
     return profile;
   }
 
+  /// Lưu thông tin profile và đồng bộ auth session xuống SharedPreferences
   Future<void> _saveProfileLocally(UserProfileModel profile) async {
     await storageService.saveUserProfile(
       userId: profile.id,
@@ -142,6 +150,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     );
   }
 
+  /// Trích xuất dữ liệu từ SharedPreferences hoặc tạo Mock dữ liệu chuẩn
   UserProfileModel _getFromLocalOrMock() {
     final savedUser = storageService.getSavedUser();
     final defaultCreated = DateTime(2026, 1, 10);
@@ -165,7 +174,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       );
     }
 
-    // Mặc định cho trường hợp chạy kiểm thử hoặc chưa có cache
+    // Dữ liệu mẫu dự phòng
     return UserProfileModel(
       id: '1',
       fullname: 'Nguyễn Văn A',
@@ -177,4 +186,3 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     );
   }
 }
-

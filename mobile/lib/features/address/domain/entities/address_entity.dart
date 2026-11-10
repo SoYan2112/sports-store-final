@@ -1,5 +1,10 @@
 import 'package:equatable/equatable.dart';
 
+/// ============================================================================
+/// ADDRESS LABEL & ENTITY (DOMAIN LAYER)
+/// ============================================================================
+
+/// Phân loại địa chỉ giao hàng: Nhà riêng hoặc Văn phòng
 enum AddressLabel {
   home('Nhà riêng'),
   office('Văn phòng');
@@ -17,15 +22,33 @@ enum AddressLabel {
   }
 }
 
+/// Thực thể địa chỉ giao nhận hàng của khách hàng
 class AddressEntity extends Equatable {
+  /// Mã định danh duy nhất của địa chỉ
   final String id;
+
+  /// Họ và tên người nhận hàng
   final String recipientName;
+
+  /// Số điện thoại người nhận hàng
   final String phoneNumber;
+
+  /// Tỉnh / Thành phố
   final String province;
+
+  /// Quận / Huyện / Thị xã
   final String district;
+
+  /// Phường / Xã / Thị trấn
   final String ward;
+
+  /// Tên đường, tòa nhà, số nhà cụ thể
   final String streetAddress;
+
+  /// Loại địa chỉ: Nhà riêng / Văn phòng
   final AddressLabel label;
+
+  /// Có phải là địa chỉ mặc định được ưu tiên chọn khi Checkout không
   final bool isDefault;
 
   const AddressEntity({
@@ -40,7 +63,7 @@ class AddressEntity extends Equatable {
     this.isDefault = false,
   });
 
-  /// Địa chỉ đầy đủ hiển thị cho người dùng
+  /// Chuỗi địa chỉ đầy đủ ghép từ các cấp hành chính để hiển thị UI
   String get fullAddress {
     final parts = [streetAddress, ward, district, province]
         .where((s) => s.trim().isNotEmpty)
@@ -48,6 +71,7 @@ class AddressEntity extends Equatable {
     return parts.join(', ');
   }
 
+  /// Tạo bản sao có sửa đổi thuộc tính
   AddressEntity copyWith({
     String? id,
     String? recipientName,

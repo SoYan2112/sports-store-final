@@ -1,6 +1,11 @@
 import '../entities/user.dart';
 import '../repositories/auth_repository_interface.dart';
 
+/// ============================================================================
+/// REGISTER PARAMS & USECASE (DOMAIN LAYER - UC-02)
+/// ============================================================================
+
+/// Tham số đầu vào cho nghiệp vụ đăng ký tài khoản
 class RegisterParams {
   final String fullname;
   final String email;
@@ -15,11 +20,14 @@ class RegisterParams {
   });
 }
 
+/// UseCase nghiệp vụ Đăng ký tài khoản:
+/// Đóng gói logic tạo người dùng mới độc lập với cơ sở dữ liệu và giao diện.
 class RegisterUseCase {
   final AuthRepositoryInterface repository;
 
   RegisterUseCase(this.repository);
 
+  /// Kích hoạt UseCase tạo tài khoản thông qua repository interface
   Future<User> call(RegisterParams params) {
     return repository.register(
       fullname: params.fullname,

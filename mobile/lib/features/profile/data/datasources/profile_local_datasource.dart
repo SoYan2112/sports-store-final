@@ -3,6 +3,11 @@ import '../../../../core/storage/local_storage_service.dart';
 import '../models/user_profile_model.dart';
 import 'profile_remote_datasource.dart';
 
+/// ============================================================================
+/// PROFILE LOCAL DATA SOURCE (SQLITE + CACHE)
+/// ============================================================================
+/// Định nghĩa các thao tác trực tiếp với cơ sở dữ liệu SQLite cục bộ (Bảng users)
+/// và bộ nhớ tạm SharedPreferences.
 abstract class ProfileLocalDataSource {
   Future<UserProfileModel> getUserProfile();
   Future<UserProfileModel> updateUserProfile(UserProfileModel profile);
@@ -12,6 +17,7 @@ abstract class ProfileLocalDataSource {
   });
 }
 
+/// Triển khai nguồn dữ liệu cục bộ sử dụng [AppDatabase] (SQLite) và [LocalStorageService]
 class ProfileLocalDataSourceImpl
     implements ProfileLocalDataSource, ProfileRemoteDataSource {
   final AppDatabase appDatabase;
@@ -22,23 +28,26 @@ class ProfileLocalDataSourceImpl
     required this.storageService,
   }) : appDatabase = appDatabase ?? AppDatabase.instance;
 
+  /// Lấy ID người dùng hiện tại đang đăng nhập từ Session SharedPreferences
   String _getEffectiveUserId() {
     return storageService.getUserId() ?? '1';
   }
 
+  /// 1. LẤY HỒ SƠ NGƯỜI DÙNG TỪ SQLITE (Bảng 'users')
   @override
   Future<UserProfileModel> getUserProfile() async {
     final db = await appDatabase.database;
     final userId = _getEffectiveUserId();
 
+    // Truy vấn dữ liệu từ bảng users dựa vào ID người dùng hiện tại
     final results = await db.query(
       'users',
       where: 'id = ?',
       whereArgs: [userId],
     );
 
+    // Nếu chưa có record trong database, trả về dữ liệu mẫu mặc định
     if (results.isEmpty) {
-      // Fallback nếu chưa đăng nhập hoặc ID không tồn tại
       return const UserProfileModel(
         id: '1',
         fullname: 'Nguyễn Văn A',
@@ -48,6 +57,7 @@ class ProfileLocalDataSourceImpl
       );
     }
 
+    // Ánh xạ bản ghi SQLite row sang UserProfileModel
     final row = results.first;
     final profile = UserProfileModel(
       id: row['id'] as String,
@@ -65,6 +75,7 @@ class ProfileLocalDataSourceImpl
       status: row['status'] as String? ?? 'ACTIVE',
     );
 
+    // Đồng bộ thông tin vừa tải vào cache SharedPreferences để truy xuất nhanh
     await storageService.saveUserProfile(
       userId: profile.id,
       name: profile.fullname,
@@ -78,11 +89,13 @@ class ProfileLocalDataSourceImpl
     return profile;
   }
 
+  /// 2. CẬP NHẬT HỒ SƠ NGƯỜI DÙNG VÀO SQLITE & CACHE
   @override
   Future<UserProfileModel> updateUserProfile(UserProfileModel profile) async {
     final db = await appDatabase.database;
     final userId = profile.id.isNotEmpty ? profile.id : _getEffectiveUserId();
 
+    // Bước 1: Chạy lệnh UPDATE trực tiếp vào bảng 'users' của SQLite
     await db.update(
       'users',
       {
@@ -96,6 +109,7 @@ class ProfileLocalDataSourceImpl
       whereArgs: [userId],
     );
 
+    // Bước 2: Đồng bộ ngay thông tin mới vào SharedPreferences
     await storageService.saveUserProfile(
       userId: userId,
       name: profile.fullname,
@@ -109,6 +123,7 @@ class ProfileLocalDataSourceImpl
     return profile;
   }
 
+  /// 3. ĐỔI MẬT KHẨU TÀI KHOẢN (Bảng 'users')
   @override
   Future<void> changePassword({
     required String oldPassword,
@@ -117,6 +132,7 @@ class ProfileLocalDataSourceImpl
     final db = await appDatabase.database;
     final userId = _getEffectiveUserId();
 
+    // Kiểm tra mật khẩu cũ có khớp trong cơ sở dữ liệu không
     final results = await db.query(
       'users',
       where: 'id = ? AND password = ?',
@@ -127,6 +143,7 @@ class ProfileLocalDataSourceImpl
       throw Exception('Mật khẩu hiện tại không chính xác');
     }
 
+    // Cập nhật mật khẩu mới
     await db.update(
       'users',
       {'password': newPassword},

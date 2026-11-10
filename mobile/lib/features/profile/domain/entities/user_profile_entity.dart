@@ -1,14 +1,36 @@
 import 'package:equatable/equatable.dart';
 
+/// ============================================================================
+/// USER PROFILE ENTITY - THỰC THỂ DỮ LIỆU HỒ SƠ NGƯỜI DÙNG (DOMAIN LAYER)
+/// ============================================================================
+/// Là đối tượng cốt lõi độc lập với cơ sở dữ liệu và thư viện bên ngoài.
+/// Đại diện cho toàn bộ thông tin hồ sơ của khách hàng trong ứng dụng Sports Store.
 class UserProfileEntity extends Equatable {
+  /// Mã định danh duy nhất của người dùng trong hệ thống
   final String id;
+
+  /// Họ và tên đầy đủ
   final String fullname;
+
+  /// Địa chỉ email đăng ký tài khoản (định danh duy nhất, không thể chỉnh sửa)
   final String email;
+
+  /// Số điện thoại liên hệ nhận hàng
   final String phoneNumber;
+
+  /// Giới tính: 'Nam', 'Nữ', 'Khác'
   final String gender;
+
+  /// Ngày tháng năm sinh
   final DateTime? dateOfBirth;
+
+  /// Đường dẫn hoặc URL ảnh đại diện
   final String? avatarUrl;
+
+  /// Ngày tạo tài khoản (ngày tham gia)
   final DateTime? createdAt;
+
+  /// Trạng thái hoạt động của tài khoản (VD: 'ACTIVE')
   final String status;
 
   const UserProfileEntity({
@@ -23,6 +45,7 @@ class UserProfileEntity extends Equatable {
     this.status = 'ACTIVE',
   });
 
+  /// Phương thức sao chép và ghi đè các thuộc tính khi cần tạo thực thể mới sau chỉnh sửa
   UserProfileEntity copyWith({
     String? id,
     String? fullname,
@@ -60,4 +83,3 @@ class UserProfileEntity extends Equatable {
         status,
       ];
 }
-

@@ -6,6 +6,14 @@ import '../../domain/usecases/get_addresses_usecase.dart';
 import '../../domain/usecases/update_address_usecase.dart';
 import 'address_state.dart';
 
+/// ============================================================================
+/// ADDRESS CUBIT - QUẢN LÝ TRẠNG THÁI SỔ ĐỊA CHỈ NHẬN HÀNG (UC-28, 29, 30, 31)
+/// ============================================================================
+/// Chịu trách nhiệm:
+/// 1. Tải danh sách địa chỉ của người dùng hiện tại ([loadAddresses]).
+/// 2. Thêm địa chỉ nhận hàng mới ([addAddress]).
+/// 3. Cập nhật thông tin địa chỉ đã có ([updateAddress]).
+/// 4. Xóa địa chỉ khỏi sổ địa chỉ ([deleteAddress]).
 class AddressCubit extends Cubit<AddressState> {
   final GetAddressesUseCase getAddressesUseCase;
   final AddAddressUseCase addAddressUseCase;
@@ -19,7 +27,7 @@ class AddressCubit extends Cubit<AddressState> {
     required this.deleteAddressUseCase,
   }) : super(const AddressInitial());
 
-  /// Lấy danh sách địa chỉ giao hàng
+  /// 1. LẤY DANH SÁCH ĐỊA CHỈ GIAO HÀNG (UC-28)
   Future<void> loadAddresses() async {
     emit(const AddressLoading());
     try {
@@ -30,7 +38,7 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  /// Thêm địa chỉ mới (UC-10)
+  /// 2. THÊM ĐỊA CHỈ MỚI (UC-29)
   Future<void> addAddress({
     required String recipientName,
     required String phoneNumber,
@@ -55,7 +63,9 @@ class AddressCubit extends Cubit<AddressState> {
         isDefault: isDefault,
       );
 
+      // Thêm vào cơ sở dữ liệu
       final created = await addAddressUseCase(newAddress);
+      // Tải lại danh sách mới nhất
       final updatedList = await getAddressesUseCase();
       emit(AddressAddSuccess(newAddress: created, addresses: updatedList));
       emit(AddressLoaded(addresses: updatedList));
@@ -64,7 +74,7 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  /// Cập nhật địa chỉ giao hàng (UC-18)
+  /// 3. CẬP NHẬT ĐỊA CHỈ GIAO HÀNG (UC-30)
   Future<void> updateAddress({
     required String id,
     required String recipientName,
@@ -102,7 +112,7 @@ class AddressCubit extends Cubit<AddressState> {
     }
   }
 
-  /// Xóa địa chỉ giao hàng (UC-19)
+  /// 4. XÓA ĐỊA CHỈ GIAO HÀNG (UC-31)
   Future<void> deleteAddress(String addressId) async {
     emit(const AddressDeleteLoading());
     try {

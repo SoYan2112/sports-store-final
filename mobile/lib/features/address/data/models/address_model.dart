@@ -1,5 +1,10 @@
 import '../../domain/entities/address_entity.dart';
 
+/// ============================================================================
+/// ADDRESS MODEL (DATA LAYER)
+/// ============================================================================
+/// Mô hình dữ liệu địa chỉ kế thừa từ [AddressEntity], chịu trách nhiệm
+/// chuyển đổi qua lại với JSON API hoặc bản ghi bảng SQLite `shipping_addresses`.
 class AddressModel extends AddressEntity {
   const AddressModel({
     required super.id,
@@ -13,6 +18,7 @@ class AddressModel extends AddressEntity {
     super.isDefault = false,
   });
 
+  /// Chuyển đổi từ Map (SQLite row hoặc API JSON) sang [AddressModel]
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
       id: json['id']?.toString() ?? '',
@@ -27,6 +33,7 @@ class AddressModel extends AddressEntity {
     );
   }
 
+  /// Đóng gói Model thành Map JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -41,6 +48,7 @@ class AddressModel extends AddressEntity {
     };
   }
 
+  /// Chuyển đổi từ Domain Entity sang Data Model
   factory AddressModel.fromEntity(AddressEntity entity) {
     return AddressModel(
       id: entity.id,
