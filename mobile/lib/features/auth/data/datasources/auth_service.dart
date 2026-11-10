@@ -1,38 +1,33 @@
+import '../../../../core/database/app_database.dart';
 import '../../domain/entities/user.dart';
 
 class AuthService {
-  static final List<User> users = [
-    User(
-      id: 1,
-      fullname: 'Nguyễn Văn A',
-      email: 'a@gmail.com',
-      password: '123456',
-      createdAt: DateTime(2026, 1, 10),
-      phoneNumber: '0901234567',
-    ),
-    User(
-      id: 2,
-      fullname: 'Nguyễn Văn B',
-      email: 'b@gmail.com',
-      password: '123456',
-      createdAt: DateTime(2026, 2, 5),
-      phoneNumber: '0912345678',
-    ),
-  ];
+  final AppDatabase _db = AppDatabase.instance;
 
   Future<User?> authenticate({
     required String email,
     required String password,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    for (final user in users) {
-      if (user.email.toLowerCase() == email.trim().toLowerCase() &&
-          user.password == password) {
-        return user;
-      }
-    }
+    final db = await _db.database;
+    final cleanEmail = email.trim().toLowerCase();
 
-    return null;
+    final results = await db.query(
+      'users',
+      where: 'LOWER(email) = ? AND password = ?',
+      whereArgs: [cleanEmail, password],
+    );
+
+    if (results.isEmpty) return null;
+
+    final row = results.first;
+    return User(
+      id: int.tryParse(row['id'].toString()) ?? 1,
+      fullname: row['fullname'] as String? ?? '',
+      email: row['email'] as String? ?? '',
+      password: row['password'] as String? ?? '',
+      phoneNumber: row['phone_number'] as String? ?? '',
+      createdAt: DateTime.tryParse(row['created_at'].toString()) ?? DateTime.now(),
+    );
   }
 
   Future<User> register({
@@ -41,34 +36,55 @@ class AuthService {
     required String phoneNumber,
     required String password,
   }) async {
-    // Mô phỏng độ trễ mạng cho Sprint 1 (chưa có backend)
-    await Future.delayed(const Duration(milliseconds: 500));
+    final db = await _db.database;
+    final cleanEmail = email.trim().toLowerCase();
+    final cleanPhone = phoneNumber.trim();
 
-    // Kiểm tra trùng Email
-    final isEmailExist = users.any(
-      (u) => u.email.toLowerCase() == email.trim().toLowerCase(),
+    // 1. Kiểm tra trùng Email
+    final emailCheck = await db.query(
+      'users',
+      where: 'LOWER(email) = ?',
+      whereArgs: [cleanEmail],
     );
-    if (isEmailExist) {
+    if (emailCheck.isNotEmpty) {
       throw Exception('Email này đã được sử dụng');
     }
 
-    // Kiểm tra trùng Số điện thoại
-    final isPhoneExist = users.any(
-      (u) => u.phoneNumber == phoneNumber.trim(),
+    // 2. Kiểm tra trùng Số điện thoại
+    final phoneCheck = await db.query(
+      'users',
+      where: 'phone_number = ?',
+      whereArgs: [cleanPhone],
     );
-    if (isPhoneExist) {
+    if (phoneCheck.isNotEmpty) {
       throw Exception('Số điện thoại này đã được sử dụng');
     }
 
-    final newUser = User(
-      id: users.length + 1,
+    // 3. Tạo ID mới
+    final countResult = await db.rawQuery('SELECT COUNT(*) as count FROM users');
+    final count = (countResult.first['count'] as num?)?.toInt() ?? 0;
+    final newId = count + 1;
+    final now = DateTime.now();
+
+    // 4. Lưu vào SQLite
+    await db.insert('users', {
+      'id': newId.toString(),
+      'fullname': fullname.trim(),
+      'email': cleanEmail,
+      'phone_number': cleanPhone,
+      'password': password,
+      'gender': 'Nam',
+      'created_at': now.toIso8601String(),
+      'status': 'ACTIVE',
+    });
+
+    return User(
+      id: newId,
       fullname: fullname.trim(),
-      email: email.trim(),
-      phoneNumber: phoneNumber.trim(),
+      email: cleanEmail,
+      phoneNumber: cleanPhone,
       password: password,
-      createdAt: DateTime.now(),
+      createdAt: now,
     );
-    users.add(newUser);
-    return newUser;
   }
 }
