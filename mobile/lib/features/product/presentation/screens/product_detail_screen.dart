@@ -165,6 +165,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           final isSelected = selectedColor == colorValue;
                           return GestureDetector(
                             key: Key('color_${colorValue.toRadixString(16)}'),
+                            // 1. Người dùng chạm chọn màu sắc sản phẩm -> Gọi cubit.selectColor(colorValue)
                             onTap: () {
                               context.read<ProductDetailCubit>().selectColor(colorValue);
                             },
@@ -244,6 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           return InkWell(
                             key: Key('size_$size'),
                             // 3. Chọn Size -> gọi cubit.selectSize(size)
+                            // 2. Người dùng chạm chọn kích thước -> Kiểm tra tồn kho, nếu còn hàng thì gọi cubit.selectSize(size)
                             onTap: isOutOfStock
                                 ? null
                                 : () {

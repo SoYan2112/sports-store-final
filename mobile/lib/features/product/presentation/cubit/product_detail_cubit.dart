@@ -62,20 +62,25 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
     }
   }
 
+  // Cập nhật biến thể kích thước (Size) của sản phẩm (UC-06)
   // Chọn size
   void selectSize(String size) {
     if (state is ProductDetailLoaded) {
       final current = state as ProductDetailLoaded;
+      // Kiểm tra nếu kích thước thuộc danh sách hết hàng thì không cho chọn
       if (current.outOfStockSizes.contains(size)) return;
       // Cập nhật size đã chọn
+      // Cập nhật size vào state để UI highlight kích thước và kích hoạt nút thêm giỏ hàng
       emit(current.copyWith(selectedSize: size));
     }
   }
 
+  // Cập nhật biến thể màu sắc (Color) của sản phẩm (UC-06)
   // Chọn màu
   void selectColor(int color) {
     if (state is ProductDetailLoaded) {
       final current = state as ProductDetailLoaded;
+      // Cập nhật mã màu vào state để UI hiển thị viền highlight và icon check
       emit(current.copyWith(selectedColor: color));
     }
   }

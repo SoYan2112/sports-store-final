@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../domain/entities/category_entity.dart';
 
+// Thẻ hiển thị từng danh mục thể thao kèm ảnh nền, tên và số lượng sản phẩm (UC-16)
 class CategoryCard extends StatelessWidget {
   final CategoryEntity category;
   final VoidCallback onTap;
@@ -15,6 +16,7 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // 5. Bắt sự kiện người dùng chạm vào thẻ danh mục để kích hoạt hành động chuyển trang/lọc
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(

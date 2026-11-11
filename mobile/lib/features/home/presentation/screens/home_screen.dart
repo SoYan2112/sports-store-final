@@ -97,16 +97,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // Cập nhật danh mục được chọn vào state và kích hoạt bộ lọc (UC-16)
   void _onSelectCategory(String? categoryId, String? categoryName) {
+    // 3. Ghi nhận categoryId và categoryName đã chọn vào state
     setState(() {
       _selectedCategoryId = categoryId;
       _selectedCategoryName = categoryName;
     });
+    // 4. Kích hoạt bộ lọc danh sách sản phẩm
     _applyFilters();
   }
 
+  // Lọc sản phẩm theo thương hiệu và danh mục đã chọn
   void _applyFilters() {
     final brand = _selectedBrandIndex == 0 ? null : _brands[_selectedBrandIndex];
+    // 5. Gửi sự kiện FetchProductsEvent kèm categoryId sang ProductBloc để lọc sản phẩm
     context.read<ProductBloc>().add(
       FetchProductsEvent(
         categoryId: _selectedCategoryId,
@@ -116,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Hiển thị modal bottom sheet chứa danh sách các phân loại sản phẩm thể thao (UC-16)
   void _showCategoryBottomSheet() {
     final categories = [
       {
@@ -256,6 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         trailing: isSelected
                             ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
                             : null,
+                        // 2. Người dùng chọn 1 danh mục -> Đóng bottom sheet và gọi hàm cập nhật
                         onTap: () {
                           Navigator.pop(ctx);
                           _onSelectCategory(catId, catId == null ? null : cat['name'] as String?);
@@ -390,6 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
+                          // 1. Người dùng bấm nút Danh mục trên thanh tìm kiếm -> Mở BottomSheet danh mục
                           InkWell(
                             key: const Key('home_category_button'),
                             onTap: _showCategoryBottomSheet,

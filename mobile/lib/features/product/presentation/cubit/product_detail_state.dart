@@ -36,6 +36,7 @@ class ProductDetailLoaded extends ProductDetailState {
     this.outOfStockSizes = const ['43'],
   });
 
+  // Kiểm tra điều kiện mua hàng: Đã chọn đầy đủ Size + Màu, size còn hàng và sản phẩm còn trong kho
   bool get canAddToCart =>
       selectedSize != null &&
       selectedColor != null &&

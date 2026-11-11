@@ -828,6 +828,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
     );
   }
 
+  // Xây dựng khu vực chọn và hiển thị mã voucher ưu đãi tại màn hình Checkout (UC-22)
   Widget _buildVoucherSection(BuildContext context, CheckoutState state) {
     final appliedVoucher = state.appliedVoucher;
 
@@ -868,9 +869,11 @@ class _CheckoutViewState extends State<_CheckoutView> {
                   ),
                 ],
               ),
+              // 1. Người dùng bấm 'Chọn voucher' (hoặc 'Đổi voucher') -> Điều hướng sang VoucherListScreen ở chế độ chọn
               TextButton(
                 key: const Key('selectVoucherButton'),
                 onPressed: () async {
+                  // 2. Mở màn hình danh sách và chờ người dùng chọn một voucher hợp lệ
                   final selectedVoucher =
                       await Navigator.of(context).push<VoucherEntity?>(
                     VoucherListScreen.route(
@@ -878,6 +881,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                       currentOrderValue: _subtotal,
                     ),
                   );
+                  // 3. Nếu đã chọn voucher -> Gửi sự kiện ApplyVoucherEvent vào CheckoutBloc để tính toán giảm giá
                   if (selectedVoucher != null && context.mounted) {
                     context.read<CheckoutBloc>().add(
                           ApplyVoucherEvent(
@@ -940,6 +944,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                       ],
                     ),
                   ),
+                  // 4. Người dùng bấm nút (X) gỡ bỏ voucher -> Gửi sự kiện RemoveVoucherEvent vào CheckoutBloc
                   IconButton(
                     key: const Key('removeVoucherButton'),
                     icon: const Icon(
@@ -1051,6 +1056,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // 5. Hiển thị dòng số tiền chiết khấu giảm giá của voucher và trừ trực tiếp vào tổng tiền
                 const Text(
                   'Voucher giảm giá',
                   style: TextStyle(

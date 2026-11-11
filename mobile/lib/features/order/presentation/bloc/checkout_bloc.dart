@@ -97,6 +97,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     ));
   }
 
+  // Xử lý sự kiện áp dụng voucher vào đơn hàng và tính toán số tiền giảm giá (UC-22)
   void _onApplyVoucher(
     ApplyVoucherEvent event,
     Emitter<CheckoutState> emit,
@@ -105,6 +106,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     final subtotal = event.subtotal;
 
     // 1. Kiểm tra hạn dùng
+    // Kiểm tra nếu voucher đã hết hạn sử dụng thì báo lỗi và dừng xử lý
     if (voucher.isExpired) {
       emit(state.copyWith(
         status: CheckoutStatus.failure,
@@ -114,6 +116,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     }
 
     // 2. Kiểm tra giá trị đơn hàng tối thiểu
+    // Kiểm tra nếu tổng tiền đơn hàng chưa đạt giá trị tối thiểu thì báo lỗi và dừng xử lý
     if (subtotal < voucher.minOrderValue) {
       emit(state.copyWith(
         status: CheckoutStatus.failure,
@@ -124,6 +127,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     }
 
     // 3. Tính toán số tiền chiết khấu
+    // Tính toán số tiền giảm giá theo loại voucher (% đơn hàng, số tiền cố định, hoặc miễn phí ship)
     double calculatedDiscount = 0.0;
     final shippingFee = state.shippingMethod.fee;
 
@@ -150,6 +154,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
         break;
     }
 
+    // Cập nhật state với voucher đã chọn và số tiền chiết khấu để giao diện tính lại tổng thanh toán
     emit(state.copyWith(
       status: CheckoutStatus.ready,
       appliedVoucher: voucher,
@@ -158,10 +163,12 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
     ));
   }
 
+  // Xử lý sự kiện gỡ bỏ voucher khỏi đơn hàng và khôi phục giá trị thanh toán gốc (UC-22)
   void _onRemoveVoucher(
     RemoveVoucherEvent event,
     Emitter<CheckoutState> emit,
   ) {
+    // Reset voucher và mức giảm giá trong state về trạng thái ban đầu
     emit(state.copyWith(
       status: CheckoutStatus.ready,
       clearVoucher: true,

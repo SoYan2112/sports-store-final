@@ -281,6 +281,7 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
+            // 1. Người dùng chạm vào thẻ Kho Voucher -> Điều hướng sang màn hình VoucherListScreen (UC-21)
             onTap: () {
               Navigator.of(context).push(VoucherListScreen.route());
             },
@@ -497,6 +498,7 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
+            // 1. Người dùng bấm vào thẻ Đăng xuất -> Gọi hàm hiển thị dialog xác nhận
             onTap: () => _confirmLogout(context),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -536,6 +538,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   /// Hộp thoại xác nhận đăng xuất
+  // Hiển thị AlertDialog xác nhận và điều phối luồng đăng xuất tài khoản (UC-03)
   Future<void> _confirmLogout(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -546,10 +549,12 @@ class ProfileScreen extends StatelessWidget {
         ),
         content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
         actions: [
+          // 2. Người dùng bấm 'Hủy' -> Đóng hộp thoại, giữ nguyên trạng thái đăng nhập
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('Hủy'),
           ),
+          // 3. Người dùng bấm 'Đăng xuất' -> Xác nhận đồng ý thoát tài khoản
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text(
@@ -566,8 +571,10 @@ class ProfileScreen extends StatelessWidget {
 
     if (confirm == true && context.mounted) {
       final messenger = ScaffoldMessenger.maybeOf(context);
+      // 4. Gọi AuthCubit xử lý đăng xuất: xóa token, dọn cache và phát AuthUnauthenticated
       await context.read<AuthCubit>().logout();
       if (!context.mounted) return;
+      // 5. Hiển thị thông báo hoàn tất, giao diện tự động cập nhật về trạng thái khách (Guest)
       messenger?.showSnackBar(
         const SnackBar(
           content: Text('Đã đăng xuất thành công'),

@@ -28,6 +28,7 @@ class CategoryListScreen extends StatelessWidget {
         child: const _CategoryListView(),
       );
     }
+    // 1. Mở màn hình: Khởi tạo CategoryCubit và gọi fetchCategories() để nạp dữ liệu
     return BlocProvider<CategoryCubit>(
       create: (_) => getIt<CategoryCubit>()..fetchCategories(),
       child: const _CategoryListView(),
@@ -66,6 +67,7 @@ class _CategoryListView extends StatelessWidget {
           ),
         ),
       ),
+      // 2. BlocBuilder lắng nghe trạng thái (Loading, Loaded, Error) để vẽ giao diện tương ứng
       body: BlocBuilder<CategoryCubit, CategoryState>(
         builder: (context, state) {
           if (state is CategoryLoading) {
@@ -132,6 +134,7 @@ class _CategoryListView extends StatelessWidget {
               onRefresh: () async {
                 await context.read<CategoryCubit>().fetchCategories();
               },
+              // 3. Render danh sách danh mục theo dạng lưới 2 cột với CategoryCard
               child: GridView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -145,6 +148,7 @@ class _CategoryListView extends StatelessWidget {
                   final category = categories[index];
                   return CategoryCard(
                     category: category,
+                    // 4. Người dùng bấm chọn danh mục -> Đóng màn hình và trả về đối tượng CategoryEntity đã chọn
                     onTap: () {
                       Navigator.of(context).pop(category);
                     },

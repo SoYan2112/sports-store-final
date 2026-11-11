@@ -64,9 +64,13 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// 4. Xử lý Đăng xuất
+  // Xử lý nghiệp vụ đăng xuất: xóa sạch token lưu trữ và đưa ứng dụng về trạng thái Unauthenticated
   Future<void> logout() async {
+    // 6. Xóa token và phiên đăng nhập của người dùng khỏi bộ nhớ máy (SharedPreferences)
     await storageService.clearAuthSession();
+    // 7. Gọi AuthRepository thực hiện dọn dẹp phiên trên backend/hệ thống
     await authRepository.logout();
+    // 8. Phát ra trạng thái AuthUnauthenticated để toàn bộ app cập nhật về trạng thái khách
     emit(const AuthUnauthenticated());
   }
 }

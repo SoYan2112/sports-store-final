@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../domain/entities/voucher_entity.dart';
 
+// Thẻ hiển thị thông tin chi tiết voucher: Loại ưu đãi, mức giảm, điều kiện áp dụng, hạn dùng và mã code (UC-21)
 class VoucherCard extends StatelessWidget {
   final VoucherEntity voucher;
   final VoidCallback? onApply;
@@ -13,6 +14,7 @@ class VoucherCard extends StatelessWidget {
     this.onApply,
   });
 
+  // Hàm sao chép mã voucher vào clipboard và hiển thị SnackBar thông báo (UC-21)
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: voucher.code));
     final messenger = ScaffoldMessenger.maybeOf(context);
@@ -252,6 +254,7 @@ class VoucherCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          // 7. Người dùng bấm nút 'Sao chép' -> Kích hoạt hàm lưu mã code vào clipboard
                           onPressed: isUsable ? () => _copyToClipboard(context) : null,
                           child: Text(
                             isUsable ? 'Sao chép' : 'Hết hạn',

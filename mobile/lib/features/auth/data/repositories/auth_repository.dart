@@ -34,7 +34,9 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   /// Xử lý đăng xuất
+  // Thu hồi phiên xác thực người dùng ở tầng dữ liệu
   Future<void> logout() async {
+    // 9. Repository dọn dẹp phiên kết nối và dữ liệu xác thực
     // Mock: chuẩn bị sẵn cho việc xóa local token / storage khi nối backend
     await Future<void>.delayed(const Duration(milliseconds: 100));
   }

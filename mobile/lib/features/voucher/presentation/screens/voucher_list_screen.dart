@@ -46,6 +46,7 @@ class VoucherListScreen extends StatelessWidget {
       );
     }
 
+    // 2. Khởi tạo VoucherCubit và gọi fetchVouchers() nạp danh sách mã giảm giá từ CSDL
     return BlocProvider<VoucherCubit>(
       create: (_) => getIt<VoucherCubit>()..fetchVouchers(),
       child: _VoucherListView(
@@ -80,6 +81,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
     super.dispose();
   }
 
+  // Hàm lọc danh sách voucher theo tab phân loại (Tất cả/Giảm giá/Freeship) và từ khóa tìm kiếm (UC-21)
   List<VoucherEntity> _filterVouchers(List<VoucherEntity> vouchers) {
     List<VoucherEntity> result = vouchers;
 
@@ -139,6 +141,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
+      // 3. BlocBuilder lắng nghe các trạng thái (VoucherLoading / VoucherError / VoucherLoaded) để vẽ UI
       body: BlocBuilder<VoucherCubit, VoucherState>(
         builder: (context, state) {
           if (state is VoucherLoading) {
@@ -242,6 +245,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
                               ),
+                              // 4. Người dùng nhập mã hoặc tên voucher -> Tự động lọc danh sách ưu đãi theo từ khóa
                               onChanged: (value) {
                                 setState(() {
                                   _searchQuery = value;
@@ -300,6 +304,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
                   Expanded(
                     child: displayedVouchers.isEmpty
                         ? _buildEmptyView()
+                        // 6. Hiển thị danh sách voucher thể thao bằng VoucherCard
                         : ListView.builder(
                             padding: const EdgeInsets.all(16),
                             itemCount: displayedVouchers.length,
@@ -307,6 +312,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
                               final voucher = displayedVouchers[index];
                               return VoucherCard(
                                 voucher: voucher,
+                                // Khi ở chế độ chọn voucher cho đơn hàng (Checkout): Bấm 'Dùng ngay' -> Kiểm tra điều kiện và trả về voucher đã chọn
                                 onApply: widget.isSelectMode
                                     ? () {
                                         if (widget.currentOrderValue != null &&
@@ -343,10 +349,12 @@ class _VoucherListViewState extends State<_VoucherListView> {
     );
   }
 
+  // Xây dựng chip lọc danh mục voucher (Tất cả, Giảm giá, Freeship)
   Widget _buildFilterChip({required String label, required int index}) {
     final isSelected = _selectedFilterIndex == index;
     return InkWell(
       borderRadius: BorderRadius.circular(20),
+      // 5. Người dùng chạm chọn tab bộ lọc -> Cập nhật _selectedFilterIndex để lọc loại voucher
       onTap: () {
         setState(() {
           _selectedFilterIndex = index;
