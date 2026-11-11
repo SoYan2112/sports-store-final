@@ -200,6 +200,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       const SizedBox(width: 12),
                       InkWell(
                         key: const Key('product_filter_button'),
+                        // 1. Chạm nút lọc (onTap) -> mở FilterBottomSheet (UC-17)
                         onTap: () => FilterBottomSheet.show(context),
                         borderRadius: BorderRadius.circular(16),
                         child: BlocBuilder<FilterCubit, FilterState>(
@@ -421,6 +422,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ),
                         );
                       } else if (state is ProductLoaded) {
+                        // 4. Lọc danh sách sản phẩm theo tiêu chí: filterState.matches(p)
                         final filteredProducts = state.products
                             .where((p) => filterState.matches(p))
                             .toList();
