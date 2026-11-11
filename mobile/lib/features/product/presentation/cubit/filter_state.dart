@@ -23,6 +23,7 @@ class FilterState extends Equatable {
       minPrice == minPriceLimit &&
       maxPrice == maxPriceLimit;
 
+  // Đếm số bộ lọc đang chọn
   int get activeFilterCount {
     var count = 0;
     count += selectedBrands.length;
@@ -33,6 +34,7 @@ class FilterState extends Equatable {
     return count;
   }
 
+  // Kiểm tra sản phẩm thỏa tiêu chí
   bool matches(ProductEntity product) {
     if (selectedBrands.isNotEmpty && !selectedBrands.contains(product.brand)) {
       return false;

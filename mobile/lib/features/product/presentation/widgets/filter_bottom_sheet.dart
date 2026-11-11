@@ -6,10 +6,11 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../cubit/filter_cubit.dart';
 import '../cubit/filter_state.dart';
 
+// Modal chọn bộ lọc sản phẩm (UC-17)
 class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({super.key});
 
-  /// Phương thức static thuận tiện để mở FilterBottomSheet từ bất cứ màn hình nào
+  // Hiển thị modal bộ lọc
   static Future<bool?> show(BuildContext context) {
     final filterCubit = context.read<FilterCubit>();
     return showModalBottomSheet<bool>(
@@ -63,6 +64,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _tempMaxPrice = currentState.maxPrice;
   }
 
+  // Đặt lại các biến lọc tạm
   void _resetLocal() {
     setState(() {
       _tempBrands.clear();
@@ -72,7 +74,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     });
   }
 
+  // Áp dụng bộ lọc sang FilterCubit
   void _applyFilter() {
+    // 3. Bấm 'Áp dụng bộ lọc' -> cập nhật sang FilterCubit và đóng modal
     context.read<FilterCubit>().updateFilter(
           brands: _tempBrands,
           categories: _tempCategories,
@@ -129,6 +133,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       color: AppColors.textPrimary,
                     ),
                   ),
+                  // 2.4 Bấm 'Đặt lại' -> reset các tiêu chí lọc
                   TextButton(
                     key: const Key('filter_reset_button'),
                     onPressed: _resetLocal,
@@ -190,6 +195,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ],
                   ),
+                  // 2.1 Kéo chọn khoảng giá
                   RangeSlider(
                     key: const Key('filter_price_slider'),
                     values: RangeValues(_tempMinPrice, _tempMaxPrice),
@@ -232,6 +238,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     runSpacing: 8,
                     children: _brandOptions.map((brand) {
                       final isSelected = _tempBrands.contains(brand);
+                      // 2.2 Chọn thương hiệu (onSelected)
                       return FilterChip(
                         key: Key('filter_brand_$brand'),
                         label: Text(brand),
@@ -285,6 +292,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     runSpacing: 8,
                     children: _categoryOptions.map((cat) {
                       final isSelected = _tempCategories.contains(cat);
+                      // 2.3 Chọn danh mục phân loại (onSelected)
                       return FilterChip(
                         key: Key('filter_category_$cat'),
                         label: Text(cat),
@@ -343,6 +351,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ),
                     elevation: 0,
                   ),
+                  // 3. Bấm 'Áp dụng bộ lọc' -> gọi _applyFilter()
                   onPressed: _applyFilter,
                   child: const Text(
                     'Áp dụng bộ lọc',

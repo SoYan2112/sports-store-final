@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'filter_state.dart';
 
+// Quản lý bộ lọc sản phẩm (UC-17)
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(const FilterState());
 
-  /// Cập nhật toàn bộ tiêu chí lọc cùng lúc (từ BottomSheet khi nhấn Áp dụng)
+  // Cập nhật bộ lọc
   void updateFilter({
     required List<String> brands,
     required List<String> categories,
@@ -21,7 +22,7 @@ class FilterCubit extends Cubit<FilterState> {
     );
   }
 
-  /// Bật/tắt một thương hiệu
+  // Chọn/bỏ thương hiệu
   void toggleBrand(String brand) {
     final currentBrands = List<String>.from(state.selectedBrands);
     if (currentBrands.contains(brand)) {
@@ -32,7 +33,7 @@ class FilterCubit extends Cubit<FilterState> {
     emit(state.copyWith(selectedBrands: currentBrands));
   }
 
-  /// Bật/tắt một danh mục con / phân loại
+  // Chọn/bỏ danh mục
   void toggleCategory(String category) {
     final currentCategories = List<String>.from(state.selectedCategories);
     if (currentCategories.contains(category)) {
@@ -43,12 +44,12 @@ class FilterCubit extends Cubit<FilterState> {
     emit(state.copyWith(selectedCategories: currentCategories));
   }
 
-  /// Đặt khoảng giá min - max
+  // Đặt khoảng giá
   void setPriceRange(double min, double max) {
     emit(state.copyWith(minPrice: min, maxPrice: max));
   }
 
-  /// Đặt lại toàn bộ bộ lọc về mặc định
+  // Đặt lại mặc định
   void reset() {
     emit(const FilterState());
   }
