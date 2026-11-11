@@ -41,4 +41,9 @@ class ProductRepositoryImpl implements ProductRepository {
     rating: rating,
     comment: comment,
   );
+
+  @override
+  Future<List<Map<String, dynamic>>> getProductRatings(String productId) {
+    return remoteDataSource.getProductRatings(productId);
+  }
 }

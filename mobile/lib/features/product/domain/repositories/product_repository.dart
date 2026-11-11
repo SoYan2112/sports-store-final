@@ -16,4 +16,6 @@ abstract class ProductRepository {
     required int rating,
     String? comment,
   });
+
+  Future<List<Map<String, dynamic>>> getProductRatings(String productId);
 }

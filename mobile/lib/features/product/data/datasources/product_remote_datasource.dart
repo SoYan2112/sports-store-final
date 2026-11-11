@@ -19,6 +19,9 @@ abstract class ProductRemoteDataSource {
     required int rating,
     String? comment,
   });
+
+  Future<List<Map<String, dynamic>>> getProductRatings(String productId);
+
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -119,6 +122,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       'rating': rating,
       'comment': comment ?? '',
     });
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getProductRatings(String productId) async {
+    return [];
   }
 
   final List<Map<String, dynamic>> _mockRatings = [];

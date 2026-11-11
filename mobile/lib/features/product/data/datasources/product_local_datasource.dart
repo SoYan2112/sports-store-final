@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import '../../../../core/database/app_database.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/product_model.dart';
@@ -30,7 +31,7 @@ class ProductLocalDataSourceImpl
   final AppDatabase appDatabase;
 
   ProductLocalDataSourceImpl({AppDatabase? appDatabase})
-      : appDatabase = appDatabase ?? AppDatabase.instance;
+    : appDatabase = appDatabase ?? AppDatabase.instance;
 
   ProductModel _mapRowToProduct(Map<String, dynamic> row) {
     List<String> images = [];
@@ -106,8 +107,9 @@ class ProductLocalDataSourceImpl
       whereArgs.add(term);
     }
 
-    final whereString =
-        whereClauses.isNotEmpty ? whereClauses.join(' AND ') : null;
+    final whereString = whereClauses.isNotEmpty
+        ? whereClauses.join(' AND ')
+        : null;
     final offset = (page - 1) * size;
 
     final results = await db.query(
@@ -168,7 +170,8 @@ class ProductLocalDataSourceImpl
     );
 
     final totalReviews = ratings.length;
-    final double avgRating = ratings.fold<double>(
+    final double avgRating =
+        ratings.fold<double>(
           0.0,
           (sum, r) => sum + ((r['rating'] as num?)?.toDouble() ?? 5.0),
         ) /
