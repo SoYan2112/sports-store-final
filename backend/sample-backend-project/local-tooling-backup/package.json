@@ -1,0 +1,13 @@
+{
+  "name": "fu-car-renting-format",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@prettier/plugin-xml": "^3.4.2",
+    "prettier": "^3.9.10",
+    "prettier-plugin-java": "^2.11.0"
+  }
+}

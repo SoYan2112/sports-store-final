@@ -1,0 +1,12 @@
+{
+  "plugins": ["prettier-plugin-java", "@prettier/plugin-xml"],
+  "tabWidth": 4,
+  "printWidth": 100,
+  "xmlWhitespaceSensitivity": "ignore",
+  "overrides": [
+    {
+      "files": ["*.json", "*.yml", "*.yaml", "*.md"],
+      "options": { "tabWidth": 2 }
+    }
+  ]
+}
