@@ -35,38 +35,7 @@ class OrderHistoryScreen extends StatefulWidget {
 }
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
-  final List<_OrderItemData> _orders = [
-    _OrderItemData(
-      orderId: 'SS000123',
-      date: '25/10/2026',
-      status: 'Chờ xác nhận',
-      statusColor: AppColors.primary,
-      productName: 'Giày Nike Air Zoom Pegasus',
-      productInfo: 'Size 42 - Đen - x1',
-      total: '2.500.000 ₫',
-      icon: Icons.directions_run_rounded,
-    ),
-    _OrderItemData(
-      orderId: 'SS000122',
-      date: '22/10/2026',
-      status: 'Đang giao',
-      statusColor: Colors.blue,
-      productName: 'Áo thể thao Adidas Training',
-      productInfo: 'Size L - Trắng - x2',
-      total: '1.200.000 ₫',
-      icon: Icons.checkroom_rounded,
-    ),
-    _OrderItemData(
-      orderId: 'SS000118',
-      date: '15/10/2026',
-      status: 'Đã giao',
-      statusColor: Colors.green,
-      productName: 'Bóng đá Puma Orbita',
-      productInfo: 'Size 5 - Trắng - x1',
-      total: '650.000 ₫',
-      icon: Icons.sports_soccer_rounded,
-    ),
-  ];
+  final List<_OrderItemData> _orders = [];
 
   @override
   void initState() {
@@ -83,7 +52,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
       setState(() {
         for (final item in _orders) {
-          final match = localOrders.where((o) => o.id == item.orderId).firstOrNull;
+          final match = localOrders
+              .where((o) => o.id == item.orderId)
+              .firstOrNull;
           if (match != null) {
             item.status = match.status;
             final lower = match.status.toLowerCase();
@@ -106,8 +77,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 '${order.createdAt.day.toString().padLeft(2, '0')}/${order.createdAt.month.toString().padLeft(2, '0')}/${order.createdAt.year}';
             final firstItem = order.items.isNotEmpty ? order.items.first : null;
             final lower = order.status.toLowerCase();
-            final isCancelled = lower.contains('hủy') || lower.contains('cancel');
-            final isPending = lower.contains('chờ') || lower.contains('pending');
+            final isCancelled =
+                lower.contains('hủy') || lower.contains('cancel');
+            final isPending =
+                lower.contains('chờ') || lower.contains('pending');
             final isShipping = lower.contains('đang');
 
             _orders.insert(
@@ -119,8 +92,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 statusColor: isCancelled
                     ? Colors.red
                     : (isPending
-                        ? AppColors.primary
-                        : (isShipping ? Colors.blue : Colors.green)),
+                          ? AppColors.primary
+                          : (isShipping ? Colors.blue : Colors.green)),
                 productName: firstItem?.name ?? 'Sản phẩm thể thao',
                 productInfo: firstItem != null
                     ? 'Size ${firstItem.selectedSize} - x${firstItem.quantity}'
@@ -188,10 +161,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({
-    required this.data,
-    this.onStatusChanged,
-  });
+  const _OrderCard({required this.data, this.onStatusChanged});
 
   final _OrderItemData data;
   final ValueChanged<String>? onStatusChanged;
@@ -286,7 +256,7 @@ class _OrderCard extends StatelessWidget {
                   height: 64,
                   decoration: BoxDecoration(
                     color: AppColors.background,
-                  borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(data.icon, color: AppColors.primary, size: 32),
                 ),
