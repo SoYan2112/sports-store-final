@@ -424,6 +424,7 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
+            // 1. Chạm 'Đổi mật khẩu' (onTap) -> mở ChangePasswordScreen (UC-28)
             onTap: () {
               Navigator.of(context).push(ChangePasswordScreen.route());
             },

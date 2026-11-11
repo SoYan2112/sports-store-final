@@ -26,6 +26,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.product,
   });
 
+  // 2. Mở màn hình: cấp phát Cubit & gọi loadProduct()
   static Route route(ProductEntity product) {
     return MaterialPageRoute(
       builder: (_) => BlocProvider(
@@ -242,6 +243,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                           return InkWell(
                             key: Key('size_$size'),
+                            // 3. Chọn Size -> gọi cubit.selectSize(size)
                             onTap: isOutOfStock
                                 ? null
                                 : () {
@@ -283,6 +285,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(width: 16),
+                          // 4. Bấm (-) -> gọi cubit.decrementQuantity()
                           IconButton(
                             icon: const Icon(Icons.remove_circle_outline),
                             onPressed: () {
@@ -293,6 +296,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             '$quantity',
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
+                          // 5. Bấm (+) -> gọi cubit.incrementQuantity()
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline),
                             onPressed: () {
@@ -354,6 +358,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       disabledForegroundColor: Colors.grey.shade600,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
+                    // 6. Bấm Thêm giỏ hàng -> dispatch AddToCartEvent
                     onPressed: canAddToCart
                         ? () => _onAddToCartPressed(
                               context,
@@ -377,10 +382,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  // Mở đánh giá
   Future<void> _openRating(BuildContext context, ProductEntity product) async {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => ProductRatingViewScreen(product: product)));
   }
 
+  // Xử lý thêm vào giỏ
   Future<void> _onAddToCartPressed(
     BuildContext context, {
     required ProductEntity product,
@@ -431,6 +438,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  // Thêm hàng vào giỏ
   void _executeAddToCart(
     BuildContext context, {
     required ProductEntity product,

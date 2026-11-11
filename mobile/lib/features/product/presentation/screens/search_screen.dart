@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/utils/currency_formatter.dart';
@@ -41,9 +42,14 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        // 1. Ô nhập từ khóa
         title: TextField(
           controller: _searchController,
           autofocus: true,
@@ -52,6 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
             hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
             border: InputBorder.none,
           ),
+          // 2. Gõ từ khóa -> gọi cubit.search(keyword)
           onChanged: (keyword) {
             context.read<SearchCubit>().search(keyword);
             setState(() {});
@@ -59,6 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         actions: [
           if (_searchController.text.isNotEmpty)
+            // 3. Bấm (X) -> gọi cubit.clear()
             IconButton(
               icon: const Icon(Icons.cancel, color: Colors.grey, size: 20),
               onPressed: () {
@@ -69,6 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
         ],
       ),
+      // 4. Lắng nghe State vẽ UI (Loading/Empty/Loaded)
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
           if (state is SearchLoading) {
@@ -80,7 +89,11 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search_off_rounded, size: 64, color: Colors.grey.shade400),
+                  Icon(
+                    Icons.search_off_rounded,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'Không tìm thấy sản phẩm phù hợp với "${state.query}"',
@@ -117,7 +130,11 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.search_rounded, size: 64, color: Colors.grey.shade300),
+                Icon(
+                  Icons.search_rounded,
+                  size: 64,
+                  color: Colors.grey.shade300,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Nhập từ khóa để tìm kiếm sản phẩm thể thao',
@@ -131,12 +148,12 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  // Render 1 sản phẩm
   Widget _buildProductItem(BuildContext context, ProductEntity product) {
     return InkWell(
+      // 5. Chạm sản phẩm -> mở ProductDetailScreen
       onTap: () {
-        Navigator.of(context).push(
-          ProductDetailScreen.route(product),
-        );
+        Navigator.of(context).push(ProductDetailScreen.route(product));
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -159,7 +176,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   width: 70,
                   height: 70,
                   color: Colors.grey.shade200,
-                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -199,7 +219,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: Colors.grey,
+            ),
           ],
         ),
       ),

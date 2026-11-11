@@ -7,6 +7,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/storage/local_storage_service.dart';
 import '../../data/datasources/profile_local_datasource.dart';
 
+/// Màn hình đổi mật khẩu người dùng (UC-28)
 class ChangePasswordScreen extends StatefulWidget {
   final Dio? dio;
   final LocalStorageService? storageService;
@@ -17,6 +18,7 @@ class ChangePasswordScreen extends StatefulWidget {
     this.storageService,
   });
 
+  // Mở màn hình từ trang Profile (UC-28)
   static Route<void> route({Dio? dio, LocalStorageService? storageService}) {
     return MaterialPageRoute<void>(
       builder: (_) => ChangePasswordScreen(
@@ -49,19 +51,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
+  // Xử lý đổi mật khẩu
   Future<void> _handleChangePassword() async {
+    // 1. Validate form
     if (!_formKey.currentState!.validate()) return;
 
+    // 2. Bật loading
     setState(() => _isLoading = true);
 
     if (getIt.isRegistered<ProfileLocalDataSource>()) {
       try {
+        // 3a. Đổi mật khẩu qua Local DataSource
         await getIt<ProfileLocalDataSource>().changePassword(
           oldPassword: _currentPasswordController.text.trim(),
           newPassword: _newPasswordController.text.trim(),
         );
         if (!mounted) return;
         setState(() => _isLoading = false);
+        // 4a. Thành công: hiện SnackBar & pop màn hình
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Đổi mật khẩu thành công!'),
@@ -74,6 +81,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       } catch (e) {
         if (!mounted) return;
         setState(() => _isLoading = false);
+        // 5a. Thất bại: hiện SnackBar báo lỗi
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', '')),
@@ -94,6 +102,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       final dio = widget.dio ??
           (getIt.isRegistered<Dio>() ? getIt<Dio>() : Dio());
 
+      // 3b. POST đổi mật khẩu lên server
       final response = await dio.post(
         '${ApiEndpoints.baseUrl}${ApiEndpoints.changePassword}',
         options: Options(
@@ -116,6 +125,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ? response.data['message'] ?? 'Đổi mật khẩu thành công!'
           : 'Đổi mật khẩu thành công!';
 
+      // 4b. Thành công: hiện SnackBar & pop màn hình
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(msg),
@@ -128,6 +138,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (!mounted) return;
       setState(() => _isLoading = false);
 
+      // 5b. Thất bại: báo lỗi server
       if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
         final errorMsg = e.response?.data is Map<String, dynamic>
             ? e.response?.data['message'] ?? 'Mật khẩu hiện tại không chính xác'
@@ -165,6 +176,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
   }
 
+  // Ô nhập mật khẩu
   Widget _buildPasswordField({
     required TextEditingController controller,
     required String label,
@@ -314,6 +326,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+              // 1. Nhập mật khẩu hiện tại
               _buildPasswordField(
                 key: const Key('current_password_field'),
                 controller: _currentPasswordController,
@@ -331,6 +344,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
               const SizedBox(height: 18),
+              // 2. Nhập mật khẩu mới
               _buildPasswordField(
                 key: const Key('new_password_field'),
                 controller: _newPasswordController,
@@ -354,6 +368,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
               const SizedBox(height: 18),
+              // 3. Xác nhận mật khẩu mới
               _buildPasswordField(
                 key: const Key('confirm_password_field'),
                 controller: _confirmPasswordController,
@@ -374,6 +389,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
               const SizedBox(height: 32),
+              // 4. Bấm Cập nhật -> gọi _handleChangePassword()
               SizedBox(
                 height: 50,
                 child: ElevatedButton(

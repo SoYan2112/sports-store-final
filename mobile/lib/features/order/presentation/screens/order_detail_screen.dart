@@ -92,7 +92,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return lower.contains('chờ') || lower.contains('pending');
   }
 
+  /// Hộp thoại xác nhận hủy đơn (UC-20)
   Future<void> _showCancelDialog() async {
+    // 2. Hiện dialog chọn lý do hủy
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
@@ -171,9 +173,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       ),
     );
 
+    // 3. Xác nhận hủy -> gọi cubit.cancelOrder()
     if (confirmed == true && mounted) {
       if (!_canCancel) return;
-      // Gọi Cubit thực hiện hủy đơn hàng
       _cancelOrderCubit.cancelOrder(
         widget.orderId,
         reason: _selectedReason,
@@ -315,6 +317,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
+                    // 1. Bấm HỦY ĐƠN -> gọi _showCancelDialog()
                     onPressed: isLoading ? null : _showCancelDialog,
                     icon: isLoading
                         ? const SizedBox(

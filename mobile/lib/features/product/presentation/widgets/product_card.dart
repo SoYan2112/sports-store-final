@@ -33,6 +33,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // 1. Chạm (onTap) -> mở chi tiết sản phẩm
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
