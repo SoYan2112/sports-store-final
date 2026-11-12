@@ -16,10 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -76,15 +72,7 @@ public class AuthServiceImpl implements AuthService {
             throw ApiException.badRequest("Tài khoản của bạn đã bị khóa");
         }
 
-        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if (!passwordMatches && isLegacyMd5(user.getPassword())) {
-            if (hashMd5(request.getPassword()).equalsIgnoreCase(user.getPassword())) {
-                passwordMatches = true;
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-        }
-
-        if (!passwordMatches) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw ApiException.unauthorized("Tài khoản hoặc mật khẩu không chính xác");
         }
 
@@ -136,25 +124,6 @@ public class AuthServiceImpl implements AuthService {
             return authHeader.substring(7).trim();
         }
         return authHeader;
-    }
-
-    private boolean isLegacyMd5(String password) {
-        return password != null && password.length() == 32 && !password.startsWith("$2");
-    }
-
-    private String hashMd5(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(password.getBytes());
-            BigInteger no = new BigInteger(1, messageDigest);
-            StringBuilder hashtext = new StringBuilder(no.toString(16));
-            while (hashtext.length() < 32) {
-                hashtext.insert(0, "0");
-            }
-            return hashtext.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
-        }
     }
 
     private UserDTO toUserDTO(User user) {
