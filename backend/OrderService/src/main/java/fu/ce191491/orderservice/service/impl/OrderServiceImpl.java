@@ -19,6 +19,9 @@ import org.springframework.web.client.RestClient;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import fu.ce191491.orderservice.config.RabbitMQConfig;
+import fu.ce191491.orderservice.dto.event.StockSyncEvent;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @Slf4j
 @Service
@@ -26,6 +29,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final RabbitTemplate rabbitTemplate;
     private final RestClient restClient = RestClient.create();
 
     @Value("${product.service.url:http://localhost:8082}")
@@ -91,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Inter-service call: Hoàn lại tồn kho bên ProductService khi hủy đơn
         for (OrderItem item : updatedOrder.getItems()) {
-            syncProductStock(item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), true);
+            syncProductStock(updatedOrder.getId(), item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), true);
         }
 
         // 4. Trả về thông tin chi tiết đơn hàng sau khi cập nhật
@@ -207,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Inter-service call: Gọi sang ProductService để trừ tồn kho khi tạo đơn hàng
         for (OrderItem item : savedOrder.getItems()) {
-            syncProductStock(item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), false);
+            syncProductStock(savedOrder.getId(), item.getProductId(), item.getQuantity(), item.getSelectedSize(), item.getSelectedColor(), false);
         }
 
         return OrderCreateResponse.builder()
@@ -297,12 +301,32 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private void syncProductStock(String productId, Integer quantity, String size, Long colorCode, boolean restore) {
+    private void syncProductStock(String orderId, String productId, Integer quantity, String size, Long colorCode, boolean restore) {
         if (productId == null || productId.isBlank()) {
             return;
         }
         int qty = quantity != null && quantity > 0 ? quantity : 1;
         String action = restore ? "restore" : "reduce";
+
+        StockSyncEvent event = StockSyncEvent.builder()
+                .orderId(orderId)
+                .productId(productId.trim())
+                .quantity(qty)
+                .size(size)
+                .colorCode(colorCode)
+                .restore(restore)
+                .build();
+
+        // 1. Gửi qua RabbitMQ bất đồng bộ (Ưu tiên)
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, event);
+            log.info("RabbitMQ published stock {} event for orderId={}, productId={}, qty={}", action, orderId, productId, qty);
+            return;
+        } catch (Exception e) {
+            log.warn("RabbitMQ publish failed ({}), falling back to synchronous REST call...", e.getMessage());
+        }
+
+        // 2. Fallback sang REST HTTP đồng bộ nếu RabbitMQ chưa kết nối
         try {
             StringBuilder uri = new StringBuilder(productServiceUrl)
                     .append("/api/v1/products/")
@@ -321,7 +345,7 @@ public class OrderServiceImpl implements OrderService {
                     .uri(uri.toString())
                     .retrieve()
                     .toBodilessEntity();
-            log.info("Inter-service stock {} succeeded for productId={}, qty={}", action, productId, qty);
+            log.info("Fallback REST inter-service stock {} succeeded for productId={}, qty={}", action, productId, qty);
         } catch (Exception ex) {
             log.warn("Inter-service stock {} skipped for productId={}: {}", action, productId, ex.getMessage());
         }

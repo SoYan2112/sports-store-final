@@ -5,6 +5,11 @@ server:
 spring:
   application:
     name: ProductService
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:rabbitmq}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
   datasource:
     url: jdbc:sqlserver://${DB_HOST:sqlserver}:1433;databaseName=sports_store_product;encrypt=true;trustServerCertificate=true
     username: ${DB_USERNAME:sa}
@@ -20,8 +25,25 @@ eureka:
   instance:
     hostname: ${EUREKA_INSTANCE_HOSTNAME:product-service}
     instance-id: ${EUREKA_INSTANCE_HOSTNAME:product-service}:${spring.application.name}:${server.port}
+    status-page-url-path: /actuator/health
+    health-check-url-path: /actuator/health
   client:
     restclient:
       enabled: true
     service-url:
       defaultZone: ${EUREKA_URI:http://discovery-server:8761/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://zipkin:9411/api/v2/spans}

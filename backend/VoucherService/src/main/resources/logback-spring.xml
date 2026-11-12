@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="VoucherService"/>
+    <springProperty scope="context" name="serviceName" source="spring.application.name" defaultValue="VoucherService"/>
+    <springProperty scope="context" name="logstashHost" source="logstash.host" defaultValue="logstash"/>
+    <springProperty scope="context" name="logstashPort" source="logstash.port" defaultValue="5000"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [service=${appName}] [traceId=%X{traceId:-},spanId=%X{spanId:-}] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [service=${serviceName}] [traceId=%X{traceId:-},spanId=%X{spanId:-}] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+    </appender>
+
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${logstashHost}:${logstashPort}</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"service":"${serviceName}"}</customFields>
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+            <includeMdcKeyName>spanId</includeMdcKeyName>
+        </encoder>
+        <keepAliveDuration>5 minutes</keepAliveDuration>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOGSTASH"/>
     </root>
 </configuration>

@@ -30,10 +30,25 @@ eureka:
   instance:
     hostname: localhost
     instance-id: localhost:${spring.application.name}:${server.port}
-    status-page-url-path: /swagger-ui.html
-    health-check-url-path: /v3/api-docs
+    status-page-url-path: /actuator/health
+    health-check-url-path: /actuator/health
   client:
     restclient:
       enabled: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://localhost:9411/api/v2/spans}

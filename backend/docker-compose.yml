@@ -7,6 +7,39 @@ services:
       SA_PASSWORD: "StrongPassword@123"
     ports:
       - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "if [ -f /opt/mssql-tools18/bin/sqlcmd ]; then /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'StrongPassword@123' -C -Q 'SELECT 1'; else /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'StrongPassword@123' -Q 'SELECT 1'; fi"]
+      interval: 10s
+      timeout: 5s
+      retries: 25
+      start_period: 15s
+    networks:
+      - sports-store-net
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sports-store-sqlserver-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./init-db.sql:/init-db.sql:ro
+    entrypoint: >
+      /bin/bash -c "
+      if [ -f /opt/mssql-tools18/bin/sqlcmd ]; then
+        SQLCMD=/opt/mssql-tools18/bin/sqlcmd;
+      else
+        SQLCMD=/opt/mssql-tools/bin/sqlcmd;
+      fi;
+      echo 'Running database initialization script init-db.sql...';
+      for i in {1..30}; do
+        $$SQLCMD -S sqlserver -U sa -P 'StrongPassword@123' -C -d master -i /init-db.sql && break;
+        echo 'Waiting for SQL Server to accept script execution, retrying in 2 seconds...';
+        sleep 2;
+      done;
+      echo 'Database initialization completed successfully!';
+      exit 0;
+      "
     networks:
       - sports-store-net
 
@@ -65,8 +98,10 @@ services:
       DB_PASSWORD: "StrongPassword@123"
       EUREKA_URI: http://discovery-server:8761/eureka/
     depends_on:
-      - sqlserver
-      - discovery-server
+      sqlserver-init:
+        condition: service_completed_successfully
+      discovery-server:
+        condition: service_started
     networks:
       - sports-store-net
 
@@ -83,8 +118,10 @@ services:
       DB_PASSWORD: "StrongPassword@123"
       EUREKA_URI: http://discovery-server:8761/eureka/
     depends_on:
-      - sqlserver
-      - discovery-server
+      sqlserver-init:
+        condition: service_completed_successfully
+      discovery-server:
+        condition: service_started
     networks:
       - sports-store-net
 
@@ -102,8 +139,10 @@ services:
       PRODUCT_SERVICE_URL: http://product-service:8082
       EUREKA_URI: http://discovery-server:8761/eureka/
     depends_on:
-      - sqlserver
-      - discovery-server
+      sqlserver-init:
+        condition: service_completed_successfully
+      discovery-server:
+        condition: service_started
     networks:
       - sports-store-net
 
@@ -120,8 +159,10 @@ services:
       DB_PASSWORD: "StrongPassword@123"
       EUREKA_URI: http://discovery-server:8761/eureka/
     depends_on:
-      - sqlserver
-      - discovery-server
+      sqlserver-init:
+        condition: service_completed_successfully
+      discovery-server:
+        condition: service_started
     networks:
       - sports-store-net
 
@@ -135,6 +176,83 @@ services:
     depends_on:
       - api-gateway
       - discovery-server
+    networks:
+      - sports-store-net
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: sports-store-zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      JAVA_OPTS: "-Xms128m -Xmx256m -XX:+ExitOnOutOfMemoryError"
+    networks:
+      - sports-store-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sports-store-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - sports-store-net
+
+  elasticsearch:
+    image: elasticsearch:7.17.24
+    container_name: sports-store-elasticsearch
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms256m -Xmx512m"
+      xpack.security.enabled: "false"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - sports-store-net
+
+  logstash:
+    image: logstash:7.17.24
+    container_name: sports-store-logstash
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+    environment:
+      LS_JAVA_OPTS: "-Xms128m -Xmx256m"
+    depends_on:
+      - elasticsearch
+    networks:
+      - sports-store-net
+
+  kibana:
+    image: kibana:7.17.24
+    container_name: sports-store-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - sports-store-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: sports-store-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     networks:
       - sports-store-net
 
